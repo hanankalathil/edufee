@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timetable - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/timetable.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app-container">
+    <!-- Sidebar Injection Target -->
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Tuition & Class Timetable</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Organize batches, classes, subjects, and sync them directly to WhatsApp.</p>
+        </div>
+        <div class="timetable-header-actions">
+          <button class="btn btn-secondary" onclick="openSettingsModal()">
+            <i class="fa-solid fa-gear"></i> WhatsApp Group Settings
+          </button>
+          <button class="btn btn-primary" onclick="openAddSlotModal()">
+            <i class="fa-solid fa-plus"></i> Add Class Slot
+          </button>
+        </div>
+      </header>
+
+      <!-- WhatsApp Automation Status Bar -->
+      <div class="whatsapp-broadcast-bar">
+        <div class="whatsapp-broadcast-info">
+          <i class="fa-brands fa-whatsapp"></i>
+          <div>
+            <div class="whatsapp-broadcast-title" id="wa-status-title">WhatsApp Group Auto-Broadcast: Disabled</div>
+            <div class="whatsapp-broadcast-desc" id="wa-status-desc">Timetable updates will not be sent to your group. Click Settings to enable.</div>
+          </div>
+        </div>
+        <div>
+          <button class="btn btn-secondary" style="background: rgba(37, 211, 102, 0.1); color: #25d366; border-color: rgba(37, 211, 102, 0.3);" onclick="shareTimetableWhatsApp()">
+            <i class="fa-solid fa-share-nodes"></i> Share Current view on WhatsApp
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls and Filters -->
+      <section class="glass-card timetable-controls" style="padding: 20px;">
+        <div class="timetable-filters" style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; width: 100%;">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label class="form-label" style="margin-bottom: 0;">Filter by Batch</label>
+            <select id="batch-filter" class="form-control" style="min-width: 200px; height: 42px;" onchange="loadTimetableGrid()">
+              <option value="all">All Batches</option>
+            </select>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
+            <label class="form-label" style="margin-bottom: 0;">Search Timetable</label>
+            <div class="timetable-search-wrapper">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="slot-search" class="form-input timetable-search-input" placeholder="Search subject, teacher, room..." oninput="loadTimetableGrid()">
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label class="form-label" style="margin-bottom: 0;">View Mode</label>
+            <div class="view-toggle">
+              <button id="view-weekly-btn" class="view-btn active" onclick="setViewMode('weekly')">
+                <i class="fa-solid fa-calendar-week"></i> Weekly Grid
+              </button>
+              <button id="view-daily-btn" class="view-btn" onclick="setViewMode('daily')">
+                <i class="fa-solid fa-calendar-day"></i> Daily Timeline
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Day Selector for Daily view -->
+      <div id="daily-day-selector" class="daily-day-selector">
+        <button class="selector-day-btn active" onclick="setDailyDay('Monday')" data-day="Monday">
+          <span class="day-name">Mon</span>
+          <span class="day-count" id="count-Monday">0</span>
+        </button>
+        <button class="selector-day-btn" onclick="setDailyDay('Tuesday')" data-day="Tuesday">
+          <span class="day-name">Tue</span>
+          <span class="day-count" id="count-Tuesday">0</span>
+        </button>
+        <button class="selector-day-btn" onclick="setDailyDay('Wednesday')" data-day="Wednesday">
+          <span class="day-name">Wed</span>
+          <span class="day-count" id="count-Wednesday">0</span>
+        </button>
+        <button class="selector-day-btn" onclick="setDailyDay('Thursday')" data-day="Thursday">
+          <span class="day-name">Thu</span>
+          <span class="day-count" id="count-Thursday">0</span>
+        </button>
+        <button class="selector-day-btn" onclick="setDailyDay('Friday')" data-day="Friday">
+          <span class="day-name">Fri</span>
+          <span class="day-count" id="count-Friday">0</span>
+        </button>
+        <button class="selector-day-btn" onclick="setDailyDay('Saturday')" data-day="Saturday">
+          <span class="day-name">Sat</span>
+          <span class="day-count" id="count-Saturday">0</span>
+        </button>
+      </div>
+
+      <!-- Weekly Schedulers Grid -->
+      <section class="timetable-grid" id="timetable-grid-container">
+        <!-- Monday -->
+        <div class="day-column" data-day="Monday">
+          <div class="day-header">Monday</div>
+          <div class="day-slots-container" id="day-Monday"></div>
+        </div>
+
+        <!-- Tuesday -->
+        <div class="day-column" data-day="Tuesday">
+          <div class="day-header">Tuesday</div>
+          <div class="day-slots-container" id="day-Tuesday"></div>
+        </div>
+
+        <!-- Wednesday -->
+        <div class="day-column" data-day="Wednesday">
+          <div class="day-header">Wednesday</div>
+          <div class="day-slots-container" id="day-Wednesday"></div>
+        </div>
+
+        <!-- Thursday -->
+        <div class="day-column" data-day="Thursday">
+          <div class="day-header">Thursday</div>
+          <div class="day-slots-container" id="day-Thursday"></div>
+        </div>
+
+        <!-- Friday -->
+        <div class="day-column" data-day="Friday">
+          <div class="day-header">Friday</div>
+          <div class="day-slots-container" id="day-Friday"></div>
+        </div>
+
+        <!-- Saturday -->
+        <div class="day-column" data-day="Saturday">
+          <div class="day-header">Saturday</div>
+          <div class="day-slots-container" id="day-Saturday"></div>
+        </div>
+      </section>
+
+      <!-- Daily Timeline Container -->
+      <section id="daily-timeline-container" class="daily-timeline" style="display: none;">
+        <div class="timeline-line"></div>
+        <div id="timeline-slots-container"></div>
+      </section>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a></p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Add/Edit Slot Modal -->
+  <div id="slot-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Add Timetable Slot</h3>
+        <button class="close-btn" onclick="closeSlotModal()">&times;</button>
+      </div>
+      <form id="slot-form" onsubmit="handleSlotSubmit(event)">
+        <input type="hidden" id="slot-id">
+        
+        <div class="form-group">
+          <label for="slot-subject" class="form-label">Subject / Class Name *</label>
+          <input type="text" id="slot-subject" class="form-input" placeholder="e.g. Mathematics Class 10" required>
+        </div>
+
+        <div class="form-group">
+          <label for="slot-batch" class="form-label">Batch *</label>
+          <select id="slot-batch" class="form-control" required>
+            <!-- Batches populated dynamically -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="slot-teacher" class="form-label">Teacher / Tutor Name</label>
+          <input type="text" id="slot-teacher" class="form-input" placeholder="e.g. Prof. Verma">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="slot-day" class="form-label">Day *</label>
+            <select id="slot-day" class="form-control" required>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="slot-room" class="form-label">Room / Location</label>
+            <input type="text" id="slot-room" class="form-input" placeholder="e.g. Room 101">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="slot-start" class="form-label">Start Time *</label>
+            <input type="time" id="slot-start" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label for="slot-end" class="form-label">End Time *</label>
+            <input type="time" id="slot-end" class="form-input" required>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeSlotModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Slot</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- WhatsApp Settings Modal -->
+  <div id="settings-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">WhatsApp Group Configuration</h3>
+        <button class="close-btn" onclick="closeSettingsModal()">&times;</button>
+      </div>
+      <form id="settings-form" onsubmit="handleSettingsSubmit(event)">
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+          <input type="checkbox" id="wa-auto-broadcast" style="width: 18px; height: 18px; cursor: pointer;">
+          <label for="wa-auto-broadcast" class="form-label" style="margin-bottom: 0; cursor: pointer;">
+            Enable Auto-Broadcast Updates
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label for="wa-group-name" class="form-label">WhatsApp Group Name *</label>
+          <input type="text" id="wa-group-name" class="form-input" placeholder="e.g. Class 10 Batch A Group" required>
+        </div>
+
+        <div class="form-group">
+          <label for="wa-group-link" class="form-label">WhatsApp Invite Link</label>
+          <input type="url" id="wa-group-link" class="form-input" placeholder="https://chat.whatsapp.com/...">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeSettingsModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Settings</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Simulated Toast Notifications -->
+  <div id="toast-notif" class="toast-notif">
+    <i class="fa-brands fa-whatsapp" style="color: #25d366; font-size: 1.25rem;"></i>
+    <span id="toast-message">Broadcasted update to WhatsApp group!</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/timetable.js"></script>
+</body>
+</html>

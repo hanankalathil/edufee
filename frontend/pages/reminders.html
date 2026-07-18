@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reminders Center - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/reminders.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app-container">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Reminders Center</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Monitor fee collection reminders, send manual WhatsApp alerts, or view active queues.</p>
+        </div>
+        <button class="btn btn-primary" onclick="window.location.href='whatsapp-settings.html'">
+          <i class="fa-solid fa-gears"></i> WhatsApp Settings
+        </button>
+      </header>
+
+      <!-- Tabs -->
+      <section class="glass-card">
+        <div class="profile-main-tabs" style="margin-bottom: 20px;">
+          <button class="tab-btn active" onclick="switchReminderTab('today')">Due Today</button>
+          <button class="tab-btn" onclick="switchReminderTab('tomorrow')">Due Tomorrow</button>
+          <button class="tab-btn" onclick="switchReminderTab('overdue')">Overdue Students</button>
+          <button class="tab-btn" onclick="switchReminderTab('sent')">Reminder Logs / History</button>
+        </div>
+
+        <div class="table-container">
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Parent Number</th>
+                <th>Due Amount</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="reminders-table-body">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted);">Loading reminders...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a></p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/reminders.js"></script>
+</body>
+</html>

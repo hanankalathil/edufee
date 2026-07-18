@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 24px;
+    }
+    @media (max-width: 500px) {
+      .analytics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Analytics & Insights</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Analyze financial growth, attendance percentages, and notification metrics.</p>
+        </div>
+      </header>
+
+      <div class="analytics-grid">
+        <!-- Revenue Growth -->
+        <section class="glass-card">
+          <h3 class="section-title">Revenue Growth Trend</h3>
+          <div style="height: 250px;">
+            <canvas id="analytics-rev-chart"></canvas>
+          </div>
+        </section>
+
+        <!-- Student Growth -->
+        <section class="glass-card">
+          <h3 class="section-title">Student Admission Growth</h3>
+          <div style="height: 250px;">
+            <canvas id="analytics-student-chart"></canvas>
+          </div>
+        </section>
+
+        <!-- Pending Fee Dist -->
+        <section class="glass-card">
+          <h3 class="section-title">Outstanding Fee Status</h3>
+          <div style="height: 250px;">
+            <canvas id="analytics-fee-chart"></canvas>
+          </div>
+        </section>
+
+        <!-- Attendance Performance -->
+        <section class="glass-card">
+          <h3 class="section-title">Batch Attendance Ratios</h3>
+          <div style="height: 250px;">
+            <canvas id="analytics-attendance-chart"></canvas>
+          </div>
+        </section>
+
+        <!-- Reminders Success -->
+        <section class="glass-card" style="grid-column: span 2;">
+          <h3 class="section-title">WhatsApp Reminder Success Rate</h3>
+          <div style="height: 250px;">
+            <canvas id="analytics-reminders-chart"></canvas>
+          </div>
+        </section>
+      </div>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a></p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAnalyticsCharts();
+    });
+
+    async function loadAnalyticsCharts() {
+      try {
+        const stats = await api.getAnalyticsStats();
+        const dStats = await api.getDashboardStats();
+        
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+        const gridColor = isDark ? '#374151' : '#e2e8f0';
+
+        // 1. Revenue
+        new Chart(document.getElementById('analytics-rev-chart'), {
+          type: 'line',
+          data: {
+            labels: dStats.revenueChart.labels,
+            datasets: [{
+              label: 'Revenue (₹)',
+              data: dStats.revenueChart.data,
+              borderColor: '#2563eb',
+              backgroundColor: 'rgba(37, 99, 235, 0.05)',
+              fill: true,
+              tension: 0.3
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // 2. Student Growth
+        new Chart(document.getElementById('analytics-student-chart'), {
+          type: 'bar',
+          data: {
+            labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+            datasets: [{
+              label: 'Students Enrolled',
+              data: [15, 25, 32, 40, 52, dStats.metrics.totalStudents + 20],
+              backgroundColor: '#06b6d4',
+              borderRadius: 6
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // 3. Fee Status Pie
+        new Chart(document.getElementById('analytics-fee-chart'), {
+          type: 'doughnut',
+          data: {
+            labels: ['Paid Invoices', 'Partial Invoices', 'Overdue/Unpaid'],
+            datasets: [{
+              data: [stats.feeDistribution.paid, stats.feeDistribution.partial, stats.feeDistribution.unpaid],
+              backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+              borderWidth: 0
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // 4. Attendance History Line
+        new Chart(document.getElementById('analytics-attendance-chart'), {
+          type: 'line',
+          data: {
+            labels: stats.attendanceHistory.map(h => h.date),
+            datasets: [{
+              label: 'Daily Present Ratio (%)',
+              data: stats.attendanceHistory.map(h => h.rate),
+              borderColor: '#10b981',
+              backgroundColor: 'transparent',
+              tension: 0.2
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // 5. Reminders Bar Chart
+        new Chart(document.getElementById('analytics-reminders-chart'), {
+          type: 'bar',
+          data: {
+            labels: ['Sent', 'Failed', 'Pending'],
+            datasets: [{
+              label: 'Reminders Volume',
+              data: [stats.reminderStats.sentReminders, stats.reminderStats.failedReminders, stats.reminderStats.pendingReminders],
+              backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
+              borderRadius: 8
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+
+      } catch (error) {
+        console.error('Error generating analytics charts:', error);
+      }
+    }
+  </script>
+</body>
+</html>

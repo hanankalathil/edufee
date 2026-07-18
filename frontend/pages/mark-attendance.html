@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mark Attendance - Portal</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      color: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+    }
+    .portal-container {
+      width: 100%;
+      max-width: 900px;
+      margin: 20px auto;
+    }
+    .portal-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .portal-header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #0284c7, #4f46e5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .portal-header p {
+      color: #475569;
+      font-size: 1rem;
+    }
+    .glass-card {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -4px rgba(0,0,0,0.05) !important;
+      backdrop-filter: none !important;
+    }
+    .form-label {
+      color: #334155 !important;
+      font-weight: 600 !important;
+    }
+    .form-control {
+      background: #f8fafc !important;
+      border: 1px solid #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+    .form-control:focus {
+      border-color: #3b82f6 !important;
+    }
+    .status-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .status-present {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+    }
+    .status-absent {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+  <div class="portal-container" style="max-width: 600px;">
+    <header class="portal-header">
+      <h1>Attendance Portal</h1>
+      <p>Select your class details below to load students roster.</p>
+    </header>
+
+    <!-- Roster Selection Panel -->
+    <section class="glass-card" style="display: flex; flex-direction: column; gap: 20px; position: relative; z-index: 100;">
+      <div class="form-group" style="margin-bottom: 0;">
+        <label for="att-date" class="form-label">Date *</label>
+        <input type="date" id="att-date" class="form-control" style="width: 100%;">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label for="att-class" class="form-label">Class *</label>
+        <select id="att-class" class="form-control" style="width: 100%;">
+          <option value="Class 8">Class 8</option>
+          <option value="Class 9">Class 9</option>
+          <option value="Class 10">Class 10</option>
+          <option value="Plus One Science">Plus One Science</option>
+          <option value="Plus One Commerce">Plus One Commerce</option>
+          <option value="Plus One Humanities">Plus One Humanities</option>
+          <option value="Plus Two Science">Plus Two Science</option>
+          <option value="Plus Two Commerce">Plus Two Commerce</option>
+          <option value="Plus Two Humanities">Plus Two Humanities</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label for="att-batch" class="form-label">Batch *</label>
+        <select id="att-batch" class="form-control" style="width: 100%;">
+          <option value="">Loading batches...</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" onclick="loadStudentsRedirect()" style="width: 100%; padding: 14px; font-size: 1rem; font-weight: 700; margin-top: 10px;">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i> Load Students
+      </button>
+    </section>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/mark-attendance.js"></script>
+</body>
+</html>

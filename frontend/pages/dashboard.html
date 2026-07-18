@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app-container">
+    <!-- Sidebar Injection Target -->
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Welcome Back, <span id="admin-display-name">Admin</span></h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Here is what's happening at your tuition center today.</p>
+        </div>
+        <div class="top-bar-actions">
+          <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" class="search-input" placeholder="Search overall...">
+          </div>
+          <button class="btn btn-secondary" onclick="window.location.href='notifications.html'">
+            <i class="fa-regular fa-bell"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Metric Cards Grid -->
+      <section class="metrics-grid">
+        <div class="glass-card metric-card">
+          <div class="metric-icon" style="background: rgba(37, 99, 235, 0.1); color: var(--color-primary);">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <p class="metric-label">Total Students</p>
+            <h3 class="metric-value" id="stat-total-students">0</h3>
+          </div>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+          <div>
+            <p class="metric-label">Total Collections</p>
+            <h3 class="metric-value" id="stat-total-collections">₹0</h3>
+          </div>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <div>
+            <p class="metric-label">Pending Fees</p>
+            <h3 class="metric-value" id="stat-pending-fees">₹0</h3>
+          </div>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div>
+            <p class="metric-label">Overdue Amount</p>
+            <h3 class="metric-value" id="stat-overdue-fees">₹0</h3>
+          </div>
+        </div>
+      </section>
+
+      <!-- Charts & Quick Actions -->
+      <div class="dashboard-grid">
+        <section class="glass-card chart-container">
+          <h3 class="section-title">Monthly Revenue</h3>
+          <div class="chart-wrapper">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </section>
+
+        <section class="glass-card actions-container">
+          <h3 class="section-title">Quick Actions</h3>
+          <div class="actions-grid">
+            <button onclick="window.location.href='add-student.html'" class="action-btn">
+              <i class="fa-solid fa-user-plus"></i> Add Student
+            </button>
+            <button onclick="window.location.href='fees.html'" class="action-btn">
+              <i class="fa-solid fa-money-check-dollar"></i> Collect Fee
+            </button>
+            <button onclick="window.location.href='attendance.html'" class="action-btn">
+              <i class="fa-solid fa-clipboard-user"></i> Attendance
+            </button>
+            <button onclick="window.location.href='reminders.html'" class="action-btn">
+              <i class="fa-solid fa-bell"></i> Send Reminders
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Recent Payments -->
+      <section class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 class="section-title" style="margin-bottom: 0;">Recent Payments</h3>
+          <button class="btn btn-secondary" onclick="window.location.href='fee-history.html'">View All</button>
+        </div>
+        <div class="table-container">
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Fee Type</th>
+                <th>Billing Period</th>
+                <th>Amount Paid</th>
+                <th>Date</th>
+                <th>Method</th>
+                <th>Receipt</th>
+              </tr>
+            </thead>
+            <tbody id="recent-payments-table">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted);">Loading payments...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a> - Smart Education Management Platform</p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- CDN scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/dashboard.js"></script>
+</body>
+</html>

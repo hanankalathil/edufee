@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app-container">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Notification Center</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Keep track of system logs, automated alerts, and actions required.</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="markAllAsRead()">Mark All Read</button>
+          <button class="btn btn-danger" onclick="clearAllNotifications()">Clear All</button>
+        </div>
+      </header>
+
+      <section class="glass-card">
+        <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+          <button class="btn btn-secondary active" id="btn-all" onclick="filterNotifications('all')">All</button>
+          <button class="btn btn-secondary" id="btn-unread" onclick="filterNotifications('unread')">Unread</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;" id="notifications-list">
+          <!-- Notification items rendered here -->
+        </div>
+      </section>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a></p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script>
+    let filterMode = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNotifications();
+    });
+
+    function getNotifs() {
+      return JSON.parse(localStorage.getItem('notifications') || '[]');
+    }
+
+    function saveNotifs(notifs) {
+      localStorage.setItem('notifications', JSON.stringify(notifs));
+    }
+
+    function renderNotifications() {
+      const container = document.getElementById('notifications-list');
+      if (!container) return;
+
+      let list = getNotifs();
+      if (filterMode === 'unread') {
+        list = list.filter(n => !n.read);
+      }
+
+      // Highlight active button
+      document.getElementById('btn-all').classList.toggle('active', filterMode === 'all');
+      document.getElementById('btn-unread').classList.toggle('active', filterMode === 'unread');
+
+      if (list.length === 0) {
+        container.innerHTML = `<p style="text-align: center; padding: 40px; color: var(--text-muted);">No notifications found.</p>`;
+        return;
+      }
+
+      container.innerHTML = list.map(n => {
+        let icon = 'fa-bell';
+        let color = '#2563EB';
+        if (n.type === 'fee') { icon = 'fa-file-invoice-dollar'; color = '#EF4444'; }
+        if (n.type === 'admission') { icon = 'fa-user-plus'; color = '#10B981'; }
+        if (n.type === 'birthday') { icon = 'fa-cake-candles'; color = '#EC4899'; }
+
+        return `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px; border-radius: var(--border-radius); background: var(--bg-secondary); border: 1px solid var(--border-color); border-left: 5px solid ${color}; opacity: ${n.read ? 0.7 : 1};">
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(37,99,235,0.05); display: flex; align-items: center; justify-content: center; color: ${color}; font-size: 1.2rem;">
+                <i class="fa-solid ${icon}"></i>
+              </div>
+              <div>
+                <h4 style="font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                  ${n.title}
+                  ${!n.read ? `<span style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-primary);"></span>` : ''}
+                </h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">${n.text}</p>
+                <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 4px;">${n.time}</span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              ${!n.read ? `<button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="markAsRead('${n.id}')">Read</button>` : ''}
+              <button class="btn btn-danger" style="padding: 6px; font-size: 0.8rem;" onclick="deleteNotif('${n.id}')"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.filterNotifications = (mode) => {
+      filterMode = mode;
+      renderNotifications();
+    };
+
+    window.markAsRead = (id) => {
+      let list = getNotifs();
+      const idx = list.findIndex(n => n.id === id);
+      if (idx !== -1) {
+        list[idx].read = true;
+        saveNotifs(list);
+        renderNotifications();
+      }
+    };
+
+    window.markAllAsRead = () => {
+      let list = getNotifs();
+      list.forEach(n => n.read = true);
+      saveNotifs(list);
+      renderNotifications();
+    };
+
+    window.deleteNotif = (id) => {
+      let list = getNotifs();
+      list = list.filter(n => n.id !== id);
+      saveNotifs(list);
+      renderNotifications();
+    };
+
+    window.clearAllNotifications = () => {
+      if (confirm('Are you sure you want to clear all notifications?')) {
+        saveNotifs([]);
+        renderNotifications();
+      }
+    };
+  </script>
+</body>
+</html>

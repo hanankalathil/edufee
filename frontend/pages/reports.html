@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app-container">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Financial & Operational Reports</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Generate account ledgers, student summaries, and reminder history sheets.</p>
+        </div>
+      </header>
+
+      <!-- Selection Filter -->
+      <section class="glass-card" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; position: relative; z-index: 10;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="report-type" class="form-label">Select Report Type</label>
+          <select id="report-type" class="form-control" style="width: 250px;" onchange="loadReportPreview()">
+            <option value="daily">Daily Revenue Report</option>
+            <option value="weekly">Weekly Revenue Report</option>
+            <option value="monthly">Monthly Revenue Report</option>
+            <option value="student">Student Ledger Statement</option>
+            <option value="reminder">WhatsApp Reminder Logs</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="exportReport('csv')">
+            <i class="fa-solid fa-file-excel"></i> Export Excel (CSV)
+          </button>
+          <button class="btn btn-primary" onclick="exportReport('pdf')">
+            <i class="fa-solid fa-file-pdf"></i> Export PDF Report
+          </button>
+        </div>
+      </section>
+
+      <!-- Preview Table -->
+      <section class="glass-card">
+        <h3 class="section-title" id="report-title-preview">Report Preview</h3>
+        <div class="table-container">
+          <table class="premium-table">
+            <thead id="report-table-header">
+              <!-- Dynamically populated headers -->
+            </thead>
+            <tbody id="report-table-body">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a></p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      loadReportPreview();
+    });
+
+    async function loadReportPreview() {
+      const type = document.getElementById('report-type').value;
+      const headerRow = document.getElementById('report-table-header');
+      const bodyRow = document.getElementById('report-table-body');
+      const titleText = document.getElementById('report-title-preview');
+
+      headerRow.innerHTML = '';
+      bodyRow.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Compiling report preview...</td></tr>`;
+
+      try {
+        const data = await api.getReportJson(type);
+
+        titleText.textContent = data.title;
+
+        // Render headers
+        headerRow.innerHTML = `<tr>${data.headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+
+        if (data.rows.length === 0) {
+          bodyRow.innerHTML = `<tr><td colspan="${data.headers.length}" style="text-align: center; color: var(--text-muted);">No records found.</td></tr>`;
+          return;
+        }
+
+        // Render rows
+        bodyRow.innerHTML = data.rows.map(row => `
+          <tr>
+            ${row.map(cell => `<td>${cell}</td>`).join('')}
+          </tr>
+        `).join('');
+
+      } catch (error) {
+        console.error('Error generating report:', error);
+      }
+    }
+
+    async function exportReport(format) {
+      const type = document.getElementById('report-type').value;
+      try {
+        if (format === 'pdf') {
+          await api.downloadPdfReport(type);
+        } else {
+          await api.downloadCsvReport(type);
+        }
+      } catch (error) {
+        alert('Export failed in current sandbox mode. (Normally downloads file)');
+      }
+    }
+  </script>
+</body>
+</html>

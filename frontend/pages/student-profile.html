@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Profile - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/students.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app-container">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Student Details Profile</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">View fee history, attendance records, and student demographics.</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="window.history.back()">
+            <i class="fa-solid fa-arrow-left"></i> Back
+          </button>
+          <button class="btn btn-primary" id="edit-profile-btn">
+            <i class="fa-regular fa-pen-to-square"></i> Edit Profile
+          </button>
+        </div>
+      </header>
+
+      <div class="profile-detail-grid">
+        <!-- Sidebar profile card -->
+        <section class="glass-card profile-sidebar">
+          <img src="" alt="Student Avatar" class="student-card-avatar" id="profile-avatar" style="width: 120px; height: 120px;">
+          <div>
+            <h2 class="student-card-name" id="profile-name">Student Name</h2>
+            <p id="profile-id" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">ID: STU0000</p>
+          </div>
+
+          <div style="width: 100%; border-top: 1px solid var(--border-color); padding-top: 20px; display: flex; flex-direction: column; gap: 12px; text-align: left; font-size: 0.9rem;">
+            <div>
+              <strong style="color: var(--text-muted);">Class:</strong> <span id="profile-class">-</span>
+            </div>
+            <div>
+              <strong style="color: var(--text-muted);">Batch:</strong> <span id="profile-batch">-</span>
+            </div>
+            <div>
+              <strong style="color: var(--text-muted);">WhatsApp:</strong> <span id="profile-whatsapp">-</span>
+            </div>
+            <div>
+              <strong style="color: var(--text-muted);">Parent:</strong> <span id="profile-parent">-</span>
+            </div>
+            <div>
+              <strong style="color: var(--text-muted);">School:</strong> <span id="profile-school">-</span>
+            </div>
+            <div>
+              <strong style="color: var(--text-muted);">Subjects:</strong> <span id="profile-subjects">-</span>
+            </div>
+            <div>
+              <strong style="color: var(--text-muted);">Admission:</strong> <span id="profile-admission">-</span>
+            </div>
+            <div>
+              <strong style="color: var(--text-muted);">Address:</strong> <span id="profile-address">-</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Main Content tabs area -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <!-- Top summary KPIs -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="glass-card" style="display: flex; align-items: center; gap: 16px; padding: 20px;">
+              <i class="fa-solid fa-indian-rupee-sign" style="font-size: 1.8rem; color: #ef4444;"></i>
+              <div>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Outstanding Balance</p>
+                <h3 style="font-size: 1.4rem;" id="kpi-outstanding">₹0</h3>
+              </div>
+            </div>
+
+            <div class="glass-card" style="display: flex; align-items: center; gap: 16px; padding: 20px;">
+              <i class="fa-regular fa-calendar-check" style="font-size: 1.8rem; color: #10b981;"></i>
+              <div>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Attendance Rate</p>
+                <h3 style="font-size: 1.4rem;" id="kpi-attendance">100%</h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs menu -->
+          <div class="glass-card">
+            <div class="profile-main-tabs">
+              <button class="tab-btn active" onclick="switchProfileTab('fees')">Fees Invoices</button>
+              <button class="tab-btn" onclick="switchProfileTab('attendance')">Attendance History</button>
+            </div>
+
+            <!-- Tab Content: Fees -->
+            <div id="tab-content-fees" class="profile-tab-panel">
+              <div class="table-container">
+                <table class="premium-table">
+                  <thead>
+                    <tr>
+                      <th>Period</th>
+                      <th>Fee Type</th>
+                      <th>Amount</th>
+                      <th>Paid</th>
+                      <th>Balance Due</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="profile-fees-table">
+                    <tr>
+                      <td colspan="7" style="text-align: center; color: var(--text-muted);">No invoice records.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab Content: Attendance -->
+            <div id="tab-content-attendance" class="profile-tab-panel" style="display: none;">
+              <div class="table-container">
+                <table class="premium-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Class</th>
+                      <th>Batch</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="profile-attendance-table">
+                    <tr>
+                      <td colspan="4" style="text-align: center; color: var(--text-muted);">No attendance entries recorded.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a></p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/students.js"></script>
+</body>
+</html>

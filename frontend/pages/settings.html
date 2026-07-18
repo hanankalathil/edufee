@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/settings.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app-container">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Global Settings</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Configure school branding, academic years, notification options, and general settings.</p>
+        </div>
+      </header>
+
+      <div class="settings-grid">
+        <!-- General settings panel (Left column) -->
+        <section class="glass-card settings-panel" id="panel-general">
+          <h3 class="section-title"><i class="fa-solid fa-hotel" style="color: var(--color-primary); margin-right: 8px;"></i> General Academy Details</h3>
+          <form id="settings-general-form">
+            <div class="form-group">
+              <label for="tuitionName" class="form-label">Tuition Center Name *</label>
+              <input type="text" id="tuitionName" name="tuitionName" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label for="academicYear" class="form-label">Academic Calendar Year *</label>
+              <select id="academicYear" name="academicYear" class="form-control" required>
+                <option value="2026-27">2026 - 2027</option>
+                <option value="2027-28">2027 - 2028</option>
+              </select>
+            </div>
+
+            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div class="form-group">
+                <label for="phone" class="form-label">Phone Contact *</label>
+                <input type="text" id="phone" name="phone" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="email" class="form-label">Support Email *</label>
+                <input type="email" id="email" name="email" class="form-control" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="address" class="form-label">Location Address</label>
+              <textarea id="address" name="address" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+              <button type="submit" class="btn btn-primary">Save General Details</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Right column containing Branding and Preferences -->
+        <div class="settings-right-col">
+          <!-- Branding logo/theme settings panel -->
+          <section class="glass-card settings-panel" id="panel-branding">
+            <h3 class="section-title"><i class="fa-solid fa-palette" style="color: var(--color-primary); margin-right: 8px;"></i> Logo & Theme Branding</h3>
+            <form id="settings-branding-form">
+              <div class="branding-layout">
+                <!-- Left/First column: Logo Upload -->
+                <div class="form-group branding-logo-section">
+                  <label class="form-label">Upload Brand Logo</label>
+                  <div class="logo-uploader" onclick="document.getElementById('logo-file-input').click()">
+                    <div class="logo-preview-container">
+                      <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&q=80" alt="Logo Preview" class="logo-preview-img" id="logo-preview">
+                    </div>
+                    <div class="logo-uploader-text">
+                      <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                      <span class="upload-title">Click to upload logo</span>
+                      <span class="upload-subtitle">Supports PNG, JPG (Max 2MB)</span>
+                    </div>
+                    <input type="file" id="logo-file-input" style="display: none;" accept="image/*">
+                  </div>
+                </div>
+
+                <!-- Right/Second column: Default UI Mode -->
+                <div class="form-group branding-theme-section">
+                  <label class="form-label">Default UI Mode</label>
+                  <div class="theme-selector-grid">
+                    <!-- Light Theme Card Option -->
+                    <div class="theme-card-option" id="theme-light-card" onclick="window.toggleTheme(); updateThemeUI('light')">
+                      <div class="theme-card-preview theme-preview-light">
+                        <div class="preview-header"></div>
+                        <div class="preview-body">
+                          <div class="preview-sidebar"></div>
+                          <div class="preview-content"></div>
+                        </div>
+                      </div>
+                      <div class="theme-card-label">
+                        <i class="fa-solid fa-sun" style="color: #eab308;"></i>
+                        <span>Light Mode</span>
+                      </div>
+                    </div>
+                    <!-- Dark Theme Card Option -->
+                    <div class="theme-card-option" id="theme-dark-card" onclick="window.toggleTheme(); updateThemeUI('dark')">
+                      <div class="theme-card-preview theme-preview-dark">
+                        <div class="preview-header"></div>
+                        <div class="preview-body">
+                          <div class="preview-sidebar"></div>
+                          <div class="preview-content"></div>
+                        </div>
+                      </div>
+                      <div class="theme-card-label">
+                        <i class="fa-solid fa-moon" style="color: #818cf8;"></i>
+                        <span>Dark Mode</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="branding-actions">
+                <button type="button" class="btn btn-primary" onclick="alert('Branding settings updated (Mock).')">Save Branding</button>
+              </div>
+            </form>
+          </section>
+
+          <!-- Preferences settings panel -->
+          <section class="glass-card settings-panel" id="panel-notifications">
+            <h3 class="section-title"><i class="fa-solid fa-bell" style="color: var(--color-primary); margin-right: 8px;"></i> Preference Notifications</h3>
+            <div style="display: flex; flex-direction: column; gap: 18px;">
+              <label class="custom-checkbox-container">
+                <input type="checkbox" checked>
+                <span class="custom-checkmark"></span>
+                <span class="checkbox-text">Enable email notifications on new fee collections.</span>
+              </label>
+
+              <label class="custom-checkbox-container">
+                <input type="checkbox" checked>
+                <span class="custom-checkmark"></span>
+                <span class="checkbox-text">Enable auto queueing of daily due WhatsApp alerts.</span>
+              </label>
+
+              <label class="custom-checkbox-container">
+                <input type="checkbox">
+                <span class="custom-checkmark"></span>
+                <span class="checkbox-text">Send automatic congratulations to students on their birthday.</span>
+              </label>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 32px;">
+              <button class="btn btn-primary" onclick="alert('Preferences updated (Mock).')">Save Preferences</button>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a></p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/settings.js"></script>
+</body>
+</html>

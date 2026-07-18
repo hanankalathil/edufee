@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mark Attendance - Students List</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+      color: #0f172a;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0 0 100px 0; /* space for fixed footer */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .mobile-container {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .header-panel {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .back-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .back-btn:hover {
+      background: rgba(0, 0, 0, 0.1);
+      transform: scale(1.05);
+    }
+    .header-details {
+      flex: 1;
+    }
+    .header-details h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #0284c7, #4f46e5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .header-details p {
+      margin: 2px 0 0 0;
+      font-size: 0.85rem;
+      color: #475569;
+    }
+
+    /* Roster Cards */
+    .roster-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .student-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .student-card.marked-present {
+      background: #f0fdf4 !important;
+      border-color: #bbf7d0 !important;
+    }
+    .student-card.marked-absent {
+      background: #fef2f2 !important;
+      border-color: #fecaca !important;
+    }
+
+    .student-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.15);
+    }
+    .student-details {
+      flex: 1;
+      min-width: 0;
+    }
+    .student-name {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 650;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .student-meta {
+      margin: 2px 0 0 0;
+      font-size: 0.75rem;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .attempts-badge {
+      background: rgba(0, 0, 0, 0.04);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    /* Modern Toggle Switch */
+    .status-toggle {
+      display: flex;
+      background: rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 12px;
+      padding: 3px;
+      gap: 4px;
+    }
+    .toggle-opt {
+      padding: 8px 14px;
+      border-radius: 9px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .toggle-opt.present {
+      color: #64748b;
+    }
+    .toggle-opt.absent {
+      color: #64748b;
+    }
+    .toggle-opt.active-present {
+      background: #10b981;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+    }
+    .toggle-opt.active-absent {
+      background: #ef4444;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+    }
+
+    /* Fixed Sticky Footer */
+    .sticky-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid #e2e8f0;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1000;
+    }
+    .footer-wrapper {
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stats-summary {
+      font-size: 0.85rem;
+      color: #334155;
+    }
+    .submit-btn {
+      background: linear-gradient(135deg, #3b82f6 0%, #818cf8 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.2);
+      transition: all 0.2s;
+    }
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Search and Quick Filters */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .search-box {
+      flex: 1;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #0f172a;
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .search-box:focus {
+      border-color: #3b82f6;
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-container">
+    <header class="header-panel">
+      <a href="mark-attendance.html" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i>
+      </a>
+      <div class="header-details">
+        <h2 id="batch-title">Loading Batch...</h2>
+        <p id="batch-meta">Please wait...</p>
+      </div>
+    </header>
+
+    <!-- Search & Quick Actions -->
+    <div class="filter-bar">
+      <input type="text" id="search-input" class="search-box" placeholder="Search student name..." oninput="filterRoster()">
+      <button class="btn btn-secondary" onclick="markAllRoster('Present')" style="padding: 8px 12px; font-size: 0.75rem; border-radius: 12px;">
+        All Present
+      </button>
+      <button class="btn btn-secondary" onclick="markAllRoster('Absent')" style="padding: 8px 12px; font-size: 0.75rem; border-radius: 12px;">
+        All Absent
+      </button>
+    </div>
+
+    <!-- Student Cards List -->
+    <div class="roster-list" id="students-roster-list">
+      <!-- Loading indicator -->
+      <div style="text-align: center; padding: 40px 0; color: #94a3b8;">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 12px;"></i>
+        <p>Loading roster checklist...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Footer -->
+  <div class="sticky-footer">
+    <div class="footer-wrapper">
+      <div class="stats-summary" id="stats-summary-text">
+        Present: 0 | Absent: 0
+      </div>
+      <button class="submit-btn" id="submit-roster-btn" onclick="submitRoster()">
+        <i class="fa-solid fa-circle-check"></i> Submit Sheet
+      </button>
+    </div>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/mark-attendance-list.js"></script>
+</body>
+</html>

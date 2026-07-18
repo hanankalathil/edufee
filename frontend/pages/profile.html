@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Profile - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app-container">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Administrator Profile</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Manage credentials, login info, and administration access privileges.</p>
+        </div>
+      </header>
+
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 32px;">
+        <section class="glass-card" style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+          <div class="user-avatar" style="width: 100px; height: 100px; font-size: 3rem; border-radius: 50%;">A</div>
+          <div>
+            <h3 class="student-card-name" id="profile-admin-name">Admin User</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem;" id="profile-admin-email">admin@techora.in</p>
+          </div>
+          <span class="badge badge-paid">Super Administrator</span>
+        </section>
+
+        <section class="glass-card">
+          <h3 class="section-title">Credentials details</h3>
+          <form id="admin-profile-form" onsubmit="event.preventDefault(); alert('Profile credentials updated (Mock).');">
+            <div class="form-group">
+              <label for="admin-name-input" class="form-label">Full Name</label>
+              <input type="text" id="admin-name-input" class="form-control" value="Admin User" required>
+            </div>
+            <div class="form-group">
+              <label for="admin-email-input" class="form-label">Login Email</label>
+              <input type="email" id="admin-email-input" class="form-control" value="admin@techora.in" required>
+            </div>
+            <div class="form-group">
+              <label for="admin-pass-input" class="form-label">Update Password</label>
+              <input type="password" id="admin-pass-input" class="form-control" placeholder="••••••••">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+              <button type="submit" class="btn btn-primary">Update Profile</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a></p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = api.getUser();
+      if (user) {
+        document.getElementById('profile-admin-name').textContent = user.name;
+        document.getElementById('profile-admin-email').textContent = user.email;
+        document.getElementById('admin-name-input').value = user.name;
+        document.getElementById('admin-email-input').value = user.email;
+      }
+    });
+  </script>
+</body>
+</html>

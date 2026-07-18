@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fees - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/fees.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app-container">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Fees Management</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Record tuition charges, allocate discounts, and collect payments.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="window.location.href='fee-history.html'">
+          <i class="fa-solid fa-clock-rotate-left"></i> Payment Logs
+        </button>
+      </header>
+
+      <div class="fees-management-grid">
+        <!-- Add Fee Invoice form -->
+        <section class="glass-card" style="position: relative; z-index: 10;">
+          <h3 class="section-title">Issue New Invoice</h3>
+          <form id="create-fee-form">
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label for="fee-student-select" class="form-label">Select Student *</label>
+                <select id="fee-student-select" class="form-control" required>
+                  <!-- Dynamically loaded students -->
+                  <option value="">Choose student...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="feeType" class="form-label">Fee Type *</label>
+                <select id="feeType" class="form-control" required>
+                  <option value="Monthly Tuition">Monthly Tuition</option>
+                  <option value="Admission Fee">Admission Fee</option>
+                  <option value="Books/Materials">Books/Materials</option>
+                  <option value="Exam Fee">Exam Fee</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="billingPeriod" class="form-label">Billing Period *</label>
+                <input type="text" id="billingPeriod" class="form-control" placeholder="e.g. July 2026" required>
+              </div>
+            </div>
+
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label for="totalAmount" class="form-label">Amount (₹) *</label>
+                <input type="number" id="totalAmount" class="form-control" placeholder="2500" required>
+              </div>
+
+              <div class="form-group">
+                <label for="discount" class="form-label">Discount (₹)</label>
+                <input type="number" id="discount" class="form-control" value="0">
+              </div>
+
+              <div class="form-group">
+                <label for="dueDate" class="form-label">Due Date *</label>
+                <input type="date" id="dueDate" class="form-control" required>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 16px;">
+              <i class="fa-solid fa-file-invoice"></i> Issue Invoice
+            </button>
+          </form>
+        </section>
+
+        <!-- Unpaid invoices lists -->
+        <section class="glass-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 class="section-title" style="margin-bottom: 0;">Invoices Directory</h3>
+            <div class="search-container" style="width: 300px;">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="fees-search" class="search-input" placeholder="Search name, ID, invoice, parent...">
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Period</th>
+                  <th>Net Fee</th>
+                  <th>Balance Due</th>
+                  <th>Status</th>
+                  <th style="text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="fees-table-body">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted);">Loading invoices...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- Payment Collection Modal Overlay -->
+      <div id="payment-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h3 class="section-title" style="margin-bottom: 0;">Collect Payment</h3>
+            <button class="btn btn-secondary" onclick="closePaymentModal()" style="border: none; padding: 4px 8px;">
+              <i class="fa-solid fa-xmark" style="font-size: 1.2rem;"></i>
+            </button>
+          </div>
+
+          <form id="payment-form">
+            <input type="hidden" id="modal-fee-id">
+            
+            <div style="margin-bottom: 20px; background: rgba(37, 99, 235, 0.04); padding: 16px; border-radius: var(--border-radius); border: 1px solid var(--border-color);">
+              <p style="font-size: 0.8rem; color: var(--text-muted);">Outstanding Balance:</p>
+              <h2 id="modal-balance-display" style="font-family: var(--font-heading); color: #ef4444;">₹0.00</h2>
+            </div>
+
+            <div class="form-group">
+              <label for="amountPaid" class="form-label">Payment Amount (₹) *</label>
+              <input type="number" id="amountPaid" class="form-control" placeholder="Enter amount..." required>
+            </div>
+
+            <div class="form-group">
+              <label for="paymentMethod" class="form-label">Payment Method *</label>
+              <select id="paymentMethod" class="form-control" required>
+                <option value="UPI">UPI (GPay / PhonePe / Paytm)</option>
+                <option value="Cash">Cash</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="Card">Credit/Debit Card</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="remarks" class="form-label">Remarks</label>
+              <input type="text" id="remarks" class="form-control" placeholder="Partial payment / advance">
+            </div>
+
+            <div style="display: flex; gap: 16px; margin-top: 32px; justify-content: flex-end;">
+              <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">Cancel</button>
+              <button type="submit" class="btn btn-primary">Post Payment</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a></p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/fees.js"></script>
+</body>
+</html>

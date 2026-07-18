@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment History - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/fees.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app-container">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1 class="highlight-heading">Payment History Audit</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">View chronologically audited payment logs and transaction history.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="window.history.back()">
+          <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+      </header>
+
+      <section class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <h3 class="section-title" style="margin-bottom: 0;">Transaction Audit Log</h3>
+          <div class="search-container" style="width: 250px;">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="txn-search" class="search-input" placeholder="Search transactions...">
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Fee Type</th>
+                <th>Billing Period</th>
+                <th>Amount Paid</th>
+                <th>Date Posted</th>
+                <th>Method</th>
+                <th style="text-align: center;">Receipt</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table-body">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted);">Loading transaction logs...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a></p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/fees.js"></script>
+</body>
+</html>

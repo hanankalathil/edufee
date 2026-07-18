@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Batches - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/students.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app-container">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Batch / Class Management</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Organize batches, schedule allocations, and view headcounts.</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-primary" onclick="openAddBatchModal()">
+            <i class="fa-solid fa-plus"></i> Add New Batch
+          </button>
+          <button class="btn btn-secondary" onclick="window.history.back()">
+            <i class="fa-solid fa-arrow-left"></i> Back
+          </button>
+        </div>
+      </header>
+
+      <section class="glass-card">
+        <h3 class="section-title">Academic Batches Overview</h3>
+        <div class="table-container">
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>Batch Name</th>
+                <th>Standard/Class</th>
+                <th>Timing Allocations</th>
+                <th>WhatsApp Group Link</th>
+                <th>Total Active Students</th>
+                <th style="text-align: center;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="batches-summary-table">
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                  <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+                  <p>Loading batches...</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a></p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Add/Edit Batch Modal -->
+  <div id="batch-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h3 class="section-title" id="modal-title" style="margin-bottom: 0;">Add New Batch</h3>
+        <button class="btn btn-secondary" onclick="closeBatchModal()" style="border: none; padding: 4px 8px; cursor: pointer;">
+          <i class="fa-solid fa-xmark" style="font-size: 1.2rem;"></i>
+        </button>
+      </div>
+
+      <form id="batch-form">
+        <input type="hidden" id="batch-id">
+        
+        <div class="form-group">
+          <label for="batch-name" class="form-label">Batch Name *</label>
+          <input type="text" id="batch-name" class="form-control" placeholder="e.g. Morning A" required>
+        </div>
+
+        <div class="form-group">
+          <label for="batch-class" class="form-label">Standard / Class *</label>
+          <select id="batch-class" class="form-control" required>
+            <option value="">Select Class...</option>
+            <option value="Class 8">Class 8</option>
+            <option value="Class 9">Class 9</option>
+            <option value="Class 10">Class 10</option>
+            <option value="Plus One">Plus One</option>
+            <option value="Plus Two">Plus Two</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="batch-stream-group" style="display: none;">
+          <label for="batch-stream" class="form-label">Stream *</label>
+          <select id="batch-stream" class="form-control">
+            <option value="">Select Stream...</option>
+            <option value="Science">Science</option>
+            <option value="Commerce">Commerce</option>
+            <option value="Humanities">Humanities</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Timing Allocations *</label>
+          <div style="display: flex; gap: 12px; align-items: center; width: 100%;">
+            <div style="flex: 1;">
+              <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Start Time</span>
+              <input type="time" id="batch-start-time" class="form-control" required>
+            </div>
+            <div style="color: var(--text-muted); margin-top: 18px; font-weight: 500;">to</div>
+            <div style="flex: 1;">
+              <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">End Time</span>
+              <input type="time" id="batch-end-time" class="form-control" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="batch-whatsapp-group" class="form-label">WhatsApp Group Link or Number</label>
+          <input type="text" id="batch-whatsapp-group" class="form-control" placeholder="https://chat.whatsapp.com/... (optional)">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn btn-secondary" onclick="closeBatchModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Batch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/students.js"></script>
+</body>
+</html>
