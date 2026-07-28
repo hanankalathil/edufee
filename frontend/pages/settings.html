@@ -20,50 +20,88 @@
         </div>
       </header>
 
-      <div class="settings-grid">
-        <!-- General settings panel (Left column) -->
-        <section class="glass-card settings-panel" id="panel-general">
-          <h3 class="section-title"><i class="fa-solid fa-hotel" style="color: var(--color-primary); margin-right: 8px;"></i> General Academy Details</h3>
-          <form id="settings-general-form">
-            <div class="form-group">
-              <label for="tuitionName" class="form-label">Tuition Center Name *</label>
-              <input type="text" id="tuitionName" name="tuitionName" class="form-control" required>
-            </div>
+      <div class="settings-layout">
+        <!-- Settings Navigation Sidebar -->
+        <aside class="settings-nav-aside">
+          <ul class="settings-list-navigation">
+            <li>
+              <a href="javascript:void(0)" class="settings-link active" onclick="switchSettingsSection('general')">
+                <i class="fa-solid fa-hotel"></i> <span>General Details</span>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0)" class="settings-link" onclick="switchSettingsSection('branding')">
+                <i class="fa-solid fa-palette"></i> <span>Branding & Theme</span>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0)" class="settings-link" onclick="switchSettingsSection('notifications')">
+                <i class="fa-solid fa-bell"></i> <span>Preferences</span>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0)" class="settings-link" onclick="switchSettingsSection('whatsapp')">
+                <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp Connection</span>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0)" class="settings-link" onclick="switchSettingsSection('security')">
+                <i class="fa-solid fa-shield-halved"></i> <span>Security</span>
+              </a>
+            </li>
+            <!--
+            <li>
+              <a href="javascript:void(0)" class="settings-link" onclick="switchSettingsSection('whatsapp-group')">
+                <i class="fa-solid fa-users-gear"></i> <span>WhatsApp Group</span>
+              </a>
+            </li>
+            -->
+          </ul>
+        </aside>
 
-            <div class="form-group">
-              <label for="academicYear" class="form-label">Academic Calendar Year *</label>
-              <select id="academicYear" name="academicYear" class="form-control" required>
-                <option value="2026-27">2026 - 2027</option>
-                <option value="2027-28">2027 - 2028</option>
-              </select>
-            </div>
-
-            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <!-- Settings Content Area -->
+        <div class="settings-content-area" style="flex: 1; width: 100%;">
+          <!-- General settings panel -->
+          <section class="glass-card settings-panel" id="panel-general">
+            <h3 class="section-title"><i class="fa-solid fa-hotel" style="color: var(--color-primary); margin-right: 8px;"></i> General Academy Details</h3>
+            <form id="settings-general-form">
               <div class="form-group">
-                <label for="phone" class="form-label">Phone Contact *</label>
-                <input type="text" id="phone" name="phone" class="form-control" required>
+                <label for="tuitionName" class="form-label">Tuition Center Name *</label>
+                <input type="text" id="tuitionName" name="tuitionName" class="form-control" required>
               </div>
+
               <div class="form-group">
-                <label for="email" class="form-label">Support Email *</label>
-                <input type="email" id="email" name="email" class="form-control" required>
+                <label for="academicYear" class="form-label">Academic Calendar Year *</label>
+                <select id="academicYear" name="academicYear" class="form-control" required>
+                  <option value="2026-27">2026 - 2027</option>
+                  <option value="2027-28">2027 - 2028</option>
+                </select>
               </div>
-            </div>
 
-            <div class="form-group">
-              <label for="address" class="form-label">Location Address</label>
-              <textarea id="address" name="address" class="form-control" rows="4"></textarea>
-            </div>
+              <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                  <label for="phone" class="form-label">Phone Contact *</label>
+                  <input type="text" id="phone" name="phone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="email" class="form-label">Support Email *</label>
+                  <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+              </div>
 
-            <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
-              <button type="submit" class="btn btn-primary">Save General Details</button>
-            </div>
-          </form>
-        </section>
+              <div class="form-group">
+                <label for="address" class="form-label">Location Address</label>
+                <textarea id="address" name="address" class="form-control" rows="4"></textarea>
+              </div>
 
-        <!-- Right column containing Branding and Preferences -->
-        <div class="settings-right-col">
+              <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+                <button type="submit" class="btn btn-primary">Save General Details</button>
+              </div>
+            </form>
+          </section>
+
           <!-- Branding logo/theme settings panel -->
-          <section class="glass-card settings-panel" id="panel-branding">
+          <section class="glass-card settings-panel" id="panel-branding" style="display: none;">
             <h3 class="section-title"><i class="fa-solid fa-palette" style="color: var(--color-primary); margin-right: 8px;"></i> Logo & Theme Branding</h3>
             <form id="settings-branding-form">
               <div class="branding-layout">
@@ -126,7 +164,7 @@
           </section>
 
           <!-- Preferences settings panel -->
-          <section class="glass-card settings-panel" id="panel-notifications">
+          <section class="glass-card settings-panel" id="panel-notifications" style="display: none;">
             <h3 class="section-title"><i class="fa-solid fa-bell" style="color: var(--color-primary); margin-right: 8px;"></i> Preference Notifications</h3>
             <div style="display: flex; flex-direction: column; gap: 18px;">
               <label class="custom-checkbox-container">
@@ -151,6 +189,286 @@
               <button class="btn btn-primary" onclick="alert('Preferences updated (Mock).')">Save Preferences</button>
             </div>
           </section>
+
+          <!-- WhatsApp Connection panel -->
+          <section class="settings-panel" id="panel-whatsapp" style="display: none;">
+            <div class="status-banner" id="whatsapp-conn-banner">
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <h3 style="margin: 0; font-size: 1.1rem;">WhatsApp Service Status</h3>
+                <span id="conn-status" class="badge badge-unpaid" style="align-self: flex-start;">Disconnected</span>
+              </div>
+              <button class="btn btn-primary" onclick="simulateConnection()" id="conn-action-btn" style="background: #25D366; border-color: #25D366; color: #fff;">
+                <i class="fa-solid fa-qrcode"></i> Connect Device
+              </button>
+            </div>
+
+            <div class="whatsapp-hub-grid">
+              <!-- Configuration & Templates (Left) -->
+              <div style="display: flex; flex-direction: column; gap: 24px;">
+                <!-- WhatsApp QR Code Connection Card -->
+                <div class="glass-card" id="whatsapp-conn-card">
+                  <h3 class="section-title">Link Device</h3>
+                  <div id="conn-disconnected-ui">
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
+                      Link your WhatsApp account using a QR code to enable automatic reminder dispatching.
+                    </p>
+                    <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap; justify-content: center;">
+                      <div style="position: relative; border: 2px solid var(--border-color); padding: 12px; border-radius: 16px; background: #fff; display: flex; align-items: center; justify-content: center; width: 160px; height: 160px;">
+                        <img id="qr-code-img" src="" alt="WhatsApp QR Code" style="width: 100%; height: 100%; display: none;">
+                        <div id="qr-loader" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                          <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--color-primary);"></i>
+                          <span style="font-size: 0.75rem; color: var(--text-muted);">Generating QR Code...</span>
+                        </div>
+                      </div>
+                      <div style="flex: 1; min-width: 180px;">
+                        <ol style="font-size: 0.8rem; color: var(--text-muted); padding-left: 16px; display: flex; flex-direction: column; gap: 8px;">
+                          <li>Open <strong>WhatsApp</strong> on your phone.</li>
+                          <li>Tap <strong>Linked Devices</strong>.</li>
+                          <li>Point your phone to this screen.</li>
+                        </ol>
+                        <div style="margin-top: 16px;">
+                          <button class="btn btn-secondary" onclick="generateQRCode()" style="padding: 8px 12px; font-size: 0.75rem; width: 100%;">
+                            <i class="fa-solid fa-arrows-rotate"></i> Refresh QR
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div id="conn-connected-ui" style="display: none;">
+                    <div style="display: flex; align-items: center; gap: 16px; background: rgba(16, 185, 129, 0.05); padding: 16px; border-radius: var(--border-radius); border: 1px solid rgba(16, 185, 129, 0.2);">
+                      <div style="width: 50px; height: 50px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                        <i class="fa-brands fa-whatsapp"></i>
+                      </div>
+                      <div style="flex: 1;">
+                        <h4 style="font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Techora Bot Account</h4>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">Phone: <span style="font-weight: 600; color: var(--text-main);">+91 98765 43210</span></p>
+                      </div>
+                      <button class="btn btn-danger" onclick="disconnectDevice()" style="padding: 8px 12px; font-size: 0.75rem;">
+                        <i class="fa-solid fa-link-slash"></i> Disconnect
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Automation Modes (Grid) -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                  <!-- Manual Mode -->
+                  <div class="glass-card" style="padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                      <h4 style="margin: 0; font-size: 0.9rem;">Manual Mode</h4>
+                      <label class="switch-toggle" style="transform: scale(0.8);">
+                        <input type="checkbox" id="toggle-manual" checked>
+                        <span class="slider-round"></span>
+                      </label>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0;">Direct web link for manual sending.</p>
+                  </div>
+
+                  <!-- Automatic Mode -->
+                  <div class="glass-card" style="padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                      <h4 style="margin: 0; font-size: 0.9rem;">Auto Mode</h4>
+                      <label class="switch-toggle" style="transform: scale(0.8);">
+                        <input type="checkbox" id="toggle-auto">
+                        <span class="slider-round"></span>
+                      </label>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0; margin-top: 8px;">
+                      <select id="queue-delay" class="form-control" style="font-size: 0.75rem; padding: 6px;">
+                        <option value="1">Delay: 1 Min</option>
+                        <option value="2">Delay: 2 Mins</option>
+                        <option value="5">Delay: 5 Mins</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Attendance Group Sharing (Disabled for V2) -->
+                <div class="glass-card" style="opacity: 0.6; pointer-events: none; position: relative;">
+                  <div style="position: absolute; top: 16px; right: 16px; background: var(--color-primary); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; z-index: 10;">Coming in V2</div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 class="section-title" style="margin-bottom: 0; padding-right: 90px;">Attendance Group Sharing</h3>
+                    <label class="switch-toggle" style="opacity: 0.5; display: none;">
+                      <input type="checkbox" id="toggle-group-share" disabled>
+                      <span class="slider-round"></span>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label for="att-group-target" class="form-label">Global Group Link / Number *</label>
+                    <input type="text" id="att-group-target" class="form-control" placeholder="https://chat.whatsapp.com/..." disabled>
+                  </div>
+                  <div class="form-group" style="margin-top: 16px;">
+                    <label for="att-template-text" class="form-label">Message Template</label>
+                    <div class="template-variables">
+                      <span class="variable-badge group-var" data-var="{{date}}">{{date}}</span>
+                      <span class="variable-badge group-var" data-var="{{class}}">{{class}}</span>
+                      <span class="variable-badge group-var" data-var="{{batch}}">{{batch}}</span>
+                      <span class="variable-badge group-var" data-var="{{present}}">{{present}}</span>
+                      <span class="variable-badge group-var" data-var="{{absent}}">{{absent}}</span>
+                    </div>
+                    <textarea id="att-template-text" class="form-control" rows="10" style="font-family: monospace;" disabled></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right side: Realtime Queue Monitor & Template Editor -->
+              <div style="display: flex; flex-direction: column; gap: 24px;">
+                <!-- Queue Monitor -->
+                <div class="glass-card">
+                  <div class="queue-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                    <h3 class="section-title" style="margin-bottom: 0;">Queue Monitor</h3>
+                    <span class="badge badge-partial" id="queue-status-badge">Running</span>
+                  </div>
+                  
+                  <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <button class="btn btn-secondary" style="flex: 1; padding: 8px; font-size: 0.8rem;" id="queue-pause-btn" onclick="toggleQueueState()">
+                      <i class="fa-solid fa-pause"></i> Pause
+                    </button>
+                    <button class="btn btn-danger" style="flex: 1; padding: 8px; font-size: 0.8rem;" id="queue-clear-btn" onclick="clearQueue()">
+                      <i class="fa-solid fa-trash-can"></i> Clear
+                    </button>
+                  </div>
+
+                  <div style="display: flex; justify-content: space-around; margin-bottom: 20px; background: rgba(37,99,235,0.02); padding: 12px; border-radius: var(--border-radius); border: 1px solid var(--border-color);">
+                    <div style="text-align: center;">
+                      <h4 style="font-size: 1.1rem;" id="q-stat-pending">0</h4>
+                      <span style="font-size: 0.65rem; color: var(--text-muted);">Pending</span>
+                    </div>
+                    <div style="text-align: center;">
+                      <h4 style="font-size: 1.1rem; color: #10b981;" id="q-stat-sent">0</h4>
+                      <span style="font-size: 0.65rem; color: var(--text-muted);">Sent</span>
+                    </div>
+                    <div style="text-align: center;">
+                      <h4 style="font-size: 1.1rem; color: #ef4444;" id="q-stat-failed">0</h4>
+                      <span style="font-size: 0.65rem; color: var(--text-muted);">Failed</span>
+                    </div>
+                  </div>
+
+                  <div style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;" id="queue-list-container">
+                    <!-- Queue items listed here -->
+                  </div>
+                </div>
+
+                <!-- Template Editor -->
+                <div class="glass-card template-editor">
+                  <h3 class="section-title" style="margin-bottom: 4px;">Message Template Editor</h3>
+                  <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0; margin-bottom: 16px;">Customize standard reminder formats.</p>
+                  <div class="template-variables">
+                    <span class="variable-badge" data-var="{{studentName}}">{{studentName}}</span>
+                    <span class="variable-badge" data-var="{{parentName}}">{{parentName}}</span>
+                    <span class="variable-badge" data-var="{{amount}}">{{amount}}</span>
+                    <span class="variable-badge" data-var="{{dueDate}}">{{dueDate}}</span>
+                    <span class="variable-badge" data-var="{{class}}">{{class}}</span>
+                    <span class="variable-badge" data-var="{{batch}}">{{batch}}</span>
+                    <span class="variable-badge" data-var="{{tuitionCenter}}">{{tuitionCenter}}</span>
+                  </div>
+
+                  <div class="form-group">
+                    <textarea id="template-text" class="form-control" rows="10" style="font-family: monospace;"></textarea>
+                  </div>
+
+                  <div style="display: flex; justify-content: flex-end;">
+                    <button class="btn btn-primary" onclick="saveSettings()" style="width: 100%;">Save Configuration</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 
+          WhatsApp Group panel (Commented out for future version)
+          <section class="settings-panel" id="panel-whatsapp-group" style="display: none;">
+            <div class="glass-card" style="padding: 24px;">
+              <h3 class="section-title"><i class="fa-solid fa-users-gear" style="color: var(--color-primary); margin-right: 8px;"></i> WhatsApp Group Configuration</h3>
+              <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px;">Configure auto-broadcast settings for each individual class/batch.</p>
+
+              <div class="form-group" style="max-width: 400px; margin-bottom: 24px;">
+                <label for="wa-batch-select" class="form-label">Select Class / Batch *</label>
+                <select id="wa-batch-select" class="form-control" onchange="window.onWABatchChanged()">
+                  <option value="">Loading batches...</option>
+                </select>
+              </div>
+
+              <div id="wa-batch-settings-fields" style="display: flex; flex-direction: column; gap: 20px; border-top: 1px solid var(--border-color); padding-top: 24px;">
+                <div style="background: rgba(37,99,235,0.03); padding: 16px; border-radius: var(--border-radius); border: 1px solid var(--border-color);">
+                  <label class="custom-checkbox-container" style="margin-bottom: 8px;">
+                    <input type="checkbox" id="wa-auto-broadcast">
+                    <span class="custom-checkmark"></span>
+                    <span class="checkbox-text" style="font-weight: 600;">Enable WhatsApp Auto-Broadcast</span>
+                  </label>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; margin-left: 34px; margin-bottom: 0;">
+                    Automatically broadcasts timetable schedule updates to the group when a slot is added, edited, or removed.
+                  </p>
+                </div>
+
+                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                  <div class="form-group">
+                    <label for="wa-group-name" class="form-label">WhatsApp Group Name *</label>
+                    <input type="text" id="wa-group-name" class="form-control" placeholder="e.g. Grade 10 A Attendance" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="wa-group-link" class="form-label">WhatsApp Invite Link</label>
+                    <input type="url" id="wa-group-link" class="form-control" placeholder="https://chat.whatsapp.com/...">
+                    <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; display: block;">
+                      Used to generate "Join Group" links for parents.
+                    </span>
+                  </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+                  <button class="btn btn-primary" onclick="window.saveTimetableGroupSettings()">Save Group Config</button>
+                </div>
+              </div>
+              
+              <div id="wa-batch-no-batches" style="display: none; padding: 40px 20px; text-align: center; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 24px;">
+                <i class="fa-solid fa-layer-group" style="font-size: 2.5rem; margin-bottom: 16px; color: var(--border-color);"></i>
+                <h4 style="color: var(--text-main); margin-bottom: 8px;">No Batches Found</h4>
+                <p style="font-size: 0.85rem;">Please create a batch under <a href="batches.html" style="color: var(--color-primary); text-decoration: underline;">Batch Management</a> first.</p>
+              </div>
+            </div>
+          </section>
+          -->
+
+          <!-- Security panel -->
+          <section class="settings-panel" id="panel-security" style="display: none;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
+              <div class="glass-card" style="padding: 24px;">
+                <h3 class="section-title"><i class="fa-solid fa-lock" style="color: var(--color-primary); margin-right: 8px;"></i> Change Password</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px;">Update your account password regularly to keep your account secure.</p>
+
+                <form id="form-change-password" onsubmit="event.preventDefault(); alert('Password successfully updated!');">
+                  <div class="form-group">
+                    <label for="current-password" class="form-label">Current Password *</label>
+                    <input type="password" id="current-password" class="form-control" required style="width: 100%;">
+                  </div>
+                  <div class="form-group">
+                    <label for="new-password" class="form-label">New Password *</label>
+                    <input type="password" id="new-password" class="form-control" required style="width: 100%;">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 24px;">
+                    <label for="confirm-password" class="form-label">Confirm New Password *</label>
+                    <input type="password" id="confirm-password" class="form-control" required style="width: 100%;">
+                  </div>
+                  <button type="submit" class="btn btn-primary" style="width: 100%;">Update Password</button>
+                </form>
+              </div>
+
+              <div class="glass-card" style="padding: 24px;">
+                <h3 class="section-title"><i class="fa-solid fa-envelope-circle-check" style="color: var(--color-primary); margin-right: 8px;"></i> Recovery Email</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px;">Set a recovery email address in case you lose access to your account.</p>
+
+                <form id="form-recovery-email" onsubmit="event.preventDefault(); alert('Recovery email saved!');">
+                  <div class="form-group">
+                    <label for="recovery-email" class="form-label">Recovery Email Address *</label>
+                    <input type="email" id="recovery-email" class="form-control" placeholder="backup@example.com" required style="width: 100%;">
+                  </div>
+                  <button type="submit" class="btn btn-primary" style="width: 100%;">Save Recovery Email</button>
+                </form>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
 
@@ -163,5 +481,6 @@
 
   <script src="../assets/js/api.js"></script>
   <script src="../assets/js/settings.js"></script>
+  <script src="../assets/js/reminders.js"></script>
 </body>
 </html>

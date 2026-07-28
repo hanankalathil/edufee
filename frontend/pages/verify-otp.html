@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Techora EduFee</title>
+  <title>Verify OTP - Techora EduFee</title>
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="../assets/css/login.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -59,40 +59,32 @@
             <div class="brand-name">Techora <span style="color: var(--color-primary)">EduFee</span></div>
           </div>
           
-          <p class="login-subtitle">Smart Education Management Platform</p>
+          <h2 style="text-align: center; font-family: var(--font-heading); margin-bottom: 8px;">Verify Email</h2>
+          <p class="login-subtitle">We've sent a 6-digit code to <br><span id="display-email" style="font-weight:600;color:var(--text-main);">your email</span></p>
           
           <div id="error-message" class="error-banner" style="display: none;"></div>
-
-          <form id="login-form">
-            <div class="form-group">
-              <label for="email" class="form-label">Email Address</label>
-              <div class="input-icon-wrapper">
-                <i class="fa-regular fa-envelope input-icon"></i>
-                <input type="email" id="email" class="form-control" placeholder="name@techora.in" required>
-              </div>
+          
+          <form id="otp-form">
+            <div class="otp-container" id="otp-inputs">
+              <input type="text" class="otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="one-time-code" required>
+              <input type="text" class="otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+              <input type="text" class="otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+              <input type="text" class="otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+              <input type="text" class="otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+              <input type="text" class="otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
             </div>
 
-            <div class="form-group">
-              <label for="password" class="form-label">Password</label>
-              <div class="input-icon-wrapper">
-                <i class="fa-solid fa-lock input-icon"></i>
-                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
-                <i class="fa-regular fa-eye password-toggle" id="toggle-password"></i>
-              </div>
-            </div>
+            <div class="otp-timer" id="timer-display">05:00</div>
 
-            <div class="form-actions">
-              <label class="remember-me">
-                <input type="checkbox" id="remember-me"> Remember me
-              </label>
-              <a href="forgot-password.html" class="forgot-password">Forgot Password?</a>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-block">
-              Login Account <i class="fa-solid fa-arrow-right"></i>
+            <button type="submit" class="btn btn-primary btn-block" id="submit-btn">
+              Verify OTP <i class="fa-solid fa-check"></i>
             </button>
           </form>
 
+          <div class="login-footer" style="margin-top: 24px;">
+            <p>Didn't receive the code? <a href="#" id="resend-btn" class="resend-link disabled">Resend OTP</a></p>
+            <p style="margin-top: 12px;"><a href="forgot-password.html"><i class="fa-solid fa-arrow-left"></i> Change Email</a></p>
+          </div>
         </div>
       </div>
       </div>
@@ -101,6 +93,6 @@
 
   <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/api.js"></script>
-  <script src="../assets/js/login.js"></script>
+  <script src="../assets/js/verify-otp.js"></script>
 </body>
 </html>

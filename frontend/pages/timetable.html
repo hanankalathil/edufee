@@ -20,7 +20,7 @@
           <p style="color: var(--text-muted); font-size: 0.9rem;">Organize batches, classes, subjects, and sync them directly to WhatsApp.</p>
         </div>
         <div class="timetable-header-actions">
-          <button class="btn btn-secondary" onclick="openSettingsModal()">
+          <button class="btn btn-secondary" onclick="window.location.href='settings.html?tab=whatsapp-group'">
             <i class="fa-solid fa-gear"></i> WhatsApp Group Settings
           </button>
           <button class="btn btn-primary" onclick="openAddSlotModal()">
@@ -219,38 +219,7 @@
     </div>
   </div>
 
-  <!-- WhatsApp Settings Modal -->
-  <div id="settings-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">WhatsApp Group Configuration</h3>
-        <button class="close-btn" onclick="closeSettingsModal()">&times;</button>
-      </div>
-      <form id="settings-form" onsubmit="handleSettingsSubmit(event)">
-        <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-          <input type="checkbox" id="wa-auto-broadcast" style="width: 18px; height: 18px; cursor: pointer;">
-          <label for="wa-auto-broadcast" class="form-label" style="margin-bottom: 0; cursor: pointer;">
-            Enable Auto-Broadcast Updates
-          </label>
-        </div>
 
-        <div class="form-group">
-          <label for="wa-group-name" class="form-label">WhatsApp Group Name *</label>
-          <input type="text" id="wa-group-name" class="form-input" placeholder="e.g. Class 10 Batch A Group" required>
-        </div>
-
-        <div class="form-group">
-          <label for="wa-group-link" class="form-label">WhatsApp Invite Link</label>
-          <input type="url" id="wa-group-link" class="form-input" placeholder="https://chat.whatsapp.com/...">
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeSettingsModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Settings</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
   <!-- Simulated Toast Notifications -->
   <div id="toast-notif" class="toast-notif">

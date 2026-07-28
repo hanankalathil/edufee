@@ -196,8 +196,9 @@
 .settings-list-navigation {
   list-style: none;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .settings-link {
@@ -285,3 +286,161 @@
   color: var(--text-main);
   line-height: 1.4;
 }
+
+/* Top Settings Layout */
+.settings-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+/* Custom Toggle Switch for WhatsApp settings */
+.switch-toggle {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider-round {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.switch-toggle input:checked + .slider-round {
+  background-color: var(--color-primary);
+}
+
+.slider-round:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.switch-toggle input:checked + .slider-round:before {
+  transform: translateX(24px);
+}
+
+/* Variable badges for WhatsApp Templates */
+.template-variables {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.variable-badge {
+  background: var(--border-color);
+  color: var(--text-main);
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-family: monospace;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.variable-badge:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* --- WhatsApp Redesign --- */
+.whatsapp-hub-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .whatsapp-hub-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.status-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, rgba(37,211,102,0.1), rgba(18,140,126,0.05));
+  border: 1px solid rgba(37,211,102,0.3);
+  border-radius: var(--border-radius);
+  margin-bottom: 24px;
+  box-shadow: inset 0 0 20px rgba(37,211,102,0.05);
+}
+
+.status-banner.disconnected {
+  background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(185,28,28,0.05));
+  border: 1px solid rgba(239,68,68,0.3);
+  box-shadow: inset 0 0 20px rgba(239,68,68,0.05);
+}
+
+.wa-split-pane {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .wa-split-pane {
+    grid-template-columns: 1fr;
+  }
+}
+
+.wa-batch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wa-batch-item {
+  padding: 14px 16px;
+  border-radius: var(--border-radius);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wa-batch-item:hover {
+  border-color: var(--color-primary);
+  transform: translateX(4px);
+}
+
+.wa-batch-item.active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.wa-batch-item.active .badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+

@@ -1,7 +1,9 @@
 // Timetable Controller
 document.addEventListener('DOMContentLoaded', () => {
-  renderLayout(); // Sidebar & Layout
-  initTimetable();
+  if (window.location.pathname.endsWith('timetable.html')) {
+    renderLayout(); // Sidebar & Layout
+    initTimetable();
+  }
 });
 
 let allSlots = [];
@@ -60,12 +62,22 @@ function updateWhatsAppBar() {
   
   if (!statusTitle || !statusDesc) return;
 
-  if (timetableSettings.autoBroadcast) {
+  const batchFilter = document.getElementById('batch-filter')?.value || 'all';
+
+  if (batchFilter === 'all') {
+    statusTitle.textContent = `WhatsApp Group Auto-Broadcast: Select a batch`;
+    statusDesc.textContent = `Select a specific batch in the filter above to view its auto-broadcast status.`;
+    return;
+  }
+
+  const batchSettings = (timetableSettings.batches && timetableSettings.batches[batchFilter]) || {};
+
+  if (batchSettings.autoBroadcast) {
     statusTitle.textContent = `WhatsApp Group Auto-Broadcast: Enabled`;
-    statusDesc.textContent = `Syncing changes directly to group: "${timetableSettings.groupName}"`;
+    statusDesc.textContent = `Syncing changes directly to group: "${batchSettings.groupName || 'Batch Group'}"`;
   } else {
     statusTitle.textContent = `WhatsApp Group Auto-Broadcast: Disabled`;
-    statusDesc.textContent = `Updates will not be shared automatically. Click settings to configure group broadcasts.`;
+    statusDesc.textContent = `Updates will not be shared automatically. Go to Settings > WhatsApp Group to configure.`;
   }
 }
 
@@ -115,6 +127,7 @@ function setDailyDay(day) {
 }
 
 function loadTimetableGrid() {
+  updateWhatsAppBar();
   const batchFilter = document.getElementById('batch-filter').value;
   const searchQuery = (document.getElementById('slot-search')?.value || '').toLowerCase().trim();
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -407,8 +420,10 @@ async function handleSlotSubmit(event) {
     closeSlotModal();
     await refreshData();
 
-    if (timetableSettings.autoBroadcast) {
-      showToastNotification(`Auto-broadcasted schedule update for ${saved.batchName} to WhatsApp group!`);
+    const batchId = saved.batchId;
+    const batchSettings = (timetableSettings.batches && timetableSettings.batches[batchId]) || {};
+    if (batchSettings.autoBroadcast) {
+      showToastNotification(`Auto-broadcasted schedule update for ${saved.batchName} to WhatsApp group!`, batchSettings.groupName);
     } else {
       showToastNotification(`Slot saved successfully!`);
     }
@@ -446,7 +461,7 @@ async function handleSettingsSubmit(event) {
   }
 }
 
-function showToastNotification(message) {
+function showToastNotification(message, groupName) {
   const toast = document.getElementById('toast-notif');
   const msgSpan = document.getElementById('toast-message');
   
@@ -459,7 +474,7 @@ function showToastNotification(message) {
   const queue = JSON.parse(localStorage.getItem('queue') || '[]');
   queue.push({
     id: 'wa_' + Date.now(),
-    studentName: 'WhatsApp Group: ' + (timetableSettings.groupName || 'Tutor Class'),
+    studentName: 'WhatsApp Group: ' + (groupName || timetableSettings.groupName || 'Tutor Class'),
     parentNumber: 'Group Broadcast',
     amount: '-',
     dueDate: '-',
@@ -517,8 +532,10 @@ function generateWhatsAppTimetableText() {
 
   text += `━━━━━━━━━━━━━━━━━━━━\n`;
   text += `Generated on: ${new Date().toLocaleDateString()}\n`;
-  if (timetableSettings.groupLink) {
-    text += `Join Group: ${timetableSettings.groupLink}`;
+  const batchSettings = (timetableSettings.batches && timetableSettings.batches[batchFilter]) || {};
+  const activeGroupLink = batchSettings.groupLink || timetableSettings.groupLink;
+  if (activeGroupLink) {
+    text += `Join Group: ${activeGroupLink}`;
   }
 
   return text;

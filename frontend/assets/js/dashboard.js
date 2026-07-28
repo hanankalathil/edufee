@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   fetchDashboardData();
+  initCommandPalette();
 });
 
 async function fetchDashboardData() {
@@ -121,3 +122,111 @@ function renderChart(chartData) {
     }
   });
 }
+
+// Command Palette Logic
+function initCommandPalette() {
+  const searchContainer = document.querySelector('.search-container');
+  const searchInputTop = document.querySelector('.search-input');
+  const cpOverlay = document.getElementById('command-palette');
+  const cpInput = document.getElementById('cp-input');
+  const cpTags = document.querySelectorAll('.cp-tag');
+  const cpItems = document.querySelectorAll('.cp-item');
+  const cpCount = document.querySelector('.cp-count');
+
+  if (!cpOverlay || !searchContainer) return;
+
+  function openCP() {
+    cpOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => cpInput.focus(), 100);
+  }
+
+  function closeCP() {
+    cpOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+    cpInput.value = '';
+    filterItems();
+  }
+
+  searchContainer.addEventListener('click', openCP);
+  searchInputTop.addEventListener('focus', openCP);
+
+  cpOverlay.addEventListener('click', (e) => {
+    if (e.target === cpOverlay) closeCP();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && cpOverlay.classList.contains('active')) {
+      closeCP();
+    }
+    
+    // Keyboard Navigation
+    if (cpOverlay.classList.contains('active')) {
+      const activeItems = Array.from(cpItems).filter(item => item.style.display !== 'none');
+      const currentIndex = activeItems.findIndex(item => item.classList.contains('active'));
+      
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (currentIndex < activeItems.length - 1) {
+          if (currentIndex >= 0) activeItems[currentIndex].classList.remove('active');
+          activeItems[currentIndex + 1].classList.add('active');
+          activeItems[currentIndex + 1].scrollIntoView({ block: 'nearest' });
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (currentIndex > 0) {
+          activeItems[currentIndex].classList.remove('active');
+          activeItems[currentIndex - 1].classList.add('active');
+          activeItems[currentIndex - 1].scrollIntoView({ block: 'nearest' });
+        }
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (currentIndex >= 0) {
+          activeItems[currentIndex].click();
+        }
+      }
+    }
+  });
+
+  cpInput.addEventListener('input', filterItems);
+
+  cpTags.forEach(tag => {
+    tag.addEventListener('click', () => {
+      cpTags.forEach(t => t.classList.remove('active'));
+      tag.classList.add('active');
+      filterItems();
+    });
+  });
+
+  function filterItems() {
+    const query = cpInput.value.toLowerCase();
+    const activeTag = document.querySelector('.cp-tag.active').textContent.toLowerCase();
+    let count = 0;
+    
+    let firstVisible = true;
+
+    cpItems.forEach(item => {
+      item.classList.remove('active');
+      const title = item.querySelector('.cp-item-title').textContent.toLowerCase();
+      const desc = item.querySelector('.cp-item-desc').textContent.toLowerCase();
+      const tags = item.getAttribute('data-tags');
+
+      const matchesQuery = title.includes(query) || desc.includes(query);
+      const matchesTag = tags.includes(activeTag) || activeTag === 'all';
+
+      if (matchesQuery && matchesTag) {
+        item.style.display = 'flex';
+        count++;
+        if (firstVisible) {
+          item.classList.add('active');
+          firstVisible = false;
+        }
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    if (cpCount) cpCount.textContent = count;
+  }
+}
+

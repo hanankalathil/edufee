@@ -19,8 +19,11 @@
           <p style="color: var(--text-muted); font-size: 0.9rem;">Organize batches, schedule allocations, and view headcounts.</p>
         </div>
         <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="openManageClassesModal()">
+            <i class="fa-solid fa-layer-group"></i> Manage Classes
+          </button>
           <button class="btn btn-primary" onclick="openAddBatchModal()">
-            <i class="fa-solid fa-plus"></i> Add New Batch
+            <i class="fa-solid fa-plus"></i> Add Batch
           </button>
           <button class="btn btn-secondary" onclick="window.history.back()">
             <i class="fa-solid fa-arrow-left"></i> Back
@@ -36,15 +39,16 @@
               <tr>
                 <th>Batch Name</th>
                 <th>Standard/Class</th>
+                <th>Price (₹)</th>
                 <th>Timing Allocations</th>
                 <th>WhatsApp Group Link</th>
-                <th>Total Active Students</th>
+                <th>Active Students</th>
                 <th style="text-align: center;">Action</th>
               </tr>
             </thead>
             <tbody id="batches-summary-table">
               <tr>
-                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">
                   <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
                   <p>Loading batches...</p>
                 </td>
@@ -63,9 +67,9 @@
 
   <!-- Add/Edit Batch Modal -->
   <div id="batch-modal" class="modal-overlay">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 850px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <h3 class="section-title" id="modal-title" style="margin-bottom: 0;">Add New Batch</h3>
+        <h3 class="section-title" id="modal-title" style="margin-bottom: 0;">Add New Class / Batch</h3>
         <button class="btn btn-secondary" onclick="closeBatchModal()" style="border: none; padding: 4px 8px; cursor: pointer;">
           <i class="fa-solid fa-xmark" style="font-size: 1.2rem;"></i>
         </button>
@@ -74,51 +78,66 @@
       <form id="batch-form">
         <input type="hidden" id="batch-id">
         
-        <div class="form-group">
-          <label for="batch-name" class="form-label">Batch Name *</label>
-          <input type="text" id="batch-name" class="form-control" placeholder="e.g. Morning A" required>
-        </div>
-
-        <div class="form-group">
-          <label for="batch-class" class="form-label">Standard / Class *</label>
-          <select id="batch-class" class="form-control" required>
-            <option value="">Select Class...</option>
-            <option value="Class 8">Class 8</option>
-            <option value="Class 9">Class 9</option>
-            <option value="Class 10">Class 10</option>
-            <option value="Plus One">Plus One</option>
-            <option value="Plus Two">Plus Two</option>
-          </select>
-        </div>
-
-        <div class="form-group" id="batch-stream-group" style="display: none;">
-          <label for="batch-stream" class="form-label">Stream *</label>
-          <select id="batch-stream" class="form-control">
-            <option value="">Select Stream...</option>
-            <option value="Science">Science</option>
-            <option value="Commerce">Commerce</option>
-            <option value="Humanities">Humanities</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Timing Allocations *</label>
-          <div style="display: flex; gap: 12px; align-items: center; width: 100%;">
-            <div style="flex: 1;">
-              <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Start Time</span>
-              <input type="time" id="batch-start-time" class="form-control" required>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <!-- Left Column -->
+          <div>
+            <div class="form-group">
+              <label for="batch-name" class="form-label">Batch Name *</label>
+              <input type="text" id="batch-name" class="form-control" placeholder="e.g. Morning A" required>
             </div>
-            <div style="color: var(--text-muted); margin-top: 18px; font-weight: 500;">to</div>
-            <div style="flex: 1;">
-              <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">End Time</span>
-              <input type="time" id="batch-end-time" class="form-control" required>
+
+            <div class="form-group">
+              <label for="batch-class" class="form-label">Standard / Class *</label>
+              <select id="batch-class" class="form-control" required onchange="handleBatchClassSelection(this.value)">
+                <option value="">Select Class...</option>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Timing Allocations *</span>
+                <label style="font-size: 0.8rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--color-primary);">
+                  <input type="checkbox" id="batch-not-constant-cb" onchange="toggleNotConstant()" style="accent-color: var(--color-primary);"> Not Constant
+                </label>
+              </label>
+              
+              <div id="batch-standard-time" style="display: flex; gap: 12px; align-items: center; width: 100%; transition: opacity 0.2s;">
+                <div style="flex: 1;">
+                  <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Start Time</span>
+                  <input type="time" id="batch-start-time" class="form-control">
+                </div>
+                <div style="color: var(--text-muted); margin-top: 18px; font-weight: 500;">to</div>
+                <div style="flex: 1;">
+                  <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">End Time</span>
+                  <input type="time" id="batch-end-time" class="form-control">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="batch-price" class="form-label">Price (₹) *</label>
+              <input type="number" id="batch-price" class="form-control" placeholder="e.g. 1500" min="0" required>
+            </div>
+
+            <div class="form-group">
+              <label for="batch-whatsapp-group" class="form-label">WhatsApp Group Link or Number</label>
+              <input type="text" id="batch-whatsapp-group" class="form-control" placeholder="https://chat.whatsapp.com/... (optional)">
             </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="batch-whatsapp-group" class="form-label">WhatsApp Group Link or Number</label>
-          <input type="text" id="batch-whatsapp-group" class="form-control" placeholder="https://chat.whatsapp.com/... (optional)">
+          <!-- Right Column -->
+          <div style="display: flex; flex-direction: column;">
+            <div class="form-group" style="flex: 1; display: flex; flex-direction: column; margin-bottom: 0;">
+              <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
+                <span><i class="fa-solid fa-book" style="margin-right: 6px; color: var(--color-primary);"></i> Subjects (Courses)</span>
+                <span id="subject-count-badge" style="background: linear-gradient(135deg, var(--color-primary), #6366f1); color: #fff; font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; font-weight: 700;">0 Subjects</span>
+              </label>
+              <div id="batch-subjects-container" style="display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 250px; max-height: 380px; overflow-y: auto; padding: 10px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-secondary); margin-top: 6px;">
+                <!-- dynamic subjects added here -->
+              </div>
+            </div>
+          </div>
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
@@ -126,6 +145,76 @@
           <button type="submit" class="btn btn-primary">Save Batch</button>
         </div>
       </form>
+    </div>
+  </div>
+  
+  <script>
+    function toggleNotConstant() {
+      const cb = document.getElementById('batch-not-constant-cb');
+      const std = document.getElementById('batch-standard-time');
+      const start = document.getElementById('batch-start-time');
+      const end = document.getElementById('batch-end-time');
+      if (cb.checked) {
+        std.style.opacity = '0.5';
+        start.disabled = true;
+        end.disabled = true;
+      } else {
+        std.style.opacity = '1';
+        start.disabled = false;
+        end.disabled = false;
+      }
+    }
+  </script>
+
+  <!-- Manage Classes Modal -->
+  <div id="manage-classes-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 850px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h3 class="section-title" style="margin-bottom: 0;">Manage Classes</h3>
+        <button class="btn btn-secondary" onclick="closeManageClassesModal()" style="border: none; padding: 4px 8px; cursor: pointer;">
+          <i class="fa-solid fa-xmark" style="font-size: 1.2rem;"></i>
+        </button>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <!-- Left Column: List of existing classes -->
+        <div style="display: flex; flex-direction: column;">
+          <h4 style="margin-bottom: 12px; font-size: 1rem;">Existing Classes</h4>
+          <div id="manage-classes-list" style="flex: 1; min-height: 300px; max-height: 400px; overflow-y: auto; padding: 10px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-secondary);">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Right Column: Add / Edit Class Form -->
+        <div style="display: flex; flex-direction: column; background: var(--bg-main); padding: 16px; border: 1px solid var(--border-color); border-radius: 12px;">
+          <h4 id="manage-class-form-title" style="margin-bottom: 16px; font-size: 1rem;">Add New Class</h4>
+          <form id="manage-class-form" style="display: flex; flex-direction: column; flex: 1;">
+            <input type="hidden" id="manage-class-id">
+            
+            <div class="form-group">
+              <label for="manage-class-name" class="form-label">Class Name *</label>
+              <input type="text" id="manage-class-name" class="form-control" placeholder="e.g. Class 11 Science" required>
+            </div>
+
+            <div class="form-group" style="flex: 1; display: flex; flex-direction: column; margin-bottom: 0;">
+              <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
+                <span><i class="fa-solid fa-book" style="margin-right: 6px; color: var(--color-primary);"></i> Default Subjects</span>
+              </label>
+              <div id="manage-class-subjects-container" style="display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 150px; max-height: 250px; overflow-y: auto; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-secondary); margin-top: 6px;">
+                <!-- dynamic subjects added here -->
+              </div>
+              <button type="button" class="btn btn-secondary" style="margin-top: 10px; font-size: 0.82rem; padding: 8px 16px; height: auto; width: 100%; border-radius: 10px; border: 1px dashed var(--border-color); background: transparent; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.25s ease;" onclick="addManageClassSubjectField()" onmouseover="this.style.borderColor='var(--color-primary)';this.style.color='var(--color-primary)';this.style.background='rgba(37,99,235,0.04)'" onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-muted)';this.style.background='transparent'">
+                <i class="fa-solid fa-plus"></i> Add Subject
+              </button>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+              <button type="button" class="btn btn-secondary" onclick="resetManageClassForm()">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save Class</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 

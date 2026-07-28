@@ -14,85 +14,61 @@ document.addEventListener('DOMContentLoaded', () => {
    1. FEES BILLING & INVOICES
    ========================================== */
 async function initFeesPage() {
-  const select = document.getElementById('fee-student-select');
   const searchInput = document.getElementById('fees-search');
-  const createForm = document.getElementById('create-fee-form');
   const paymentForm = document.getElementById('payment-form');
-
-  // Pre-populate Billing Period (e.g., "July 2026") and Due Date (today)
-  const billingPeriodInput = document.getElementById('billingPeriod');
-  if (billingPeriodInput && !billingPeriodInput.value) {
-    billingPeriodInput.value = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  }
-  const dueDateInput = document.getElementById('dueDate');
-  if (dueDateInput && !dueDateInput.value) {
-    dueDateInput.value = new Date().toISOString().split('T')[0];
-  }
-
-  // Load students for invoice select dropdown
-  try {
-    const students = await api.getStudents();
-    select.innerHTML = '<option value="">Choose student...</option>' + 
-      students.map(s => `<option value="${s._id}">${s.name} (${s.studentId})</option>`).join('');
-
-    // Re-initialize custom dropdown so it shows the loaded students
-    if (window.initializeCustomSelects) {
-      window.initializeCustomSelects();
-    }
-  } catch (error) {
-    console.error('Error loading students list for billing:', error);
-  }
+  
+  let currentPage = 1;
+  const pageSize = 10;
 
   // Load and render invoices
   const render = async () => {
     const invoices = await api.getFees({
-      search: searchInput.value
+      search: searchInput ? searchInput.value : ''
     });
-    renderInvoicesTable(invoices);
+    
+    // Sort: Unpaid first, then Partial, then Paid
+    const statusOrder = { 'Unpaid': 1, 'Partial': 2, 'Paid': 3 };
+    invoices.sort((a, b) => {
+      const orderA = statusOrder[a.status] || 99;
+      const orderB = statusOrder[b.status] || 99;
+      return orderA - orderB;
+    });
+    
+    const totalEntries = invoices.length;
+    const totalPages = Math.ceil(totalEntries / pageSize) || 1;
+    
+    if (currentPage > totalPages) {
+      currentPage = totalPages;
+    }
+    
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, totalEntries);
+    const pageInvoices = invoices.slice(startIndex, endIndex);
+
+    renderInvoicesTable(pageInvoices);
+    
+    renderPagination(
+      currentPage,
+      totalPages,
+      totalEntries === 0 ? 0 : startIndex + 1,
+      endIndex,
+      totalEntries,
+      (newPage) => {
+        currentPage = newPage;
+        render();
+      }
+    );
   };
 
-  if (searchInput) searchInput.addEventListener('input', render);
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      currentPage = 1;
+      render();
+    });
+  }
 
   // Initial render
   render();
-
-  // Create Fee Form Submit
-  if (createForm) {
-    createForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const feeData = {
-        studentId: document.getElementById('fee-student-select').value,
-        feeType: document.getElementById('feeType').value,
-        billingPeriod: document.getElementById('billingPeriod').value,
-        totalAmount: document.getElementById('totalAmount').value,
-        discount: document.getElementById('discount').value || 0,
-        fine: 0,
-        dueDate: document.getElementById('dueDate').value
-      };
-
-      try {
-        await api.createFee(feeData);
-        alert('Invoice generated successfully.');
-        createForm.reset();
-        
-        // Re-populate Billing Period and Due Date defaults
-        if (billingPeriodInput) {
-          billingPeriodInput.value = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        }
-        if (dueDateInput) {
-          dueDateInput.value = new Date().toISOString().split('T')[0];
-        }
-        
-        // Re-initialize custom dropdown trigger values
-        if (window.initializeCustomSelects) window.initializeCustomSelects();
-
-        render();
-      } catch (error) {
-        alert('Error creating invoice: ' + error.message);
-      }
-    });
-  }
 
   // Payment Form Submit
   if (paymentForm) {
@@ -109,7 +85,7 @@ async function initFeesPage() {
 
       try {
         const { payment } = await api.collectPayment(feeId, paymentData);
-        alert('Payment posted successfully.');
+        await alert('Payment posted successfully.');
         closePaymentModal();
         render();
 
@@ -118,10 +94,192 @@ async function initFeesPage() {
           api.downloadReceipt(feeId, payment._id);
         }
       } catch (error) {
-        alert('Error posting payment: ' + error.message);
+        await alert('Error posting payment: ' + error.message);
       }
     });
   }
+
+  // Dynamic remaining balance update
+  const amountPaidInput = document.getElementById('amountPaid');
+  if (amountPaidInput) {
+    amountPaidInput.addEventListener('input', () => {
+      if (window.updateRemainingBalance) {
+        window.updateRemainingBalance();
+      }
+    });
+    amountPaidInput.addEventListener('change', () => {
+      if (window.updateRemainingBalance) {
+        window.updateRemainingBalance();
+      }
+    });
+  }
+  
+  // Custom Dropdown for Fee Type
+  const feeTypeInput = document.getElementById('bulkFeeType');
+  const customDropdown = document.getElementById('customFeeTypeDropdown');
+  if (feeTypeInput && customDropdown) {
+    const dropdownItems = customDropdown.querySelectorAll('.dropdown-item');
+
+    feeTypeInput.addEventListener('focus', () => {
+      customDropdown.classList.add('show');
+    });
+
+    feeTypeInput.addEventListener('input', () => {
+      const filter = feeTypeInput.value.toLowerCase();
+      let hasVisible = false;
+      dropdownItems.forEach(item => {
+        if (item.textContent.toLowerCase().includes(filter)) {
+          item.style.display = 'block';
+          hasVisible = true;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      if (hasVisible) {
+        customDropdown.classList.add('show');
+      } else {
+        customDropdown.classList.remove('show');
+      }
+    });
+
+    // Handle selection
+    dropdownItems.forEach(item => {
+      item.addEventListener('mousedown', (e) => {
+        // use mousedown to fire before input blur
+        feeTypeInput.value = item.textContent;
+        customDropdown.classList.remove('show');
+      });
+    });
+
+    feeTypeInput.addEventListener('blur', () => {
+      customDropdown.classList.remove('show');
+    });
+  }
+
+  // Issue Fee Form Submit
+  const issueFeeForm = document.getElementById('issue-fee-form');
+  if (issueFeeForm) {
+    issueFeeForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const feeData = {
+        feeType: document.getElementById('bulkFeeType').value,
+        billingPeriod: 'N/A', // Removed from UI
+        totalAmount: document.getElementById('bulkTotalAmount').value,
+        dueDate: document.getElementById('bulkDueDate').value,
+        discount: 0,
+        fine: 0
+      };
+      
+      const filters = {
+        batch: document.getElementById('bulkBatch').value
+      };
+
+      try {
+        await api.issueBulkFees(filters, feeData);
+        await alert('Fees issued successfully to all matching students.');
+        closeIssueFeeModal();
+        render();
+      } catch (error) {
+        await alert('Error issuing fees: ' + error.message);
+      }
+    });
+  }
+
+}
+
+window.openIssueFeeModal = async () => {
+  const modal = document.getElementById('issue-fee-modal');
+  const batchSelect = document.getElementById('bulkBatch');
+  
+  if (batchSelect) {
+    batchSelect.innerHTML = '<option value="All Batches">All Batches (Everyone)</option>';
+    try {
+      const batches = await api.getBatches();
+      batches.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b.name;
+        opt.textContent = `${b.name} (${b.class})`;
+        batchSelect.appendChild(opt);
+      });
+      if (window.initializeCustomSelects) {
+        window.initializeCustomSelects();
+      }
+    } catch (e) {
+      console.error('Failed to load batches', e);
+    }
+  }
+
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    modal.classList.add('active');
+  }, 10);
+};
+
+window.closeIssueFeeModal = () => {
+  const modal = document.getElementById('issue-fee-modal');
+  modal.classList.remove('active');
+  setTimeout(() => {
+    if (!modal.classList.contains('active')) {
+      modal.style.display = 'none';
+    }
+  }, 250);
+  document.getElementById('issue-fee-form').reset();
+};
+
+function renderPagination(currentPage, totalPages, displayStart, displayEnd, totalEntries, onPageChange, containerId = 'fees-pagination-container') {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (totalEntries === 0) {
+    container.innerHTML = '';
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = 'flex';
+
+  let buttonsHtml = '';
+  
+  // Previous button
+  buttonsHtml += `
+    <button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+  `;
+
+  // Page numbers
+  for (let i = 1; i <= totalPages; i++) {
+    buttonsHtml += `
+      <button class="pagination-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>
+    `;
+  }
+
+  // Next button
+  buttonsHtml += `
+    <button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  `;
+
+  container.innerHTML = `
+    <div class="pagination-info">
+      Showing ${displayStart} to ${displayEnd} of ${totalEntries} entries
+    </div>
+    <div class="pagination-buttons">
+      ${buttonsHtml}
+    </div>
+  `;
+
+  // Attach event handlers
+  container.querySelectorAll('.pagination-btn').forEach(btn => {
+    btn.onclick = () => {
+      const page = parseInt(btn.getAttribute('data-page'));
+      if (page >= 1 && page <= totalPages && page !== currentPage) {
+        onPageChange(page);
+      }
+    };
+  });
 }
 
 function renderInvoicesTable(invoices) {
@@ -129,7 +287,7 @@ function renderInvoicesTable(invoices) {
   if (!tbody) return;
 
   if (invoices.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No invoice records found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No invoice records found.</td></tr>`;
     return;
   }
 
@@ -146,8 +304,7 @@ function renderInvoicesTable(invoices) {
           <span style="font-size: 0.75rem; color: var(--text-muted);">${f.student.studentId}</span>
         </td>
         <td>
-          <div style="font-weight: 500;">${f.billingPeriod}</div>
-          <span style="font-size: 0.75rem; color: var(--text-muted);">${f.feeType}</span>
+          <span style="font-size: 0.85rem; font-weight: 500;">${f.feeType}</span>
         </td>
         <td style="font-weight: 600;">₹${f.netAmount}</td>
         <td style="font-weight: 600; color: ${f.dueAmount > 0 ? '#ef4444' : 'inherit'}">₹${f.dueAmount}</td>
@@ -172,16 +329,53 @@ function renderInvoicesTable(invoices) {
   }).join('');
 }
 
+window.updateRemainingBalance = () => {
+  const balanceDisplay = document.getElementById('modal-balance-display');
+  const amountPaidInput = document.getElementById('amountPaid');
+  const remainingDisplay = document.getElementById('modal-remaining-display');
+  if (!balanceDisplay || !amountPaidInput || !remainingDisplay) return;
+
+  const outstanding = Number(balanceDisplay.dataset.outstanding) || 0;
+  const paidAmount = Number(amountPaidInput.value) || 0;
+  const remaining = Math.max(0, outstanding - paidAmount);
+  remainingDisplay.textContent = `₹${remaining.toLocaleString('en-IN')}`;
+  
+  if (remaining === 0) {
+    remainingDisplay.style.color = '#22c55e'; // Green for fully paid
+  } else if (remaining === outstanding) {
+    remainingDisplay.style.color = '#ef4444'; // Red for unpaid/no payment entered
+  } else {
+    remainingDisplay.style.color = '#f97316'; // Orange for partial payment
+  }
+};
+
 window.openPaymentModal = (feeId, dueAmount) => {
+  const amount = Number(dueAmount) || 0;
   document.getElementById('modal-fee-id').value = feeId;
-  document.getElementById('modal-balance-display').textContent = `₹${dueAmount.toLocaleString('en-IN')}`;
-  document.getElementById('amountPaid').value = dueAmount;
-  document.getElementById('amountPaid').max = dueAmount;
-  document.getElementById('payment-modal').style.display = 'flex';
+  const balanceDisplay = document.getElementById('modal-balance-display');
+  balanceDisplay.textContent = `₹${amount.toLocaleString('en-IN')}`;
+  balanceDisplay.dataset.outstanding = amount;
+  
+  document.getElementById('amountPaid').value = amount;
+  document.getElementById('amountPaid').max = amount;
+  
+  window.updateRemainingBalance();
+  
+  const modal = document.getElementById('payment-modal');
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    modal.classList.add('active');
+  }, 10);
 };
 
 window.closePaymentModal = () => {
-  document.getElementById('payment-modal').style.display = 'none';
+  const modal = document.getElementById('payment-modal');
+  modal.classList.remove('active');
+  setTimeout(() => {
+    if (!modal.classList.contains('active')) {
+      modal.style.display = 'none';
+    }
+  }, 250);
   document.getElementById('payment-form').reset();
 };
 
@@ -192,9 +386,12 @@ window.closePaymentModal = () => {
 async function initFeeHistoryPage() {
   const searchInput = document.getElementById('txn-search');
 
+  let currentPage = 1;
+  const pageSize = 10;
+
   const render = async () => {
     const fees = await api.getFees({
-      search: searchInput.value
+      search: searchInput ? searchInput.value : ''
     });
 
     const recentPayments = [];
@@ -213,10 +410,40 @@ async function initFeeHistoryPage() {
     });
 
     recentPayments.sort((a,b) => new Date(b.paymentDate) - new Date(a.paymentDate));
-    renderAuditTable(recentPayments);
+    
+    const totalEntries = recentPayments.length;
+    const totalPages = Math.ceil(totalEntries / pageSize) || 1;
+    
+    if (currentPage > totalPages) {
+      currentPage = totalPages;
+    }
+    
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, totalEntries);
+    const pagePayments = recentPayments.slice(startIndex, endIndex);
+
+    renderAuditTable(pagePayments);
+    
+    renderPagination(
+      currentPage,
+      totalPages,
+      totalEntries === 0 ? 0 : startIndex + 1,
+      endIndex,
+      totalEntries,
+      (newPage) => {
+        currentPage = newPage;
+        render();
+      },
+      'audit-pagination-container'
+    );
   };
 
-  if (searchInput) searchInput.addEventListener('input', render);
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      currentPage = 1;
+      render();
+    });
+  }
   render();
 }
 

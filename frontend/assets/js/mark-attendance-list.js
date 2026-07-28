@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   dateParam = urlParams.get('date');
 
   if (!classParam || !batchParam || !dateParam) {
-    alert('Invalid class, batch or date parameters. Redirecting back...');
+    await alert('Invalid class, batch or date parameters. Redirecting back...');
     window.location.href = 'mark-attendance.html';
     return;
   }
@@ -61,13 +61,14 @@ function renderRosterList() {
     const isPresent = record.status === 'Present';
     const initials = student.name ? student.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'ST';
     const stats = record.stats || { total: 0, present: 0, percent: 100 };
+    const displayName = batchParam === 'All Batches' ? `${student.name} <span style="font-size: 0.75rem; color: #64748b; font-weight: normal; margin-left: 6px;">(${student.batch})</span>` : student.name;
 
     return `
       <div class="student-card ${isPresent ? 'marked-present' : 'marked-absent'}" id="card-${student._id}" data-student-id="${student._id}" data-name="${student.name.toLowerCase()}">
         <div class="student-info">
           <div class="avatar">${initials}</div>
           <div class="student-details">
-            <h4 class="student-name">${student.name}</h4>
+            <h4 class="student-name">${displayName}</h4>
             <div class="student-meta">
               <span>ID: ${student.studentId}</span>
               <span class="attempts-badge" style="color: ${stats.percent >= 75 ? '#10b981' : '#f43f5e'}">
@@ -170,56 +171,69 @@ async function submitRoster() {
     // WhatsApp Group Sharing logic
     const settings = await api.getWhatsappSettings();
     if (settings && settings.groupShareEnabled) {
-      const total = records.length;
-      const present = records.filter(r => r.status === 'Present').length;
-      const absent = total - present;
-      const presentPercent = total > 0 ? Math.round((present / total) * 100) : 100;
-
-      // Extract absentee names from studentsData array
-      const absents = studentsData.filter(r => r.status === 'Absent').map(r => r.student.name);
-      const absentsList = absents.length > 0 ? absents.join(', ') : 'None';
-
-      const template = settings.attendanceTemplate || "*Attendance Report*\nDate: {{date}}\nClass: {{class}}\nBatch: {{batch}}\n---------------------------\nTotal: {{total}} | Present: {{present}} | Absent: {{absent}}\n\n*Absentees:* {{absentsList}}";
-      
-      const message = template
-        .replace(/{{date}}/g, new Date(dateParam).toLocaleDateString())
-        .replace(/{{class}}/g, classParam)
-        .replace(/{{batch}}/g, batchParam)
-        .replace(/{{total}}/g, total)
-        .replace(/{{present}}/g, present)
-        .replace(/{{presentPercent}}/g, presentPercent)
-        .replace(/{{absent}}/g, absent)
-        .replace(/{{absentsList}}/g, absentsList);
-
       const batches = await api.getBatches();
-      const currentBatch = batches.find(b => b.name === batchParam);
-      const groupLink = (currentBatch && currentBatch.whatsappGroup) || settings.groupLinkOrPhone || '';
+      const batchesToShare = [];
 
-      // Add to simulated queue
-      const queue = JSON.parse(localStorage.getItem('queue') || '[]');
-      queue.push({
-        id: 'q_' + Date.now(),
-        studentName: `Attendance Group - ${classParam} (${batchParam})`,
-        parentNumber: groupLink || 'Group Share',
-        amount: 'N/A',
-        dueDate: new Date(dateParam).toLocaleDateString(),
-        status: 'Pending',
-        time: new Date().toLocaleTimeString()
-      });
-      localStorage.setItem('queue', JSON.stringify(queue));
-
-      let whatsappUrl = '';
-      if (groupLink.startsWith('http')) {
-        whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
-      } else if (groupLink) {
-        whatsappUrl = `https://api.whatsapp.com/send?phone=${encodeURIComponent(groupLink)}&text=${encodeURIComponent(message)}`;
+      if (batchParam === 'All Batches') {
+        // Group students by their assigned batch
+        const uniqueBatches = [...new Set(studentsData.map(r => r.student.batch || 'Unassigned'))];
+        uniqueBatches.forEach(bName => {
+          const batchRecords = studentsData.filter(r => (r.student.batch || 'Unassigned') === bName);
+          batchesToShare.push({ batchName: bName, records: batchRecords });
+        });
       } else {
-        whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+        batchesToShare.push({ batchName: batchParam, records: studentsData });
       }
 
-      if (await confirm('Attendance submitted successfully!\n\nWould you like to share this report to the WhatsApp Group now?')) {
-        window.open(whatsappUrl, '_blank');
+      const queue = JSON.parse(localStorage.getItem('queue') || '[]');
+
+      for (const group of batchesToShare) {
+        const total = group.records.length;
+        const present = group.records.filter(r => r.status === 'Present').length;
+        const absent = total - present;
+        const presentPercent = total > 0 ? Math.round((present / total) * 100) : 100;
+        const absentsList = group.records.filter(r => r.status === 'Absent').map(r => r.student.name).join(', ') || 'None';
+
+        const template = settings.attendanceTemplate || "*Attendance Report*\nDate: {{date}}\nClass: {{class}}\nBatch: {{batch}}\n---------------------------\nTotal: {{total}} | Present: {{present}} | Absent: {{absent}}\n\n*Absentees:* {{absentsList}}";
+        
+        const message = template
+          .replace(/{{date}}/g, new Date(dateParam).toLocaleDateString())
+          .replace(/{{class}}/g, classParam)
+          .replace(/{{batch}}/g, group.batchName)
+          .replace(/{{total}}/g, total)
+          .replace(/{{present}}/g, present)
+          .replace(/{{presentPercent}}/g, presentPercent)
+          .replace(/{{absent}}/g, absent)
+          .replace(/{{absentsList}}/g, absentsList);
+
+        const currentBatch = batches.find(b => b.name === group.batchName);
+        const groupLink = (currentBatch && currentBatch.whatsappGroup) || settings.groupLinkOrPhone || '';
+
+        // Add to simulated queue
+        queue.push({
+          id: 'q_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
+          studentName: `Attendance Group - ${classParam} (${group.batchName})`,
+          parentNumber: groupLink || 'Group Share',
+          amount: 'N/A',
+          dueDate: new Date(dateParam).toLocaleDateString(),
+          status: 'Pending',
+          time: new Date().toLocaleTimeString()
+        });
+
+        let whatsappUrl = '';
+        if (groupLink.startsWith('http')) {
+          whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+        } else if (groupLink) {
+          whatsappUrl = `https://api.whatsapp.com/send?phone=${encodeURIComponent(groupLink)}&text=${encodeURIComponent(message)}`;
+        } else {
+          whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+        }
+
+        if (await confirm(`Attendance submitted successfully!\n\nWould you like to share the report for batch "${group.batchName}" to its WhatsApp Group now?`)) {
+          window.open(whatsappUrl, '_blank');
+        }
       }
+      localStorage.setItem('queue', JSON.stringify(queue));
     } else {
       alert('Attendance sheet submitted successfully!');
     }

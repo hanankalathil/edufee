@@ -327,7 +327,7 @@ body {
 .glass-card {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   border-radius: var(--border-radius);
   padding: 24px;
   transition: var(--transition);
@@ -348,31 +348,61 @@ body {
   border-radius: var(--border-radius);
   border: 1px solid var(--border-color);
   background: var(--bg-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Elegant custom scrollbar for table container */
+.table-container::-webkit-scrollbar {
+  height: 6px;
+}
+.table-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+.table-container::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 6px;
+  transition: var(--transition);
+}
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
 
 .premium-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  table-layout: auto;
 }
 
 .premium-table th {
   background: var(--bg-primary);
   color: var(--text-muted);
   font-weight: 600;
-  padding: 18px 24px;
+  padding: 14px 16px;
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
 }
 
 .premium-table td {
-  padding: 18px 24px;
+  padding: 14px 16px;
   border-bottom: 1px solid var(--border-color);
   font-size: 0.9rem;
   color: var(--text-main);
   vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Allow text wrapping on description/remarks and name columns to avoid unnecessary overflow */
+.premium-table td.wrap-cell,
+.premium-table th.wrap-cell {
+  white-space: normal;
+  word-break: break-word;
+  min-width: 160px;
+  max-width: 250px;
+  line-height: 1.45;
 }
 
 .premium-table tr:hover td {
@@ -381,6 +411,22 @@ body {
 
 .premium-table tr:last-child td {
   border-bottom: none;
+}
+
+/* Smooth fade-in animation for tab transitions */
+.profile-tab-panel {
+  animation: tabFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Badges */
@@ -422,6 +468,7 @@ body {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   transition: var(--transition);
   border: none;
@@ -461,6 +508,18 @@ body {
   background: #ef4444;
   color: #ffffff;
   box-shadow: 0 8px 20px 0 rgba(239, 68, 68, 0.25);
+}
+
+.btn-whatsapp {
+  background: #25D366;
+  color: #ffffff;
+}
+
+.btn-whatsapp:hover {
+  background: #128C7E;
+  color: #ffffff;
+  box-shadow: 0 8px 20px 0 rgba(37, 211, 102, 0.25);
+  transform: translateY(-1px);
 }
 
 /* Forms controls */
@@ -546,6 +605,14 @@ select.form-control option {
   border-color: var(--color-primary);
   outline: none;
   box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.custom-select-container.disabled .custom-select-trigger {
+  opacity: 0.6;
+  pointer-events: none;
+  background: var(--bg-body);
+  color: var(--text-muted);
+  cursor: not-allowed;
 }
 
 .custom-select-trigger i {
@@ -843,6 +910,45 @@ body.modal-open {
   overflow: hidden !important;
 }
 
+/* Universal Boundary Enforcement for Form Fields (Inputs & Dropdowns) */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="tel"],
+textarea,
+select,
+.form-control,
+.custom-select-trigger {
+  border: 1.5px solid #cbd5e1 !important; /* Slightly thicker, darker slate border */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
 
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="tel"],
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .custom-select-trigger {
+  border: 1.5px solid #475569 !important;
+}
 
-
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus,
+input[type="tel"]:focus,
+textarea:focus,
+select:focus,
+.form-control:focus,
+.custom-select-trigger:focus,
+.custom-select-container.open .custom-select-trigger {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2) !important;
+}

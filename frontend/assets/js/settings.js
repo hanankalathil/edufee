@@ -27,6 +27,43 @@ async function initSettingsPage() {
     console.error('Error loading settings:', error);
   }
 
+  // Load WhatsApp Group configuration per batch
+  let timetableSettings = {};
+  let batchesList = [];
+  try {
+    timetableSettings = await api.getTimetableSettings();
+    timetableSettings.batches = timetableSettings.batches || {};
+    
+    batchesList = await api.getBatches();
+    const batchSelect = document.getElementById('wa-batch-select');
+    const fieldsDiv = document.getElementById('wa-batch-settings-fields');
+    const noBatchesDiv = document.getElementById('wa-batch-no-batches');
+
+    if (batchesList.length === 0) {
+      batchSelect.innerHTML = '<option value="">No batches available</option>';
+      fieldsDiv.style.display = 'none';
+      noBatchesDiv.style.display = 'block';
+    } else {
+      batchSelect.innerHTML = batchesList.map(b => `<option value="${b._id}">${b.name} (${b.class || 'No Class'})</option>`).join('');
+      fieldsDiv.style.display = 'flex';
+      noBatchesDiv.style.display = 'none';
+      
+      // Define batch change handler
+      window.onWABatchChanged = () => {
+        const batchId = batchSelect.value;
+        const bSettings = timetableSettings.batches[batchId] || {};
+        document.getElementById('wa-auto-broadcast').checked = !!bSettings.autoBroadcast;
+        const selectedBatch = batchesList.find(b => b._id === batchId);
+        document.getElementById('wa-group-name').value = bSettings.groupName || (selectedBatch ? selectedBatch.name + " Group" : '');
+        document.getElementById('wa-group-link').value = bSettings.groupLink || '';
+      };
+      
+      window.onWABatchChanged(); // Trigger initial load
+    }
+  } catch (error) {
+    console.error('Error loading WhatsApp Group settings:', error);
+  }
+
   // Handle logo upload preview (base64 in mock mode)
   logoInput.addEventListener('change', () => {
     const file = logoInput.files[0];
@@ -58,8 +95,13 @@ async function initSettingsPage() {
   });
 
   // Set active state to theme button
-  const currentTheme = localStorage.getItem('theme') || 'light';
+  const currentTheme = localStorage.getItem('theme') || 'dark';
   updateThemeUI(currentTheme);
+
+  // Switch to the tab requested via URL param (e.g. ?tab=whatsapp)
+  const urlParams = new URLSearchParams(window.location.search);
+  const tab = urlParams.get('tab') || 'general';
+  switchSettingsSection(tab);
 }
 
 window.switchSettingsSection = (sectionName) => {
@@ -75,9 +117,43 @@ window.switchSettingsSection = (sectionName) => {
   } else if (sectionName === 'branding') {
     links[1].classList.add('active');
     document.getElementById('panel-branding').style.display = 'block';
-  } else {
+  } else if (sectionName === 'notifications') {
     links[2].classList.add('active');
     document.getElementById('panel-notifications').style.display = 'block';
+  } else if (sectionName === 'whatsapp') {
+    links[3].classList.add('active');
+    document.getElementById('panel-whatsapp').style.display = 'block';
+  } else if (sectionName === 'security') {
+    links[4].classList.add('active');
+    document.getElementById('panel-security').style.display = 'block';
+  }
+};
+
+window.saveTimetableGroupSettings = async () => {
+  const batchSelect = document.getElementById('wa-batch-select');
+  if (!batchSelect || !batchSelect.value) {
+    alert("No batch selected.");
+    return;
+  }
+  const batchId = batchSelect.value;
+  const autoBroadcast = document.getElementById('wa-auto-broadcast').checked;
+  const groupName = document.getElementById('wa-group-name').value;
+  const groupLink = document.getElementById('wa-group-link').value;
+
+  try {
+    const currentSettings = await api.getTimetableSettings();
+    currentSettings.batches = currentSettings.batches || {};
+    currentSettings.batches[batchId] = { autoBroadcast, groupName, groupLink };
+    
+    // Also update global ones for backwards compatibility / fallback
+    currentSettings.autoBroadcast = autoBroadcast;
+    currentSettings.groupName = groupName;
+    currentSettings.groupLink = groupLink;
+
+    await api.saveTimetableSettings(currentSettings);
+    alert("WhatsApp Group configuration for this batch saved successfully!");
+  } catch (error) {
+    alert("Failed to save settings: " + error.message);
   }
 };
 

@@ -1,92 +1,95 @@
+
 // Custom Styled Alert Implementation
 window.alert = function(message) {
-  // Remove any existing active alerts
-  const activeAlert = document.getElementById('custom-alert-overlay');
-  if (activeAlert) {
-    activeAlert.remove();
-  }
-
-  // Create overlay container
-  const overlay = document.createElement('div');
-  overlay.id = 'custom-alert-overlay';
-  overlay.className = 'custom-alert-overlay';
-
-  // Create alert card dialog
-  const dialog = document.createElement('div');
-  dialog.className = 'custom-alert-dialog';
-
-  // Choose style and icon based on message content
-  let type = 'info';
-  let iconSvg = `
-    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" y1="16" x2="12" y2="12" />
-      <line x1="12" y1="8" x2="12.01" y2="8" />
-    </svg>
-  `;
-
-  const msgLower = message.toLowerCase();
-  if (msgLower.includes('success') || msgLower.includes('save') || msgLower.includes('update') || msgLower.includes('post') || msgLower.includes('download')) {
-    type = 'success';
-    iconSvg = `
-      <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M9 12l2 2 4-4" />
-      </svg>
-    `;
-  } else if (msgLower.includes('error') || msgLower.includes('failed') || msgLower.includes('invalid') || msgLower.includes('not found') || msgLower.includes('no student')) {
-    type = 'error';
-    iconSvg = `
-      <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <line x1="12" y1="8" x2="12" y2="12" />
-        <line x1="12" y1="16" x2="12.01" y2="16" />
-      </svg>
-    `;
-  }
-
-  // Populate dialog content
-  dialog.innerHTML = `
-    <div class="custom-alert-icon-container ${type}">
-      ${iconSvg}
-    </div>
-    <div class="custom-alert-message">${message.replace(/\n/g, '<br>')}</div>
-    <div class="custom-alert-actions">
-      <button class="custom-alert-button" id="custom-alert-ok-btn">OK</button>
-    </div>
-  `;
-
-  overlay.appendChild(dialog);
-  document.body.appendChild(overlay);
-
-  // Trigger animations
-  setTimeout(() => {
-    overlay.classList.add('active');
-    dialog.classList.add('active');
-  }, 10);
-
-  const okBtn = dialog.querySelector('#custom-alert-ok-btn');
-  okBtn.focus();
-
-  const closeAlert = () => {
-    overlay.classList.remove('active');
-    dialog.classList.remove('active');
-    setTimeout(() => {
-      overlay.remove();
-    }, 250);
-  };
-
-  okBtn.onclick = closeAlert;
-
-  // Handle Enter / Escape keys to dismiss
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === 'Escape') {
-      e.preventDefault();
-      closeAlert();
-      window.removeEventListener('keydown', handleKeyDown);
+  return new Promise((resolve) => {
+    // Remove any existing active alerts
+    const activeAlert = document.getElementById('custom-alert-overlay');
+    if (activeAlert) {
+      activeAlert.remove();
     }
-  };
-  window.addEventListener('keydown', handleKeyDown);
+
+    // Create overlay container
+    const overlay = document.createElement('div');
+    overlay.id = 'custom-alert-overlay';
+    overlay.className = 'custom-alert-overlay';
+
+    // Create alert card dialog
+    const dialog = document.createElement('div');
+    dialog.className = 'custom-alert-dialog';
+
+    // Choose style and icon based on message content
+    let type = 'info';
+    let iconSvg = `
+      <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
+      </svg>
+    `;
+
+    const msgLower = message.toLowerCase();
+    if (msgLower.includes('success') || msgLower.includes('save') || msgLower.includes('update') || msgLower.includes('post') || msgLower.includes('download')) {
+      type = 'success';
+      iconSvg = `
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9 12l2 2 4-4" />
+        </svg>
+      `;
+    } else if (msgLower.includes('error') || msgLower.includes('failed') || msgLower.includes('invalid') || msgLower.includes('not found') || msgLower.includes('no student')) {
+      type = 'error';
+      iconSvg = `
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+      `;
+    }
+
+    // Populate dialog content
+    dialog.innerHTML = `
+      <div class="custom-alert-icon-container ${type}">
+        ${iconSvg}
+      </div>
+      <div class="custom-alert-message">${message.replace(/\n/g, '<br>')}</div>
+      <div class="custom-alert-actions">
+        <button class="custom-alert-button" id="custom-alert-ok-btn">OK</button>
+      </div>
+    `;
+
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+
+    // Trigger animations
+    setTimeout(() => {
+      overlay.classList.add('active');
+      dialog.classList.add('active');
+    }, 10);
+
+    const okBtn = dialog.querySelector('#custom-alert-ok-btn');
+    okBtn.focus();
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' || e.key === 'Escape') {
+        e.preventDefault();
+        closeAlert();
+      }
+    };
+
+    const closeAlert = () => {
+      overlay.classList.remove('active');
+      dialog.classList.remove('active');
+      setTimeout(() => {
+        overlay.remove();
+      }, 250);
+      window.removeEventListener('keydown', handleKeyDown);
+      resolve();
+    };
+
+    okBtn.onclick = closeAlert;
+    window.addEventListener('keydown', handleKeyDown);
+  });
 };
 
 // Custom Styled Confirm Implementation
@@ -118,13 +121,13 @@ window.confirm = function(message) {
 
     // Populate dialog content with secondary cancel button and primary action button
     dialog.innerHTML = `
-      <div class="custom-alert-icon-container error" style="background-color: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+      <div class="custom-alert-icon-container error" style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444;">
         ${iconSvg}
       </div>
       <div class="custom-alert-message">${message.replace(/\n/g, '<br>')}</div>
       <div class="custom-alert-actions" style="display: flex; gap: 12px; justify-content: center; width: 100%;">
         <button class="custom-alert-button" id="custom-confirm-cancel-btn" style="background: var(--border-color); color: var(--text-main); box-shadow: none;">Cancel</button>
-        <button class="custom-alert-button" id="custom-confirm-ok-btn">OK</button>
+        <button class="custom-alert-button" id="custom-confirm-ok-btn" style="background: #ef4444; color: white; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);">OK</button>
       </div>
     `;
 
@@ -141,30 +144,28 @@ window.confirm = function(message) {
     const cancelBtn = dialog.querySelector('#custom-confirm-cancel-btn');
     okBtn.focus();
 
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        closeConfirm(true);
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        closeConfirm(false);
+      }
+    };
+
     const closeConfirm = (result) => {
       overlay.classList.remove('active');
       dialog.classList.remove('active');
       setTimeout(() => {
         overlay.remove();
       }, 250);
+      window.removeEventListener('keydown', handleKeyDown);
       resolve(result);
     };
 
     okBtn.onclick = () => closeConfirm(true);
     cancelBtn.onclick = () => closeConfirm(false);
-
-    // Handle Enter / Escape keys to dismiss/resolve
-    const handleKeyDown = (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        closeConfirm(true);
-        window.removeEventListener('keydown', handleKeyDown);
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
-        closeConfirm(false);
-        window.removeEventListener('keydown', handleKeyDown);
-      }
-    };
     window.addEventListener('keydown', handleKeyDown);
   });
 };
@@ -182,6 +183,41 @@ const setLocalStorageJson = (key, val) => {
 
 // Initialize Mock Data if it doesn't exist
 const initializeMockDB = () => {
+  const CURRENT_MOCK_VERSION = "v5";
+  if (localStorage.getItem('mock_version') !== CURRENT_MOCK_VERSION) {
+    localStorage.removeItem('students');
+    localStorage.removeItem('fees');
+    localStorage.removeItem('attendance');
+    localStorage.removeItem('queue');
+    localStorage.removeItem('batches');
+    localStorage.removeItem('timetable');
+    localStorage.removeItem('tests');
+    localStorage.removeItem('classes');
+    localStorage.setItem('mock_version', CURRENT_MOCK_VERSION);
+  }
+
+  if (!localStorage.getItem('classes')) {
+    const defaultClasses = [
+      { _id: "class_1", name: "Class 1", subjects: ["Mathematics", "English", "EVS"] },
+      { _id: "class_2", name: "Class 2", subjects: ["Mathematics", "English", "EVS"] },
+      { _id: "class_3", name: "Class 3", subjects: ["Mathematics", "English", "Science"] },
+      { _id: "class_4", name: "Class 4", subjects: ["Mathematics", "English", "Science"] },
+      { _id: "class_5", name: "Class 5", subjects: ["Mathematics", "English", "Science"] },
+      { _id: "class_6", name: "Class 6", subjects: ["Mathematics", "English", "Science", "Social Science"] },
+      { _id: "class_7", name: "Class 7", subjects: ["Mathematics", "English", "Science", "Social Science"] },
+      { _id: "class_8", name: "Class 8", subjects: ["Mathematics", "Science", "Social Science", "English"] },
+      { _id: "class_9", name: "Class 9", subjects: ["Mathematics", "Science", "Social Science", "English"] },
+      { _id: "class_10", name: "Class 10", subjects: ["Mathematics", "Science", "History", "Geography"] },
+      { _id: "class_11_sci", name: "Plus One Science", subjects: ["Physics", "Chemistry", "Mathematics", "Biology"] },
+      { _id: "class_11_com", name: "Plus One Commerce", subjects: ["Accountancy", "Business Studies", "Economics", "Mathematics"] },
+      { _id: "class_11_hum", name: "Plus One Humanities", subjects: ["History", "Political Science", "Geography", "English"] },
+      { _id: "class_12_sci", name: "Plus Two Science", subjects: ["Physics", "Chemistry", "Mathematics", "Biology"] },
+      { _id: "class_12_com", name: "Plus Two Commerce", subjects: ["Accountancy", "Business Studies", "Economics", "Mathematics"] },
+      { _id: "class_12_hum", name: "Plus Two Humanities", subjects: ["History", "Political Science", "Geography", "English"] }
+    ];
+    setLocalStorageJson('classes', defaultClasses);
+  }
+
   if (!localStorage.getItem('students')) {
     const defaultStudents = [
       {
@@ -253,6 +289,216 @@ const initializeMockDB = () => {
         batch: "Weekend Special",
         subjects: ["Mathematics", "Science"],
         admissionDate: "2026-06-20T00:00:00.000Z"
+      },
+      {
+        _id: "student6",
+        studentId: "STU106",
+        name: "Meera Nair",
+        photo: "",
+        parentName: "Gopal Nair",
+        whatsappNumber: "919876543215",
+        address: "302, Palm Grove, Kochi",
+        school: "Choice School",
+        class: "Plus Two Commerce",
+        batch: "Evening B",
+        subjects: ["Accountancy", "Business Studies", "Economics"],
+        admissionDate: "2026-06-22T00:00:00.000Z"
+      },
+      {
+        _id: "student7",
+        studentId: "STU107",
+        name: "Aditya Patel",
+        photo: "",
+        parentName: "Dinesh Patel",
+        whatsappNumber: "919876543216",
+        address: "A-44, Shanti Nagar, Ahmedabad",
+        school: "St. Kabir School",
+        class: "Plus One Commerce",
+        batch: "Evening B",
+        subjects: ["Accountancy", "Mathematics"],
+        admissionDate: "2026-06-25T00:00:00.000Z"
+      },
+      {
+        _id: "student8",
+        studentId: "STU108",
+        name: "Zara Fatima",
+        photo: "",
+        parentName: "Imran Fatima",
+        whatsappNumber: "919876543217",
+        address: "Flat 12B, Royal Meadows, Hyderabad",
+        school: "Gitanjali Devshala",
+        class: "Class 8",
+        batch: "Morning A",
+        subjects: ["Mathematics", "English", "Social Science"],
+        admissionDate: "2026-06-28T00:00:00.000Z"
+      },
+      {
+        _id: "student9",
+        studentId: "STU109",
+        name: "Devendra Joshi",
+        photo: "",
+        parentName: "Mukesh Joshi",
+        whatsappNumber: "919876543218",
+        address: "15/3, Rajpur Road, Dehradun",
+        school: "The Doon School",
+        class: "Plus Two Humanities",
+        batch: "Weekend Special",
+        subjects: ["History", "Political Science", "Geography"],
+        admissionDate: "2026-07-01T00:00:00.000Z"
+      },
+      {
+        _id: "student10",
+        studentId: "STU110",
+        name: "Diya Sen",
+        photo: "",
+        parentName: "Siddharth Sen",
+        whatsappNumber: "919876543219",
+        address: "56A, Salt Lake Sector 2, Kolkata",
+        school: "La Martiniere for Girls",
+        class: "Class 10",
+        batch: "Morning A",
+        subjects: ["Mathematics", "Science", "History"],
+        admissionDate: "2026-07-02T00:00:00.000Z"
+      },
+      {
+        _id: "student11",
+        studentId: "STU111",
+        name: "Arjun Reddy",
+        photo: "",
+        parentName: "K. R. Reddy",
+        whatsappNumber: "919876543220",
+        address: "Plot 24, Jubilee Hills, Hyderabad",
+        school: "Chirec International School",
+        class: "Plus One Science",
+        batch: "Evening B",
+        subjects: ["Physics", "Chemistry", "Mathematics", "Biology"],
+        admissionDate: "2026-07-03T00:00:00.000Z"
+      },
+      {
+        _id: "student12",
+        studentId: "STU112",
+        name: "Riya Kapoor",
+        photo: "",
+        parentName: "Anil Kapoor",
+        whatsappNumber: "919876543221",
+        address: "88, Lokhandwala Complex, Mumbai",
+        school: "Podar International",
+        class: "Plus Two Science",
+        batch: "Evening B",
+        subjects: ["Physics", "Mathematics", "Computer Science"],
+        admissionDate: "2026-07-04T00:00:00.000Z"
+      },
+      {
+        _id: "student13",
+        studentId: "STU113",
+        name: "Varun Dhawan",
+        photo: "",
+        parentName: "David Dhawan",
+        whatsappNumber: "919876543222",
+        address: "10B, Juhu Beach Road, Mumbai",
+        school: "Jamnabai Narsee School",
+        class: "Class 9",
+        batch: "Morning A",
+        subjects: ["Mathematics", "Science", "Geography"],
+        admissionDate: "2026-07-05T00:00:00.000Z"
+      },
+      {
+        _id: "student14",
+        studentId: "STU114",
+        name: "Kiara Advani",
+        photo: "",
+        parentName: "Jagdeep Advani",
+        whatsappNumber: "919876543223",
+        address: "Park Street Residency, Kolkata",
+        school: "Loreto House",
+        class: "Plus Two Commerce",
+        batch: "Weekend Special",
+        subjects: ["Accountancy", "Economics", "Mathematics"],
+        admissionDate: "2026-07-06T00:00:00.000Z"
+      },
+      {
+        _id: "student15",
+        studentId: "STU115",
+        name: "Siddharth Malhotra",
+        photo: "",
+        parentName: "Sunil Malhotra",
+        whatsappNumber: "919876543224",
+        address: "B-12, Defence Colony, New Delhi",
+        school: "Delhi Public School, RK Puram",
+        class: "Plus One Humanities",
+        batch: "Weekend Special",
+        subjects: ["History", "Political Science", "English"],
+        admissionDate: "2026-07-07T00:00:00.000Z"
+      },
+      {
+        _id: "student16",
+        studentId: "STU116",
+        name: "Pranav Kurup",
+        photo: "",
+        parentName: "Hari Kurup",
+        whatsappNumber: "919876543225",
+        address: "Vikas Nagar, Trivandrum",
+        school: "Loyola School",
+        class: "Class 8",
+        batch: "Morning A",
+        subjects: ["Mathematics", "Science"],
+        admissionDate: "2026-07-08T00:00:00.000Z"
+      },
+      {
+        _id: "student17",
+        studentId: "STU117",
+        name: "Anjali Menon",
+        photo: "",
+        parentName: "Jayadev Menon",
+        whatsappNumber: "919876543226",
+        address: "Kaloor, Kochi",
+        school: "Toc H Public School",
+        class: "Plus Two Science",
+        batch: "Evening B",
+        subjects: ["Physics", "Chemistry", "Mathematics"],
+        admissionDate: "2026-07-09T00:00:00.000Z"
+      },
+      {
+        _id: "student18",
+        studentId: "STU118",
+        name: "Gautham Krishna",
+        photo: "",
+        parentName: "Radhakrishnan",
+        whatsappNumber: "919876543227",
+        address: "Perungudi, Chennai",
+        school: "DAV Public School",
+        class: "Plus One Science",
+        batch: "Evening B",
+        subjects: ["Physics", "Mathematics", "Chemistry"],
+        admissionDate: "2026-07-10T00:00:00.000Z"
+      },
+      {
+        _id: "student19",
+        studentId: "STU119",
+        name: "Sneha Paul",
+        photo: "",
+        parentName: "Saji Paul",
+        whatsappNumber: "919876543228",
+        address: "Vyttila, Kochi",
+        school: "Bhavans Vidya Mandir",
+        class: "Class 10",
+        batch: "Weekend Special",
+        subjects: ["Mathematics", "Science"],
+        admissionDate: "2026-07-11T00:00:00.000Z"
+      },
+      {
+        _id: "student20",
+        studentId: "STU120",
+        name: "Vikram Rathore",
+        photo: "",
+        parentName: "Rajendra Rathore",
+        whatsappNumber: "919876543229",
+        address: "Malviya Nagar, Jaipur",
+        school: "Step by Step School",
+        class: "Plus Two Commerce",
+        batch: "Evening B",
+        subjects: ["Accountancy", "Business Studies", "Economics"],
+        admissionDate: "2026-07-12T00:00:00.000Z"
       }
     ];
     setLocalStorageJson('students', defaultStudents);
@@ -361,6 +607,321 @@ const initializeMockDB = () => {
         status: "Pending",
         dueDate: "2026-07-25T00:00:00.000Z",
         paymentHistory: []
+      },
+      {
+        _id: "fee6",
+        studentId: "student6",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 2500,
+        discount: 0,
+        fine: 0,
+        netAmount: 2500,
+        paidAmount: 2500,
+        dueAmount: 0,
+        status: "Paid",
+        dueDate: "2026-07-10T00:00:00.000Z",
+        paymentHistory: [
+          {
+            _id: "pay6_1",
+            amountPaid: 2500,
+            paymentDate: "2026-07-09T16:20:00.000Z",
+            paymentMethod: "UPI",
+            transactionId: "TXN776251241",
+            remarks: "UPI Payment"
+          }
+        ]
+      },
+      {
+        _id: "fee7",
+        studentId: "student7",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 2500,
+        discount: 100,
+        fine: 0,
+        netAmount: 2400,
+        paidAmount: 1200,
+        dueAmount: 1200,
+        status: "Partial",
+        dueDate: "2026-07-10T00:00:00.000Z",
+        paymentHistory: [
+          {
+            _id: "pay7_1",
+            amountPaid: 1200,
+            paymentDate: "2026-07-11T12:00:00.000Z",
+            paymentMethod: "Cash",
+            transactionId: "CSH-33214",
+            remarks: "Part payment"
+          }
+        ]
+      },
+      {
+        _id: "fee8",
+        studentId: "student8",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 1500,
+        discount: 0,
+        fine: 50,
+        netAmount: 1550,
+        paidAmount: 0,
+        dueAmount: 1550,
+        status: "Overdue",
+        dueDate: "2026-07-05T00:00:00.000Z",
+        paymentHistory: []
+      },
+      {
+        _id: "fee9",
+        studentId: "student9",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 3000,
+        discount: 0,
+        fine: 0,
+        netAmount: 3000,
+        paidAmount: 3000,
+        dueAmount: 0,
+        status: "Paid",
+        dueDate: "2026-07-10T00:00:00.000Z",
+        paymentHistory: [
+          {
+            _id: "pay9_1",
+            amountPaid: 3000,
+            paymentDate: "2026-07-06T10:45:00.000Z",
+            paymentMethod: "UPI",
+            transactionId: "TXN99882211",
+            remarks: "Paid online"
+          }
+        ]
+      },
+      {
+        _id: "fee10",
+        studentId: "student10",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 1500,
+        discount: 0,
+        fine: 0,
+        netAmount: 1500,
+        paidAmount: 1500,
+        dueAmount: 0,
+        status: "Paid",
+        dueDate: "2026-07-10T00:00:00.000Z",
+        paymentHistory: [
+          {
+            _id: "pay10_1",
+            amountPaid: 1500,
+            paymentDate: "2026-07-07T09:15:00.000Z",
+            paymentMethod: "Cash",
+            transactionId: "CSH-55421",
+            remarks: "Paid by cash"
+          }
+        ]
+      },
+      {
+        _id: "fee11",
+        studentId: "student11",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 2500,
+        discount: 250,
+        fine: 0,
+        netAmount: 2250,
+        paidAmount: 2250,
+        dueAmount: 0,
+        status: "Paid",
+        dueDate: "2026-07-10T00:00:00.000Z",
+        paymentHistory: [
+          {
+            _id: "pay11_1",
+            amountPaid: 2250,
+            paymentDate: "2026-07-08T18:00:00.000Z",
+            paymentMethod: "UPI",
+            transactionId: "TXN65412398",
+            remarks: "Sibling discount applied"
+          }
+        ]
+      },
+      {
+        _id: "fee12",
+        studentId: "student12",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 4000,
+        discount: 0,
+        fine: 200,
+        netAmount: 4200,
+        paidAmount: 0,
+        dueAmount: 4200,
+        status: "Overdue",
+        dueDate: "2026-07-05T00:00:00.000Z",
+        paymentHistory: []
+      },
+      {
+        _id: "fee13",
+        studentId: "student13",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 1500,
+        discount: 0,
+        fine: 0,
+        netAmount: 1500,
+        paidAmount: 0,
+        dueAmount: 1500,
+        status: "Pending",
+        dueDate: "2026-07-25T00:00:00.000Z",
+        paymentHistory: []
+      },
+      {
+        _id: "fee14",
+        studentId: "student14",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 3000,
+        discount: 0,
+        fine: 0,
+        netAmount: 3000,
+        paidAmount: 3000,
+        dueAmount: 0,
+        status: "Paid",
+        dueDate: "2026-07-10T00:00:00.000Z",
+        paymentHistory: [
+          {
+            _id: "pay14_1",
+            amountPaid: 3000,
+            paymentDate: "2026-07-09T14:40:00.000Z",
+            paymentMethod: "Bank Transfer",
+            transactionId: "TXN11223344",
+            remarks: "Online transfer"
+          }
+        ]
+      },
+      {
+        _id: "fee15",
+        studentId: "student15",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 3000,
+        discount: 300,
+        fine: 0,
+        netAmount: 2700,
+        paidAmount: 1000,
+        dueAmount: 1700,
+        status: "Partial",
+        dueDate: "2026-07-10T00:00:00.000Z",
+        paymentHistory: [
+          {
+            _id: "pay15_1",
+            amountPaid: 1000,
+            paymentDate: "2026-07-10T11:00:00.000Z",
+            paymentMethod: "UPI",
+            transactionId: "TXN88776655",
+            remarks: "Part 1"
+          }
+        ]
+      },
+      {
+        _id: "fee16",
+        studentId: "student16",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 1500,
+        discount: 0,
+        fine: 0,
+        netAmount: 1500,
+        paidAmount: 1500,
+        dueAmount: 0,
+        status: "Paid",
+        dueDate: "2026-07-10T00:00:00.000Z",
+        paymentHistory: [
+          {
+            _id: "pay16_1",
+            amountPaid: 1500,
+            paymentDate: "2026-07-05T12:00:00.000Z",
+            paymentMethod: "Cash",
+            transactionId: "CSH-11992",
+            remarks: "Early payment"
+          }
+        ]
+      },
+      {
+        _id: "fee17",
+        studentId: "student17",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 4000,
+        discount: 0,
+        fine: 0,
+        netAmount: 4000,
+        paidAmount: 0,
+        dueAmount: 4000,
+        status: "Pending",
+        dueDate: "2026-07-25T00:00:00.000Z",
+        paymentHistory: []
+      },
+      {
+        _id: "fee18",
+        studentId: "student18",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 2500,
+        discount: 0,
+        fine: 0,
+        netAmount: 2500,
+        paidAmount: 2500,
+        dueAmount: 0,
+        status: "Paid",
+        dueDate: "2026-07-10T00:00:00.000Z",
+        paymentHistory: [
+          {
+            _id: "pay18_1",
+            amountPaid: 2500,
+            paymentDate: "2026-07-09T08:30:00.000Z",
+            paymentMethod: "UPI",
+            transactionId: "TXN55443322",
+            remarks: "Full fee"
+          }
+        ]
+      },
+      {
+        _id: "fee19",
+        studentId: "student19",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 3000,
+        discount: 0,
+        fine: 150,
+        netAmount: 3150,
+        paidAmount: 0,
+        dueAmount: 3150,
+        status: "Overdue",
+        dueDate: "2026-07-05T00:00:00.000Z",
+        paymentHistory: []
+      },
+      {
+        _id: "fee20",
+        studentId: "student20",
+        feeType: "Monthly Tuition",
+        billingPeriod: "July 2026",
+        totalAmount: 2500,
+        discount: 0,
+        fine: 0,
+        netAmount: 2500,
+        paidAmount: 2500,
+        dueAmount: 0,
+        status: "Paid",
+        dueDate: "2026-07-10T00:00:00.000Z",
+        paymentHistory: [
+          {
+            _id: "pay20_1",
+            amountPaid: 2500,
+            paymentDate: "2026-07-10T17:00:00.000Z",
+            paymentMethod: "UPI",
+            transactionId: "TXN77665544",
+            remarks: "On due date"
+          }
+        ]
       }
     ];
     setLocalStorageJson('fees', defaultFees);
@@ -382,8 +943,8 @@ const initializeMockDB = () => {
 
   if (!localStorage.getItem('notifications')) {
     setLocalStorageJson('notifications', [
-      { id: "notif1", type: "fee", title: "Fee Overdue", text: "Rohan Das's fee is overdue by 13 days.", read: false, time: "2 hours ago" },
-      { id: "notif2", type: "admission", title: "New Admission", text: "Kabir Singh has registered for Weekend Special.", read: false, time: "1 day ago" },
+      { id: "notif1", type: "fee", title: "Fee Overdue", text: "Rohan Das's fee is overdue by 14 days.", read: false, time: "2 hours ago" },
+      { id: "notif2", type: "admission", title: "New Admission", text: "Vikram Rathore has registered for Evening B.", read: false, time: "5 hours ago" },
       { id: "notif3", type: "alert", title: "Low Attendance Alert", text: "Isha Sharma attended less than 75% classes this month.", read: true, time: "2 days ago" },
       { id: "notif4", type: "birthday", title: "Birthday", text: "Happy birthday to Aarav Mehta!", read: true, time: "3 days ago" }
     ]);
@@ -398,7 +959,8 @@ const initializeMockDB = () => {
         batch: "Morning A",
         records: [
           { studentId: "student1", status: "Present" },
-          { studentId: "student3", status: "Absent" }
+          { studentId: "student10", status: "Present" },
+          { studentId: "student5", status: "Absent" }
         ]
       },
       {
@@ -408,7 +970,8 @@ const initializeMockDB = () => {
         batch: "Morning A",
         records: [
           { studentId: "student1", status: "Present" },
-          { studentId: "student3", status: "Present" }
+          { studentId: "student10", status: "Present" },
+          { studentId: "student5", status: "Present" }
         ]
       }
     ]);
@@ -418,7 +981,7 @@ const initializeMockDB = () => {
     setLocalStorageJson('queue', [
       { id: "q1", studentName: "Rohan Das", parentNumber: "919876543212", amount: 2650, dueDate: "2026-07-05", status: "Pending", time: "Scheduled" },
       { id: "q2", studentName: "Isha Sharma", parentNumber: "919876543211", amount: 2100, dueDate: "2026-07-10", status: "Pending", time: "Scheduled" },
-      { id: "q3", studentName: "Kabir Singh", parentNumber: "919876543214", amount: 3000, dueDate: "2026-07-25", status: "Pending", time: "Scheduled" }
+      { id: "q3", studentName: "Zara Fatima", parentNumber: "919876543217", amount: 1550, dueDate: "2026-07-05", status: "Pending", time: "Scheduled" }
     ]);
   }
 
@@ -438,20 +1001,26 @@ const initializeMockDB = () => {
       {
         _id: "batch1",
         name: "Morning A",
-        class: "Class 8, Class 9, Class 10",
-        timing: "08:00 AM - 10:00 AM"
+        class: "Class 8",
+        timing: "08:00 AM - 10:00 AM",
+        price: 1500,
+        subjects: ["Mathematics", "Physics", "Chemistry", "Biology", "English"]
       },
       {
         _id: "batch2",
         name: "Evening B",
-        class: "Plus One Science, Plus Two Science",
-        timing: "04:00 PM - 06:00 PM"
+        class: "Plus One Science",
+        timing: "04:00 PM - 06:00 PM",
+        price: 2500,
+        subjects: ["Mathematics", "Physics", "Chemistry", "Biology", "Computer Science", "Accountancy", "Business Studies", "Economics"]
       },
       {
         _id: "batch3",
         name: "Weekend Special",
-        class: "All Classes",
-        timing: "09:00 AM - 01:00 PM"
+        class: "Class 10",
+        timing: "09:00 AM - 01:00 PM",
+        price: 3000,
+        subjects: ["Science", "Mathematics", "English"]
       }
     ]);
   }
@@ -522,8 +1091,55 @@ const initializeMockDB = () => {
       b.class = b.class.replace(/Class 12/g, 'Plus Two Science');
       batchesUpdated = true;
     }
+    if (b.class && b.class.includes(',')) {
+      b.class = b.class.split(',')[0].trim();
+      batchesUpdated = true;
+    }
+    if (b.class === 'All Classes') {
+      b.class = 'Class 10';
+      batchesUpdated = true;
+    }
+    if (b.price === undefined) {
+      if (b.name === 'Morning A') b.price = 1500;
+      else if (b.name === 'Evening B') b.price = 2500;
+      else if (b.name === 'Weekend Special') b.price = 3000;
+      else b.price = 1500;
+      batchesUpdated = true;
+    }
   });
   if (batchesUpdated) setLocalStorageJson('batches', storedBatches);
+
+  if (!localStorage.getItem('tests')) {
+    setLocalStorageJson('tests', [
+      {
+        _id: "test1",
+        name: "First Term Algebra Test",
+        subject: "Mathematics",
+        date: "2026-07-05",
+        class: "Class 10",
+        batch: "Morning A",
+        maxMarks: 50,
+        records: [
+          { studentId: "student1", marks: 45, remarks: "Excellent performance, keep it up!" },
+          { studentId: "student5", marks: 38, remarks: "Good effort, clear understanding of concepts." },
+          { studentId: "student8", marks: 29, remarks: "Needs more practice in solving linear equations." }
+        ]
+      },
+      {
+        _id: "test2",
+        name: "Mechanics Weekly Test",
+        subject: "Physics",
+        date: "2026-07-12",
+        class: "Plus Two Science",
+        batch: "Evening B",
+        maxMarks: 100,
+        records: [
+          { studentId: "student2", marks: 88, remarks: "Great conceptual understanding of Newton's Laws." },
+          { studentId: "student6", marks: 74, remarks: "Steady progress, check unit conversions next time." }
+        ]
+      }
+    ]);
+  }
 };
 
 // Execute DB initialization
@@ -531,13 +1147,11 @@ initializeMockDB();
 
 // Mock API Methods
 const api = {
-  getToken: () => sessionStorage.getItem('token') || localStorage.getItem('token'),
-  setToken: (token, remember = false) => {
-    if (remember) {
-      localStorage.setItem('token', token);
-    } else {
-      sessionStorage.setItem('token', token);
-    }
+  getToken: () => localStorage.getItem('token') || sessionStorage.getItem('token'),
+  setToken: (token, remember = true) => {
+    // Save to both to persist authentication across Live Server tabs/sessions
+    localStorage.setItem('token', token);
+    sessionStorage.setItem('token', token);
   },
   clearToken: () => {
     sessionStorage.removeItem('token');
@@ -645,6 +1259,61 @@ const api = {
 
     list.push(newStudent);
     setLocalStorageJson('students', list);
+
+    // Auto-generate invoices for the registered month and the next month
+    try {
+      const batches = getLocalStorageJson('batches', []);
+      const batch = batches.find(b => b.name === newStudent.batch);
+      const price = batch ? parseFloat(batch.price || 0) : 2500;
+
+      const admissionDate = new Date(newStudent.admissionDate);
+      const fees = getLocalStorageJson('fees', []);
+
+      // 1. Current Month's Invoice (due on Admission/Registration Date)
+      const firstPeriod = admissionDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      const firstDueDate = admissionDate.toISOString();
+      const fee1 = {
+        _id: 'fee_' + Date.now() + '_1',
+        studentId: newStudent._id,
+        feeType: 'Monthly Tuition',
+        billingPeriod: firstPeriod,
+        totalAmount: price,
+        discount: 0,
+        fine: 0,
+        netAmount: price,
+        paidAmount: 0,
+        dueAmount: price,
+        status: 'Unpaid',
+        dueDate: firstDueDate,
+        paymentHistory: []
+      };
+
+      // 2. Next Month's Invoice (due within 7 days of the next month start, i.e., on the 7th)
+      const nextMonthDate = new Date(admissionDate.getFullYear(), admissionDate.getMonth() + 1, 1);
+      const nextPeriod = nextMonthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      const nextDueDate = new Date(nextMonthDate.getFullYear(), nextMonthDate.getMonth(), 7).toISOString();
+      const fee2 = {
+        _id: 'fee_' + Date.now() + '_2',
+        studentId: newStudent._id,
+        feeType: 'Monthly Tuition',
+        billingPeriod: nextPeriod,
+        totalAmount: price,
+        discount: 0,
+        fine: 0,
+        netAmount: price,
+        paidAmount: 0,
+        dueAmount: price,
+        status: 'Unpaid',
+        dueDate: nextDueDate,
+        paymentHistory: []
+      };
+
+      fees.push(fee1, fee2);
+      setLocalStorageJson('fees', fees);
+    } catch (err) {
+      console.error('Error generating automatic invoices for new student:', err);
+    }
+
     return newStudent;
   },
 
@@ -687,7 +1356,18 @@ const api = {
 
   // Batches
   getBatches: async () => {
-    return getLocalStorageJson('batches', []);
+    const list = getLocalStorageJson('batches', []);
+    let updated = false;
+    list.forEach(b => {
+      if (!b.subjects) {
+        b.subjects = ["Mathematics", "Physics", "Chemistry", "Biology", "Science", "English"];
+        updated = true;
+      }
+    });
+    if (updated) {
+      setLocalStorageJson('batches', list);
+    }
+    return list;
   },
 
   createBatch: async (batchData) => {
@@ -700,7 +1380,9 @@ const api = {
       name: batchData.name,
       class: batchData.class,
       timing: batchData.timing,
-      whatsappGroup: batchData.whatsappGroup || ''
+      whatsappGroup: batchData.whatsappGroup || '',
+      price: parseFloat(batchData.price || 0),
+      subjects: batchData.subjects || []
     };
     list.push(newBatch);
     setLocalStorageJson('batches', list);
@@ -722,7 +1404,9 @@ const api = {
       name: batchData.name,
       class: batchData.class,
       timing: batchData.timing,
-      whatsappGroup: batchData.whatsappGroup || ''
+      whatsappGroup: batchData.whatsappGroup || '',
+      price: parseFloat(batchData.price || 0),
+      subjects: batchData.subjects || []
     };
     setLocalStorageJson('batches', list);
     return list[index];
@@ -742,6 +1426,46 @@ const api = {
 
     const filtered = list.filter(b => b._id !== id);
     setLocalStorageJson('batches', filtered);
+  },
+
+  // Classes
+  getClasses: async () => {
+    return getLocalStorageJson('classes', []);
+  },
+  createClass: async (classData) => {
+    const list = getLocalStorageJson('classes', []);
+    if (list.some(c => c.name.toLowerCase() === classData.name.toLowerCase())) {
+      throw new Error('Class already exists');
+    }
+    const newClass = {
+      _id: 'class_' + Date.now(),
+      name: classData.name,
+      subjects: classData.subjects || []
+    };
+    list.push(newClass);
+    setLocalStorageJson('classes', list);
+    return newClass;
+  },
+  updateClass: async (id, classData) => {
+    const list = getLocalStorageJson('classes', []);
+    const idx = list.findIndex(c => c._id === id);
+    if (idx === -1) throw new Error('Class not found');
+    list[idx] = { ...list[idx], ...classData };
+    setLocalStorageJson('classes', list);
+    return list[idx];
+  },
+  deleteClass: async (id) => {
+    let list = getLocalStorageJson('classes', []);
+    const clazz = list.find(c => c._id === id);
+    if (!clazz) throw new Error('Class not found');
+
+    const batches = getLocalStorageJson('batches', []);
+    if (batches.some(b => b.class === clazz.name)) {
+      throw new Error(`Cannot delete class "${clazz.name}" as there are batches using it.`);
+    }
+
+    const filtered = list.filter(c => c._id !== id);
+    setLocalStorageJson('classes', filtered);
   },
 
   // Timetable
@@ -858,6 +1582,48 @@ const api = {
     return newFee;
   },
 
+  issueBulkFees: async (filters, feeData) => {
+    const students = getLocalStorageJson('students', []);
+    let targetStudents = students;
+    
+    if (filters.batch && filters.batch !== 'All Batches') {
+      targetStudents = students.filter(s => s.batch === filters.batch);
+    }
+    
+    if (targetStudents.length === 0) {
+      throw new Error('No students found for the selected batch.');
+    }
+
+    const fees = getLocalStorageJson('fees', []);
+    const newFees = [];
+    
+    const baseId = Date.now();
+    
+    targetStudents.forEach((student, index) => {
+      const net = parseFloat(feeData.totalAmount) - parseFloat(feeData.discount || 0) + parseFloat(feeData.fine || 0);
+      const newFee = {
+        _id: 'fee_' + (baseId + index),
+        studentId: student._id,
+        feeType: feeData.feeType,
+        billingPeriod: feeData.billingPeriod,
+        totalAmount: parseFloat(feeData.totalAmount),
+        discount: parseFloat(feeData.discount || 0),
+        fine: parseFloat(feeData.fine || 0),
+        netAmount: net,
+        paidAmount: 0,
+        dueAmount: net,
+        status: 'Unpaid',
+        dueDate: new Date(feeData.dueDate).toISOString(),
+        paymentHistory: []
+      };
+      fees.push(newFee);
+      newFees.push(newFee);
+    });
+
+    setLocalStorageJson('fees', fees);
+    return newFees;
+  },
+
   collectPayment: async (feeId, paymentData) => {
     const fees = getLocalStorageJson('fees', []);
     const index = fees.findIndex(f => f._id === feeId);
@@ -892,18 +1658,39 @@ const api = {
   // Attendance
   getAttendance: async (date, className, batch) => {
     const list = getLocalStorageJson('attendance', []);
-    let sheet = list.find(s => s.date === date && s.class === className && s.batch === batch);
-
     const students = getLocalStorageJson('students', []);
-    const filteredStudents = students.filter(s => s.class === className && s.batch === batch);
 
-    if (!sheet) {
-      const records = filteredStudents.map(s => ({
-        studentId: s._id,
-        status: 'Present'
-      }));
-      sheet = { date, class: className, batch, records };
+    let filteredStudents = [];
+    if (batch === 'All Batches') {
+      filteredStudents = students.filter(s => s.class === className);
+    } else {
+      filteredStudents = students.filter(s => s.class === className && s.batch === batch);
     }
+
+    let records = [];
+    if (batch === 'All Batches') {
+      records = filteredStudents.map(s => {
+        // Find if this student has attendance recorded in their specific batch sheet
+        const studentSheet = list.find(sheet => sheet.date === date && sheet.class === className && sheet.batch === s.batch);
+        const record = studentSheet ? studentSheet.records.find(r => r.studentId === s._id) : null;
+        return {
+          studentId: s._id,
+          status: record ? record.status : 'Present'
+        };
+      });
+    } else {
+      let sheet = list.find(s => s.date === date && s.class === className && s.batch === batch);
+      if (sheet) {
+        records = sheet.records;
+      } else {
+        records = filteredStudents.map(s => ({
+          studentId: s._id,
+          status: 'Present'
+        }));
+      }
+    }
+
+    const sheet = { date, class: className, batch, records };
 
     // Populate student object and historical statistics for UI
     const populatedRecords = sheet.records.map(r => {
@@ -913,7 +1700,9 @@ const api = {
       let totalAttempts = 0;
       let presentCount = 0;
       list.forEach(attRecord => {
-        if (attRecord.class === className && attRecord.batch === batch) {
+        // If query is All Batches, aggregate attempts across all sheets of this class
+        const matchesBatch = batch === 'All Batches' || attRecord.batch === batch;
+        if (attRecord.class === className && matchesBatch) {
           const studentRec = attRecord.records.find(sr => sr.studentId === r.studentId);
           if (studentRec) {
             totalAttempts++;
@@ -940,33 +1729,87 @@ const api = {
 
   markAttendance: async (attendanceData) => {
     const list = getLocalStorageJson('attendance', []);
-    const index = list.findIndex(s => 
-      s.date === attendanceData.date && 
-      s.class === attendanceData.class && 
-      s.batch === attendanceData.batch
-    );
+    const students = getLocalStorageJson('students', []);
 
-    const cleanedRecords = attendanceData.records.map(r => ({
-      studentId: r.student,
-      status: r.status
-    }));
+    if (attendanceData.batch === 'All Batches') {
+      // Group incoming records by student's batch
+      const recordsByBatch = {};
+      attendanceData.records.forEach(r => {
+        const student = students.find(s => s._id === r.student);
+        const bName = student ? (student.batch || 'Unassigned') : 'Unassigned';
+        if (!recordsByBatch[bName]) {
+          recordsByBatch[bName] = [];
+        }
+        recordsByBatch[bName].push({
+          studentId: r.student,
+          status: r.status
+        });
+      });
 
-    const sheet = {
-      _id: index !== -1 ? list[index]._id : 'att_' + Date.now(),
-      date: attendanceData.date,
-      class: attendanceData.class,
-      batch: attendanceData.batch,
-      records: cleanedRecords
-    };
+      // Update/insert sheets for each batch
+      for (const [bName, records] of Object.entries(recordsByBatch)) {
+        const index = list.findIndex(s => 
+          s.date === attendanceData.date && 
+          s.class === attendanceData.class && 
+          s.batch === bName
+        );
 
-    if (index !== -1) {
-      list[index] = sheet;
+        const sheet = {
+          _id: index !== -1 ? list[index]._id : 'att_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+          date: attendanceData.date,
+          class: attendanceData.class,
+          batch: bName,
+          records: records
+        };
+
+        if (index !== -1) {
+          // Merge records to keep any existing students in the batch
+          const mergedRecords = [...list[index].records];
+          records.forEach(newRec => {
+            const existingIdx = mergedRecords.findIndex(mr => mr.studentId === newRec.studentId);
+            if (existingIdx !== -1) {
+              mergedRecords[existingIdx].status = newRec.status;
+            } else {
+              mergedRecords.push(newRec);
+            }
+          });
+          sheet.records = mergedRecords;
+          list[index] = sheet;
+        } else {
+          list.push(sheet);
+        }
+      }
+      setLocalStorageJson('attendance', list);
+      return { success: true };
     } else {
-      list.push(sheet);
-    }
+      const index = list.findIndex(s => 
+        s.date === attendanceData.date && 
+        s.class === attendanceData.class && 
+        s.batch === attendanceData.batch
+      );
 
-    setLocalStorageJson('attendance', list);
-    return sheet;
+      const cleanedRecords = attendanceData.records.map(r => ({
+        studentId: r.student,
+        status: r.status
+      }));
+
+      const sheet = {
+        _id: index !== -1 ? list[index]._id : 'att_' + Date.now(),
+        date: attendanceData.date,
+        class: attendanceData.class,
+        batch: attendanceData.batch,
+        records: cleanedRecords
+      };
+
+      if (index !== -1) {
+        list[index] = sheet;
+      } else {
+        list.push(sheet);
+      }
+
+      setLocalStorageJson('attendance', list);
+      return sheet;
+    }
   },
 
   // WhatsApp
@@ -1211,19 +2054,141 @@ const api = {
         rows
       };
     }
+  },
+
+  // Tests & Academic Performance CRUD
+  getTests: async (filters = {}) => {
+    let list = getLocalStorageJson('tests', []);
+    if (filters.className) {
+      list = list.filter(t => t.class === filters.className);
+    }
+    if (filters.batch) {
+      list = list.filter(t => t.batch === filters.batch);
+    }
+    return list;
+  },
+  getTest: async (id) => {
+    const list = getLocalStorageJson('tests', []);
+    const test = list.find(t => t._id === id);
+    if (!test) throw new Error('Test not found');
+    return test;
+  },
+  saveTest: async (testData) => {
+    const list = getLocalStorageJson('tests', []);
+    if (testData._id) {
+      const idx = list.findIndex(t => t._id === testData._id);
+      if (idx !== -1) {
+        list[idx] = { ...list[idx], ...testData };
+      } else {
+        throw new Error('Test not found');
+      }
+    } else {
+      testData._id = 'test_' + Date.now();
+      list.push(testData);
+    }
+    setLocalStorageJson('tests', list);
+    return testData;
+  },
+  deleteTest: async (id) => {
+    let list = getLocalStorageJson('tests', []);
+    list = list.filter(t => t._id !== id);
+    setLocalStorageJson('tests', list);
+    return { success: true };
+  },
+  getStudentPerformance: async (studentId) => {
+    const list = getLocalStorageJson('tests', []);
+    const studentTests = [];
+    let totalMarksObtained = 0;
+    let totalMaxMarks = 0;
+    let highestPercentage = 0;
+    let testsTaken = 0;
+
+    list.forEach(t => {
+      const record = t.records.find(r => r.studentId === studentId);
+      if (record) {
+        testsTaken++;
+        
+        let marksObtained = 0;
+        let maxMarks = 0;
+        let breakdown = [];
+        let pct = 0;
+
+        if (t.subjects && Array.isArray(t.subjects)) {
+          t.subjects.forEach(sub => {
+            const subMark = record.marks && record.marks[sub.name] !== undefined ? Number(record.marks[sub.name]) : 0;
+            marksObtained += subMark;
+            maxMarks += Number(sub.maxMarks);
+            breakdown.push(`${sub.name}: ${subMark}/${sub.maxMarks}`);
+          });
+          pct = maxMarks > 0 ? (marksObtained / maxMarks) * 100 : 0;
+        } else {
+          marksObtained = Number(record.marks);
+          maxMarks = Number(t.maxMarks);
+          pct = maxMarks > 0 ? (marksObtained / maxMarks) * 100 : 0;
+        }
+
+        if (pct > highestPercentage) {
+          highestPercentage = pct;
+        }
+        totalMarksObtained += marksObtained;
+        totalMaxMarks += maxMarks;
+
+        // Calculate class average
+        let classAvg = 0;
+        if (t.records.length > 0) {
+          if (t.subjects && Array.isArray(t.subjects)) {
+            let recordSum = 0;
+            let recordMax = 0;
+            t.records.forEach(rec => {
+              t.subjects.forEach(sub => {
+                recordSum += rec.marks && rec.marks[sub.name] !== undefined ? Number(rec.marks[sub.name]) : 0;
+                recordMax += Number(sub.maxMarks);
+              });
+            });
+            classAvg = recordMax > 0 ? (recordSum / recordMax) * 100 : 0;
+          } else {
+            const sum = t.records.reduce((sum, r) => sum + Number(r.marks), 0);
+            classAvg = (sum / (t.records.length * t.maxMarks)) * 100;
+          }
+        } else {
+          classAvg = 0;
+        }
+
+        studentTests.push({
+          _id: t._id,
+          name: t.name,
+          subject: t.subjects && Array.isArray(t.subjects) ? t.subjects.map(s => s.name).join(', ') : t.subject,
+          date: t.date,
+          maxMarks: maxMarks,
+          marks: t.subjects && Array.isArray(t.subjects) ? `${marksObtained} (${breakdown.join(', ')})` : record.marks,
+          remarks: record.remarks || '',
+          percentage: pct.toFixed(1),
+          classAverage: classAvg.toFixed(1)
+        });
+      }
+    });
+
+    const averagePercentage = totalMaxMarks > 0 ? ((totalMarksObtained / totalMaxMarks) * 100).toFixed(1) : "0.0";
+
+    return {
+      averagePercentage,
+      testsTaken,
+      highestPercentage: highestPercentage.toFixed(1),
+      records: studentTests
+    };
   }
 };
 
 // Automate layout rendering on window load (Sidebar, Header, Theme, Logout)
 if (!window.location.pathname.endsWith('login.html') && !window.location.pathname.endsWith('receipt-preview.html') && !window.location.pathname.endsWith('mark-attendance.html') && !window.location.pathname.endsWith('mark-attendance-list.html')) {
-  if (!api.getToken()) {
-    window.location.href = 'login.html';
-  } else {
+  // if (!api.getToken()) {
+  //   window.location.href = 'login.html';
+  // } else {
     document.addEventListener('DOMContentLoaded', () => {
       renderLayout();
       if (window.initializeCustomSelects) window.initializeCustomSelects();
     });
-  }
+  // }
 } else {
   // Run on login page or public page if any selects exist
   document.addEventListener('DOMContentLoaded', () => {
@@ -1232,11 +2197,18 @@ if (!window.location.pathname.endsWith('login.html') && !window.location.pathnam
 }
 
 window.initializeCustomSelects = () => {
-  const selects = document.querySelectorAll('select.form-control');
+  const selects = document.querySelectorAll('select.form-control:not([multiple])');
   selects.forEach(select => {
+    const isSearchable = select.getAttribute('data-search') === 'true' || select.id === 'fee-student-select';
+
     // Avoid double wrapping
     if (select.nextElementSibling && select.nextElementSibling.classList.contains('custom-select-container')) {
       const container = select.nextElementSibling;
+      if (select.disabled) {
+        container.classList.add('disabled');
+      } else {
+        container.classList.remove('disabled');
+      }
       if (select.style.width) {
         container.style.width = select.style.width;
       }
@@ -1244,6 +2216,7 @@ window.initializeCustomSelects = () => {
         container.style.minWidth = select.style.minWidth;
       }
       const optionsContainer = container.querySelector('.custom-select-options');
+      const triggerInput = container.querySelector('.custom-select-trigger input.custom-select-search');
       const triggerSpan = container.querySelector('.custom-select-trigger span');
       
       const selectOptions = select.querySelectorAll('option');
@@ -1254,15 +2227,40 @@ window.initializeCustomSelects = () => {
       `).join('');
       
       const activeOpt = select.querySelector('option:checked') || selectOptions[0];
-      if (activeOpt) triggerSpan.textContent = activeOpt.textContent;
+      if (activeOpt) {
+        if (triggerInput) {
+          triggerInput.value = activeOpt.textContent;
+          triggerInput.placeholder = activeOpt.textContent || "Search...";
+        } else if (triggerSpan) {
+          triggerSpan.textContent = activeOpt.textContent;
+        }
+      }
       
+      // Reset filter state
+      optionsContainer.querySelectorAll('.custom-option').forEach(optDiv => {
+        optDiv.style.display = isSearchable ? 'none' : '';
+      });
+      if (isSearchable) {
+        optionsContainer.style.display = 'none';
+      } else {
+        optionsContainer.style.display = '';
+      }
+
       // Rebind click events
       optionsContainer.querySelectorAll('.custom-option').forEach(optDiv => {
         optDiv.addEventListener('click', (e) => {
           e.stopPropagation();
           select.value = optDiv.getAttribute('data-value');
           select.dispatchEvent(new Event('change'));
-          triggerSpan.textContent = optDiv.textContent;
+          if (triggerInput) {
+            triggerInput.value = optDiv.textContent;
+            triggerInput.placeholder = optDiv.textContent || "Search...";
+            triggerInput.readOnly = true;
+            triggerInput.blur();
+            optionsContainer.style.display = 'none';
+          } else if (triggerSpan) {
+            triggerSpan.textContent = optDiv.textContent;
+          }
           optionsContainer.querySelectorAll('.custom-option').forEach(d => d.classList.remove('selected'));
           optDiv.classList.add('selected');
           container.classList.remove('open');
@@ -1275,6 +2273,9 @@ window.initializeCustomSelects = () => {
 
     const container = document.createElement('div');
     container.className = 'custom-select-container';
+    if (select.disabled) {
+      container.classList.add('disabled');
+    }
     if (select.style.width) {
       container.style.width = select.style.width;
     }
@@ -1285,13 +2286,39 @@ window.initializeCustomSelects = () => {
     const trigger = document.createElement('div');
     trigger.className = 'custom-select-trigger';
     
-    const triggerText = document.createElement('span');
     const defaultOpt = select.querySelector('option:checked') || select.firstElementChild;
-    triggerText.textContent = defaultOpt ? defaultOpt.textContent : 'Select option...';
-    trigger.appendChild(triggerText);
+    const defaultText = defaultOpt ? defaultOpt.textContent : 'Select option...';
+
+    let triggerInput = null;
+    let triggerText = null;
+
+    if (isSearchable) {
+      triggerInput = document.createElement('input');
+      triggerInput.type = 'text';
+      triggerInput.className = 'custom-select-search';
+      triggerInput.value = defaultText;
+      triggerInput.placeholder = defaultText;
+      triggerInput.readOnly = true;
+      triggerInput.style.border = 'none';
+      triggerInput.style.background = 'transparent';
+      triggerInput.style.outline = 'none';
+      triggerInput.style.width = '100%';
+      triggerInput.style.color = 'inherit';
+      triggerInput.style.font = 'inherit';
+      triggerInput.style.padding = '0';
+      triggerInput.style.margin = '0';
+      trigger.appendChild(triggerInput);
+    } else {
+      triggerText = document.createElement('span');
+      triggerText.textContent = defaultText;
+      trigger.appendChild(triggerText);
+    }
     
     const chevron = document.createElement('i');
     chevron.className = 'fa-solid fa-chevron-down';
+    if (isSearchable) {
+      chevron.style.display = 'none';
+    }
     trigger.appendChild(chevron);
     
     const optionsContainer = document.createElement('div');
@@ -1311,11 +2338,114 @@ window.initializeCustomSelects = () => {
     // Toggle dropdown
     trigger.addEventListener('click', (e) => {
       e.stopPropagation();
+      if (select.disabled) return;
+      const isOpen = container.classList.contains('open');
+      
       document.querySelectorAll('.custom-select-container').forEach(c => {
-        if (c !== container) c.classList.remove('open');
+        if (c !== container) {
+          c.classList.remove('open');
+          const otherInput = c.querySelector('.custom-select-search');
+          const otherSelect = c.previousElementSibling;
+          if (otherInput) {
+            otherInput.readOnly = true;
+            if (otherSelect && otherSelect.tagName === 'SELECT') {
+              const activeOpt = otherSelect.querySelector('option:checked') || otherSelect.firstElementChild;
+              if (activeOpt) otherInput.value = activeOpt.textContent;
+            }
+          }
+          const otherOptionsContainer = c.querySelector('.custom-select-options');
+          if (otherOptionsContainer && otherSelect && (otherSelect.getAttribute('data-search') === 'true' || otherSelect.id === 'fee-student-select')) {
+            otherOptionsContainer.style.display = 'none';
+          }
+        }
       });
-      container.classList.toggle('open');
+
+      if (!isOpen) {
+        container.classList.add('open');
+        if (isSearchable && triggerInput) {
+          triggerInput.readOnly = false;
+          triggerInput.value = ''; // clear input for fresh search typing
+          triggerInput.focus();
+          optionsContainer.querySelectorAll('.custom-option').forEach(optDiv => {
+            optDiv.style.display = 'none';
+          });
+          optionsContainer.style.display = 'none';
+        }
+      } else {
+        container.classList.remove('open');
+        if (isSearchable && triggerInput) {
+          triggerInput.readOnly = true;
+          const activeOpt = select.querySelector('option:checked') || select.firstElementChild;
+          if (activeOpt) triggerInput.value = activeOpt.textContent;
+          optionsContainer.style.display = 'none';
+        }
+      }
     });
+
+    if (isSearchable && triggerInput) {
+      triggerInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (query === '') {
+          optionsContainer.querySelectorAll('.custom-option').forEach(optDiv => {
+            optDiv.style.display = 'none';
+          });
+          optionsContainer.style.display = 'none';
+          return;
+        }
+
+        let hasMatches = false;
+        optionsContainer.querySelectorAll('.custom-option').forEach(optDiv => {
+          const text = optDiv.textContent.toLowerCase();
+          const isPlaceholder = optDiv.getAttribute('data-value') === '';
+          if (!isPlaceholder && text.includes(query)) {
+            optDiv.style.display = '';
+            hasMatches = true;
+          } else {
+            optDiv.style.display = 'none';
+          }
+        });
+
+        if (hasMatches) {
+          optionsContainer.style.display = 'block';
+        } else {
+          optionsContainer.style.display = 'none';
+        }
+      });
+
+      triggerInput.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = container.classList.contains('open');
+        if (!isOpen) {
+          document.querySelectorAll('.custom-select-container').forEach(c => {
+            if (c !== container) {
+              c.classList.remove('open');
+              const otherInput = c.querySelector('.custom-select-search');
+              const otherSelect = c.previousElementSibling;
+              if (otherInput) {
+                otherInput.readOnly = true;
+                if (otherSelect && otherSelect.tagName === 'SELECT') {
+                  const activeOpt = otherSelect.querySelector('option:checked') || otherSelect.firstElementChild;
+                  if (activeOpt) otherInput.value = activeOpt.textContent;
+                }
+              }
+              const otherOptionsContainer = c.querySelector('.custom-select-options');
+              if (otherOptionsContainer && otherSelect && (otherSelect.getAttribute('data-search') === 'true' || otherSelect.id === 'fee-student-select')) {
+                otherOptionsContainer.style.display = 'none';
+              }
+            }
+          });
+
+          container.classList.add('open');
+          triggerInput.readOnly = false;
+          triggerInput.value = '';
+          triggerInput.focus();
+          optionsContainer.querySelectorAll('.custom-option').forEach(optDiv => {
+            optDiv.style.display = 'none';
+          });
+          optionsContainer.style.display = 'none';
+        }
+      });
+    }
 
     // Option click
     optionsContainer.querySelectorAll('.custom-option').forEach(optDiv => {
@@ -1323,7 +2453,15 @@ window.initializeCustomSelects = () => {
         e.stopPropagation();
         select.value = optDiv.getAttribute('data-value');
         select.dispatchEvent(new Event('change'));
-        triggerText.textContent = optDiv.textContent;
+        if (isSearchable && triggerInput) {
+          triggerInput.value = optDiv.textContent;
+          triggerInput.placeholder = optDiv.textContent || "Search...";
+          triggerInput.readOnly = true;
+          triggerInput.blur();
+          optionsContainer.style.display = 'none';
+        } else if (triggerText) {
+          triggerText.textContent = optDiv.textContent;
+        }
         optionsContainer.querySelectorAll('.custom-option').forEach(d => d.classList.remove('selected'));
         optDiv.classList.add('selected');
         container.classList.remove('open');
@@ -1333,7 +2471,22 @@ window.initializeCustomSelects = () => {
 };
 
 document.addEventListener('click', () => {
-  document.querySelectorAll('.custom-select-container').forEach(c => c.classList.remove('open'));
+  document.querySelectorAll('.custom-select-container').forEach(c => {
+    c.classList.remove('open');
+    const input = c.querySelector('.custom-select-search');
+    if (input) {
+      input.readOnly = true;
+      const select = c.previousElementSibling;
+      if (select && select.tagName === 'SELECT') {
+        const activeOpt = select.querySelector('option:checked') || select.firstElementChild;
+        if (activeOpt) input.value = activeOpt.textContent;
+      }
+      const optionsContainer = c.querySelector('.custom-select-options');
+      if (optionsContainer) {
+        optionsContainer.style.display = 'none';
+      }
+    }
+  });
 });
 
 function renderLayout() {
@@ -1344,8 +2497,8 @@ function renderLayout() {
   if (sidebarContainer) {
     sidebarContainer.innerHTML = `
       <div class="sidebar">
-        <div class="brand-section">
-          <div class="brand-logo">T</div>
+        <div class="brand-section" id="software-info-btn" style="cursor: pointer; transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+          <img src="../assets/images/logo.jpg" alt="EduFee Logo" style="width: 36px; height: 36px; border-radius: 10px; object-fit: cover; box-shadow: 0 4px 12px rgba(37,99,235,0.2);">
           <div class="brand-name">Techora <span style="color: var(--color-primary)">EduFee</span></div>
         </div>
 
@@ -1365,17 +2518,20 @@ function renderLayout() {
           <li class="nav-item ${currentPath.includes('attendance.html') ? 'active' : ''}">
             <a href="attendance.html"><i class="fa-solid fa-calendar-check"></i> <span>Attendance</span></a>
           </li>
-          <li class="nav-item ${currentPath.includes('timetable.html') ? 'active' : ''}">
-            <a href="timetable.html"><i class="fa-solid fa-calendar-days"></i> <span>Timetable</span></a>
+          <li class="nav-item ${currentPath.includes('educational-details.html') ? 'active' : ''}">
+            <a href="educational-details.html"><i class="fa-solid fa-book-open"></i> <span>Edu Details</span></a>
           </li>
-          <li class="nav-item ${currentPath.includes('reminders.html') || currentPath.includes('whatsapp-settings.html') ? 'active' : ''}">
+          <li class="nav-item ${currentPath.includes('timetable.html') ? 'active' : ''}">
+            <a href="#" onclick="showV2Popup(event)"><i class="fa-solid fa-calendar-days"></i> <span>Timetable</span> <span style="margin-left: 8px; background: var(--color-primary, #2563eb); color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; line-height: 1;">V2</span></a>
+          </li>
+          <li class="nav-item ${currentPath.includes('reminders.html') ? 'active' : ''}">
             <a href="reminders.html"><i class="fa-solid fa-paper-plane"></i> <span>Reminders</span></a>
           </li>
           <li class="nav-item ${currentPath.includes('reports.html') ? 'active' : ''}">
             <a href="reports.html"><i class="fa-solid fa-chart-line"></i> <span>Reports</span></a>
           </li>
           <li class="nav-item ${currentPath.includes('analytics.html') ? 'active' : ''}">
-            <a href="analytics.html"><i class="fa-solid fa-chart-column"></i> <span>Analytics</span></a>
+            <a href="#" onclick="showV2Popup(event)"><i class="fa-solid fa-chart-column"></i> <span>Analytics</span> <span style="margin-left: 8px; background: var(--color-primary, #2563eb); color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; line-height: 1;">V2</span></a>
           </li>
           <li class="nav-item ${currentPath.includes('settings.html') ? 'active' : ''}">
             <a href="settings.html"><i class="fa-solid fa-sliders"></i> <span>Settings</span></a>
@@ -1402,21 +2558,102 @@ function renderLayout() {
     `;
   }
 
+  const softwareInfoBtn = document.getElementById('software-info-btn');
+  if (softwareInfoBtn) {
+    softwareInfoBtn.addEventListener('click', () => {
+      const popup = document.createElement('div');
+      popup.className = 'modal-overlay active';
+      popup.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 99999; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease;';
+      
+      popup.innerHTML = `
+        <div style="background: var(--bg-secondary); padding: 48px; border-radius: 32px; text-align: center; max-width: 480px; width: 90%; box-shadow: 0 24px 80px rgba(0,0,0,0.3); border: 1px solid var(--border-color); transform: scale(0.9); transition: transform 0.3s ease; position: relative;">
+          <img src="../assets/images/logo.jpg" style="width: 96px; height: 96px; border-radius: 24px; margin-bottom: 24px; box-shadow: 0 12px 32px rgba(37,99,235,0.3);">
+          <h2 style="font-family: var(--font-heading); color: var(--text-main); font-size: 2.2rem; font-weight: 800; margin-bottom: 12px;">Techora <span style="color: var(--color-primary);">EduFee</span></h2>
+          <p style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.6; margin-bottom: 32px;">
+            The most powerful, secure, and intuitive fee management platform built specifically for modern educational institutions.
+            <br><br><span style="font-size: 0.9rem; font-weight: 600; padding: 6px 12px; background: rgba(37,99,235,0.1); color: var(--color-primary); border-radius: 8px;">Version 1.0.0 (Pro)</span>
+          </p>
+          <button id="close-software-info" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); color: #fff; border: none; padding: 14px 40px; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 8px 24px rgba(37,99,235,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 28px rgba(37,99,235,0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(37,99,235,0.3)';">Awesome!</button>
+        </div>
+      `;
+      
+      document.body.appendChild(popup);
+      
+      // Trigger animation
+      setTimeout(() => {
+        popup.style.opacity = '1';
+        popup.firstElementChild.style.transform = 'scale(1)';
+      }, 10);
+      
+      const closePopup = () => {
+        popup.style.opacity = '0';
+        popup.firstElementChild.style.transform = 'scale(0.9)';
+        setTimeout(() => popup.remove(), 300);
+      };
+      
+      document.getElementById('close-software-info').addEventListener('click', closePopup);
+      popup.addEventListener('click', (e) => {
+        if (e.target === popup) closePopup();
+      });
+    });
+  }
+
+
   // Set Theme Class
-  const currentTheme = localStorage.getItem('theme') || 'light';
+  const currentTheme = localStorage.getItem('theme') || 'dark';
   document.documentElement.setAttribute('data-theme', currentTheme);
 }
 
 window.toggleTheme = () => {
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', newTheme);
   localStorage.setItem('theme', newTheme);
 };
 
 window.logout = () => {
-  api.clearToken();
-  window.location.href = 'login.html';
+  const popup = document.createElement('div');
+  popup.className = 'modal-overlay active';
+  popup.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 999999; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease;';
+  
+  popup.innerHTML = `
+    <div style="background: var(--bg-secondary); padding: 40px; border-radius: 24px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 24px 60px rgba(0,0,0,0.3); border: 1px solid var(--border-color); transform: scale(0.9); transition: transform 0.3s ease;">
+      <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 24px auto;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      </div>
+      <h3 style="font-family: var(--font-heading); color: var(--text-main); font-size: 1.5rem; margin-bottom: 12px;">Confirm Logout</h3>
+      <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.5; margin-bottom: 32px;">Are you sure you want to log out of Techora EduFee?</p>
+      
+      <div style="display: flex; gap: 16px; justify-content: center;">
+        <button id="cancel-logout" style="flex: 1; padding: 12px; border-radius: 12px; background: transparent; border: 1px solid var(--border-color); color: var(--text-main); font-weight: 600; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">Cancel</button>
+        <button id="confirm-logout" style="flex: 1; padding: 12px; border-radius: 12px; background: #ef4444; border: none; color: white; font-weight: 600; cursor: pointer; transition: transform 0.2s; box-shadow: 0 8px 16px rgba(239,68,68,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Logout</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(popup);
+  
+  // Animation
+  setTimeout(() => {
+    popup.style.opacity = '1';
+    popup.firstElementChild.style.transform = 'scale(1)';
+  }, 10);
+  
+  const closePopup = () => {
+    popup.style.opacity = '0';
+    popup.firstElementChild.style.transform = 'scale(0.9)';
+    setTimeout(() => popup.remove(), 300);
+  };
+  
+  document.getElementById('cancel-logout').addEventListener('click', closePopup);
+  document.getElementById('confirm-logout').addEventListener('click', () => {
+    api.clearToken();
+    window.location.href = 'login.html';
+  });
+  
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup) closePopup();
+  });
 };
 
 // Block/unblock background scrolling when modals or alert overlays are shown
@@ -1479,3 +2716,61 @@ if (document.readyState === 'loading') {
   setupModalObserver();
 }
 
+window.showV2Popup = function(e) {
+  if (e) e.preventDefault();
+  
+  const overlay = document.createElement('div');
+  overlay.id = 'v2-popup-modal';
+  overlay.style.cssText = 'display: flex; align-items: center; justify-content: center; z-index: 99999; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); position: fixed; top: 0; left: 0; right: 0; bottom: 0; animation: v2fadeIn 0.3s ease-out;';
+  
+  const content = document.createElement('div');
+  content.style.cssText = 'background: var(--bg-secondary); padding: 40px; border-radius: 20px; max-width: 450px; width: 90%; text-align: center; box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); position: relative; animation: v2slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: var(--text-main);';
+  
+  document.body.style.overflow = 'hidden';
+  
+  const closeBtn = document.createElement('button');
+  closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+  closeBtn.style.cssText = 'position: absolute; top: 15px; right: 15px; background: transparent; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s;';
+  closeBtn.onmouseover = () => closeBtn.style.color = 'var(--text-main)';
+  closeBtn.onmouseout = () => closeBtn.style.color = 'var(--text-muted)';
+  
+  const closePopup = () => {
+    overlay.style.animation = 'v2fadeOut 0.3s ease-out forwards';
+    content.style.animation = 'v2slideDown 0.3s ease-in forwards';
+    setTimeout(() => {
+      overlay.remove();
+      document.body.style.overflow = '';
+    }, 300);
+  };
+  
+  closeBtn.onclick = closePopup;
+  overlay.onclick = (event) => {
+    if (event.target === overlay) closePopup();
+  };
+  
+  content.innerHTML = `
+    <div style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+      <i class="fa-solid fa-rocket" style="font-size: 2.5rem; color: var(--color-primary);"></i>
+    </div>
+    <h3 style="margin-bottom: 15px; font-size: 1.5rem; font-weight: 700; color: var(--text-main);">Coming Soon!</h3>
+    <p style="margin-bottom: 30px; font-size: 1.05rem; line-height: 1.6; color: var(--text-muted);">This section is not available in this version.</p>
+    <button class="btn btn-primary" style="width: 100%; padding: 12px; border-radius: 12px; font-size: 1.1rem; font-weight: 600; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); border: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; background: var(--color-primary); color: white;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(59, 130, 246, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'">Got it, thanks!</button>
+  `;
+  
+  if (!document.getElementById('v2-popup-styles')) {
+    const style = document.createElement('style');
+    style.id = 'v2-popup-styles';
+    style.innerHTML = `
+      @keyframes v2fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes v2fadeOut { from { opacity: 1; } to { opacity: 0; } }
+      @keyframes v2slideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+      @keyframes v2slideDown { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(20px) scale(0.95); } }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  content.appendChild(closeBtn);
+  content.querySelector('.btn-primary').onclick = closePopup;
+  overlay.appendChild(content);
+  document.body.appendChild(overlay);
+};

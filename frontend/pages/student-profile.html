@@ -31,36 +31,75 @@
       <div class="profile-detail-grid">
         <!-- Sidebar profile card -->
         <section class="glass-card profile-sidebar">
-          <img src="" alt="Student Avatar" class="student-card-avatar" id="profile-avatar" style="width: 120px; height: 120px;">
-          <div>
-            <h2 class="student-card-name" id="profile-name">Student Name</h2>
-            <p id="profile-id" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">ID: STU0000</p>
+          <div class="profile-header-main">
+            <img src="../assets/images/default-avatar.svg" alt="Student Avatar" class="student-card-avatar" id="profile-avatar" style="width: 120px; height: 120px; margin-bottom: 0;">
+            <div class="profile-name-section">
+              <h2 class="student-card-name" id="profile-name">Student Name</h2>
+              <p id="profile-id" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">ID: STU0000</p>
+            </div>
           </div>
 
-          <div style="width: 100%; border-top: 1px solid var(--border-color); padding-top: 20px; display: flex; flex-direction: column; gap: 12px; text-align: left; font-size: 0.9rem;">
-            <div>
-              <strong style="color: var(--text-muted);">Class:</strong> <span id="profile-class">-</span>
+          <div class="profile-details-grid">
+            <div class="detail-item">
+              <span class="detail-icon icon-blue"><i class="fa-solid fa-graduation-cap"></i></span>
+              <div class="detail-content">
+                <span class="detail-label">Class</span>
+                <span class="detail-value" id="profile-class">-</span>
+              </div>
             </div>
-            <div>
-              <strong style="color: var(--text-muted);">Batch:</strong> <span id="profile-batch">-</span>
+            <div class="detail-item">
+              <span class="detail-icon icon-indigo"><i class="fa-solid fa-clock"></i></span>
+              <div class="detail-content">
+                <span class="detail-label">Batch</span>
+                <span class="detail-value" id="profile-batch">-</span>
+              </div>
             </div>
-            <div>
-              <strong style="color: var(--text-muted);">WhatsApp:</strong> <span id="profile-whatsapp">-</span>
+            <div class="detail-item">
+              <span class="detail-icon icon-green"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i></span>
+              <div class="detail-content">
+                <span class="detail-label">WhatsApp</span>
+                <span class="detail-value" id="profile-whatsapp-container">
+                  <span id="profile-whatsapp">-</span>
+                  <a href="#" id="profile-whatsapp-link" target="_blank" class="detail-action-link" title="Chat on WhatsApp">
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                  </a>
+                </span>
+              </div>
             </div>
-            <div>
-              <strong style="color: var(--text-muted);">Parent:</strong> <span id="profile-parent">-</span>
+            <div class="detail-item">
+              <span class="detail-icon icon-pink"><i class="fa-solid fa-user-friends"></i></span>
+              <div class="detail-content">
+                <span class="detail-label">Parent</span>
+                <span class="detail-value" id="profile-parent">-</span>
+              </div>
             </div>
-            <div>
-              <strong style="color: var(--text-muted);">School:</strong> <span id="profile-school">-</span>
+            <div class="detail-item">
+              <span class="detail-icon icon-amber"><i class="fa-solid fa-school"></i></span>
+              <div class="detail-content">
+                <span class="detail-label">School</span>
+                <span class="detail-value" id="profile-school">-</span>
+              </div>
             </div>
-            <div>
-              <strong style="color: var(--text-muted);">Subjects:</strong> <span id="profile-subjects">-</span>
+            <div class="detail-item">
+              <span class="detail-icon icon-sky"><i class="fa-solid fa-calendar-day"></i></span>
+              <div class="detail-content">
+                <span class="detail-label">Admission</span>
+                <span class="detail-value" id="profile-admission">-</span>
+              </div>
             </div>
-            <div>
-              <strong style="color: var(--text-muted);">Admission:</strong> <span id="profile-admission">-</span>
+            <div class="detail-item">
+              <span class="detail-icon icon-purple"><i class="fa-solid fa-book-open"></i></span>
+              <div class="detail-content">
+                <span class="detail-label">Subjects</span>
+                <span class="detail-value" id="profile-subjects">-</span>
+              </div>
             </div>
-            <div>
-              <strong style="color: var(--text-muted);">Address:</strong> <span id="profile-address">-</span>
+            <div class="detail-item">
+              <span class="detail-icon icon-rose"><i class="fa-solid fa-location-dot"></i></span>
+              <div class="detail-content">
+                <span class="detail-label">Address</span>
+                <span class="detail-value" id="profile-address">-</span>
+              </div>
             </div>
           </div>
         </section>
@@ -91,6 +130,7 @@
             <div class="profile-main-tabs">
               <button class="tab-btn active" onclick="switchProfileTab('fees')">Fees Invoices</button>
               <button class="tab-btn" onclick="switchProfileTab('attendance')">Attendance History</button>
+              <button class="tab-btn" onclick="switchProfileTab('academic')">Academic Records</button>
             </div>
 
             <!-- Tab Content: Fees -->
@@ -132,6 +172,46 @@
                   <tbody id="profile-attendance-table">
                     <tr>
                       <td colspan="4" style="text-align: center; color: var(--text-muted);">No attendance entries recorded.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab Content: Academic Records -->
+            <div id="tab-content-academic" class="profile-tab-panel" style="display: none;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+                <div class="glass-card" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: rgba(37, 99, 235, 0.05); border: 1px solid var(--border-color);">
+                  <i class="fa-solid fa-award" style="font-size: 1.8rem; color: var(--color-primary);"></i>
+                  <div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Academic Average</p>
+                    <h3 style="font-size: 1.3rem; margin: 4px 0 0 0;" id="kpi-avg-score">0%</h3>
+                  </div>
+                </div>
+                <div class="glass-card" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: rgba(16, 185, 129, 0.05); border: 1px solid var(--border-color);">
+                  <i class="fa-solid fa-check-double" style="font-size: 1.8rem; color: #10b981;"></i>
+                  <div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Tests Taken</p>
+                    <h3 style="font-size: 1.3rem; margin: 4px 0 0 0;" id="kpi-tests-taken">0</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="table-container">
+                <table class="premium-table">
+                  <thead>
+                    <tr>
+                      <th class="wrap-cell">Exam/Test Name</th>
+                      <th>Subject</th>
+                      <th>Date</th>
+                      <th>Score</th>
+                      <th>Class Avg</th>
+                      <th>Performance</th>
+                      <th class="wrap-cell">Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody id="profile-academic-table">
+                    <tr>
+                      <td colspan="7" style="text-align: center; color: var(--text-muted);">No academic records found.</td>
                     </tr>
                   </tbody>
                 </table>

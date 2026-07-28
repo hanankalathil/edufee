@@ -6,8 +6,162 @@
   <title>Attendance - Techora EduFee</title>
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Custom Premium Segmented Pill Switch Styling */
+    .attendance-switch-container {
+      display: flex;
+      justify-content: center;
+    }
+
+    .attendance-switch {
+      display: flex;
+      position: relative;
+      background: rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 30px;
+      padding: 3px;
+      width: 200px;
+      user-select: none;
+      transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] .attendance-switch {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .attendance-switch-input {
+      display: none;
+    }
+
+    .attendance-switch-label {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 26px;
+      position: relative;
+      z-index: 1;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Present Active State */
+    .present-input:checked + .present-label {
+      color: #ffffff;
+      background-color: #10b981;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+    }
+
+    /* Absent Active State */
+    .absent-input:checked + .absent-label {
+      color: #ffffff;
+      background-color: #ef4444;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+    }
+
+    /* Hover effects when not checked */
+    .present-input:not(:checked) + .present-label:hover {
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .absent-input:not(:checked) + .absent-label:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    [data-theme="dark"] .present-input:not(:checked) + .present-label:hover {
+      background: rgba(16, 185, 129, 0.15);
+    }
+
+    [data-theme="dark"] .absent-input:not(:checked) + .absent-label:hover {
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    /* Premium Toast Styles */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .toast-notification {
+      background: var(--bg-card, #ffffff);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 14px 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: auto;
+      min-width: 300px;
+      max-width: 450px;
+    }
+
+    [data-theme="dark"] .toast-notification {
+      background: var(--bg-card, #1e1e2d);
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast-notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-notification.toast-success {
+      border-left: 4px solid #10b981;
+    }
+
+    .toast-notification.toast-error {
+      border-left: 4px solid #ef4444;
+    }
+
+    .toast-notification.toast-info {
+      border-left: 4px solid #3b82f6;
+    }
+
+    .toast-notification i {
+      font-size: 1.15rem;
+    }
+
+    .toast-notification .toast-msg {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-main);
+      flex-grow: 1;
+    }
+
+    .toast-notification .toast-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px;
+      font-size: 0.85rem;
+    }
+    
+    .toast-notification .toast-close:hover {
+      color: var(--text-main);
+    }
+  </style>
 </head>
 <body>
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
   <div id="app-container">
     <div id="sidebar-container"></div>
 
@@ -61,9 +215,63 @@
       <section class="glass-card" id="sheet-card" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
           <h3 class="section-title" style="margin-bottom: 0;">Attendance Checklist</h3>
-          <div style="display: flex; gap: 12px;">
+          <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <!-- Student Search Bar -->
+            <div style="position: relative; min-width: 240px;">
+              <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;"></i>
+              <input type="text" id="student-search" placeholder="Search by name or ID..." class="form-control" style="padding-left: 36px; padding-top: 8px; padding-bottom: 8px; font-size: 0.85rem; margin-bottom: 0; width: 100%;" oninput="filterStudents()">
+            </div>
             <button class="btn btn-secondary" onclick="markAllStatus('Present')">Mark All Present</button>
             <button class="btn btn-secondary" onclick="markAllStatus('Absent')">Mark All Absent</button>
+          </div>
+        </div>
+
+        <!-- Dynamic Statistics Cards Grid -->
+        <div id="attendance-stats-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px;">
+          <div class="stat-pill-card" style="background: rgba(59, 130, 246, 0.03); border: 1px solid rgba(59, 130, 246, 0.08); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;">
+            <div style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Students</div>
+              <div id="stat-total" style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">0</div>
+            </div>
+          </div>
+          
+          <div class="stat-pill-card" style="background: rgba(16, 185, 129, 0.03); border: 1px solid rgba(16, 185, 129, 0.08); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;">
+            <div style="background: rgba(16, 185, 129, 0.1); color: #10b981; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Present</div>
+              <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span id="stat-present" style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">0</span>
+                <span id="stat-present-pct" style="font-size: 0.8rem; font-weight: 600; color: #10b981;">(0%)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-pill-card" style="background: rgba(239, 68, 68, 0.03); border: 1px solid rgba(239, 68, 68, 0.08); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;">
+            <div style="background: rgba(239, 68, 68, 0.1); color: #ef4444; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+              <i class="fa-solid fa-user-xmark"></i>
+            </div>
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Absent</div>
+              <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span id="stat-absent" style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">0</span>
+                <span id="stat-absent-pct" style="font-size: 0.8rem; font-weight: 600; color: #ef4444;">(0%)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-pill-card" style="background: rgba(139, 92, 246, 0.03); border: 1px solid rgba(139, 92, 246, 0.08); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;">
+            <div style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Avg Attendance Rate</div>
+              <div id="stat-avg-rate" style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">0%</div>
+            </div>
           </div>
         </div>
 
@@ -83,7 +291,10 @@
           </table>
         </div>
 
-        <div style="display: flex; justify-content: flex-end;">
+        <div style="display: flex; justify-content: flex-end; gap: 12px;">
+          <button class="btn btn-whatsapp" id="share-whatsapp-btn" onclick="shareAttendanceWhatsapp()">
+            <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Share on WhatsApp Group
+          </button>
           <button class="btn btn-primary" id="save-attendance-btn" onclick="saveAttendance()">
             <i class="fa-regular fa-floppy-disk"></i> Save Attendance Sheet
           </button>

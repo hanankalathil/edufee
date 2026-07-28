@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initRemindersCenter();
   }
 
-  if (currentPath.endsWith('whatsapp-settings.html')) {
+  if (currentPath.endsWith('whatsapp-settings.html') || currentPath.endsWith('settings.html')) {
     initWhatsappSettings();
   }
 });

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Educational Details - Techora EduFee</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .batch-pill-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .batch-pill-checkbox:hover {
+      border-color: var(--color-primary);
+      background: var(--bg-surface);
+    }
+    .batch-pill-checkbox input:checked + span {
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+    .batch-pill-checkbox:has(input:checked) {
+      border-color: var(--color-primary);
+      background: rgba(43, 90, 246, 0.05); /* very light primary */
+    }
+    .edu-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+    .edu-tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 12px;
+      transition: all 0.25s ease;
+    }
+    .edu-tab-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-main);
+    }
+    .edu-tab-btn.active {
+      background: var(--color-primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .selector-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .form-control-compact {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      box-sizing: border-box;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .form-control-compact:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .student-marks-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.2s;
+    }
+    .student-marks-row:hover {
+      background: var(--bg-hover);
+    }
+    .student-info-col {
+      flex: 2;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .student-avatar-small {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-primary) 0%, #1d4ed8 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .marks-input-col {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .remarks-input-col {
+      flex: 2;
+    }
+    .max-marks-label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .roster-actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .roster-actions-left, .roster-actions-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .progress-pill {
+      background: var(--bg-hover);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .progress-pill i {
+      color: var(--color-primary);
+    }
+    .page-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-body);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .page-btn:hover:not(:disabled) {
+      background: var(--bg-hover);
+      border-color: var(--color-primary);
+    }
+    .page-btn.active {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+    .page-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Educational Details</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Record exam marks, class tests, and track academic performance.</p>
+        </div>
+      </header>
+
+      <!-- Tabs Navigation -->
+      <nav class="edu-tabs">
+        <button class="edu-tab-btn active" onclick="switchEduTab('enter-marks')">
+          <i class="fa-solid fa-pen-to-square"></i> Enter Marks
+        </button>
+        <button class="edu-tab-btn" onclick="switchEduTab('manage-tests')">
+          <i class="fa-solid fa-list-check"></i> Manage Tests
+        </button>
+        <button class="edu-tab-btn" onclick="switchEduTab('gradebook')">
+          <i class="fa-solid fa-chart-bar"></i> Gradebook
+        </button>
+      </nav>
+
+      <!-- Tab Content: Enter Marks -->
+      <section id="tab-enter-marks" class="tab-panel active">
+        <div class="glass-card" style="margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 class="section-title" style="margin: 0;">Test & Batch Selectors</h3>
+            <button type="button" class="btn btn-primary" onclick="switchEduTab('manage-tests'); openNewTestModal()" style="padding: 10px 20px; border-radius: 12px; font-weight: 600; font-size: 0.9rem;" title="Create New Test Profile">
+              <i class="fa-solid fa-plus" style="margin-right: 8px;"></i> Create New Test
+            </button>
+          </div>
+          <div class="selector-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="form-group" style="margin: 0;">
+              <label for="marks-batch" class="form-label"><span style="color:var(--color-primary); font-weight: bold;">1.</span> Batch</label>
+              <select id="marks-batch" class="form-control">
+                <option value="">Select Batch...</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin: 0;">
+              <label for="marks-test" class="form-label"><span style="color:var(--color-primary); font-weight: bold;">2.</span> Exam / Test Profile</label>
+              <select id="marks-test" class="form-control" disabled>
+                <option value="">Select Test / Exam...</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin: 0;">
+              <label for="marks-subject" class="form-label"><span style="color:var(--color-primary); font-weight: bold;">3.</span> Subject</label>
+              <select id="marks-subject" class="form-control" disabled>
+                <option value="">Select Subject...</option>
+                <!-- Dynamically populated from selected test's subjects -->
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <!-- Roster Control / Actions Bar -->
+          <div class="roster-actions-bar" id="roster-actions-bar" style="display: none;">
+            <div class="roster-actions-left">
+              <h3 class="section-title" id="roster-title" style="margin: 0;">Student Roster</h3>
+              <div class="progress-pill" id="roster-progress-pill">
+                <i class="fa-solid fa-circle-check"></i>
+                <span id="roster-progress-text">0 / 0 Entered</span>
+              </div>
+              <span class="max-marks-label" id="max-marks-badge" style="font-weight: 600; padding: 6px 12px; border-radius: 20px; background: rgba(37, 99, 235, 0.1); color: var(--color-primary);">Max Marks: -</span>
+            </div>
+            
+            <div class="roster-actions-right">
+              <!-- Search Bar -->
+              <div style="position: relative; margin-right: 8px;">
+                <i class="fa-solid fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem;"></i>
+                <input type="text" id="roster-search-input" class="form-control-compact" placeholder="Search student name or ID..." style="padding-left: 32px; width: 220px;" oninput="filterRoster()">
+              </div>
+              <!-- Quick Utilities -->
+              <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 0.85rem;" onclick="quickFillZero()" title="Fill empty marks with 0">
+                <i class="fa-solid fa-fill-drip"></i> Fill Empty with 0
+              </button>
+              <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 0.85rem;" onclick="clearAllRosterMarks()" title="Reset all score fields">
+                <i class="fa-solid fa-arrows-rotate"></i> Clear All
+              </button>
+              
+              <!-- Divider -->
+              <span style="width: 1px; height: 24px; background: var(--border-color); margin: 0 4px;"></span>
+
+              <!-- Bulk Upload Buttons -->
+              <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 0.85rem; background: var(--bg-hover);" onclick="downloadCSVTemplate()" title="Download roster template CSV file">
+                <i class="fa-solid fa-download"></i> Get CSV Template
+              </button>
+              
+              <button class="btn btn-primary" style="padding: 8px 14px; font-size: 0.85rem;" onclick="openCSVUploadModal()" title="Upload CSV file with marks">
+                <i class="fa-solid fa-file-csv"></i> Bulk Upload CSV
+              </button>
+            </div>
+          </div>
+          
+          <div id="roster-container" style="display: flex; flex-direction: column;">
+            <p style="text-align: center; color: var(--text-muted); padding: 40px;" id="roster-placeholder">Select Class, Batch, Subject, and Test to view students.</p>
+          </div>
+
+          <div id="roster-pagination-container" style="display: none; justify-content: space-between; align-items: center; padding: 16px 20px; border-top: 1px solid var(--border-color); background: var(--bg-body); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; margin-top: -1px;">
+            <div id="roster-pagination-info" style="font-size: 0.9rem; color: var(--text-muted);">
+              Showing 0 to 0 of 0 entries
+            </div>
+            <div id="roster-pagination-controls" style="display: flex; gap: 8px;">
+              <!-- Pagination buttons -->
+            </div>
+          </div>
+
+          <div id="save-marks-container" style="margin-top: 24px; display: none; justify-content: flex-end; gap: 16px;">
+            <button class="btn btn-secondary" onclick="resetRoster()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveRosterMarks()">Save Student Marks</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab Content: Manage Tests -->
+      <section id="tab-manage-tests" class="tab-panel">
+        <div class="glass-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 class="section-title" style="margin-bottom: 0;">Scheduled Exams & Class Tests</h3>
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <div style="position: relative;">
+                <i class="fa-solid fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem;"></i>
+                <input type="text" id="manage-tests-search" class="form-control-compact" placeholder="Search test name, class, or subject..." style="padding-left: 32px; width: 280px;" oninput="renderManageTests()">
+              </div>
+              <button class="btn btn-primary" onclick="openNewTestModal()">
+                <i class="fa-solid fa-plus"></i> Create New Test
+              </button>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th>Test / Exam Name</th>
+                  <th>Class / Batch</th>
+                  <th>Subject</th>
+                  <th>Max Marks</th>
+                  <th>Exam Date</th>
+                  <th>Class Avg</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tests-table-body">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted);">Loading tests...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab Content: Gradebook -->
+      <section id="tab-gradebook" class="tab-panel">
+        <div class="glass-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
+            <h3 class="section-title" style="margin-bottom: 0;">Student Gradebook Overview</h3>
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: nowrap; justify-content: flex-end;">
+              <div style="min-width: 180px;">
+                <select id="gradebook-batch" class="form-control" onchange="renderGradebook()">
+                  <option value="">All Batches</option>
+                </select>
+              </div>
+              <div class="search-container" style="max-width: 300px; width: 100%; min-width: 200px;">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" class="search-input" id="gradebook-search" placeholder="Search students...">
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th>Student Name</th>
+                  <th>Student ID</th>
+                  <th>Class</th>
+                  <th>Batch</th>
+                  <th>Tests Attended</th>
+                  <th>Average Score (%)</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="gradebook-table-body">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted);">Loading student data...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div id="gradebook-pagination-container" style="display: none; justify-content: space-between; align-items: center; padding: 16px 20px; border-top: 1px solid var(--border-color); background: var(--bg-body); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; margin-top: -1px;">
+            <div id="gradebook-pagination-info" style="font-size: 0.9rem; color: var(--text-muted);">
+              Showing 0 to 0 of 0 entries
+            </div>
+            <div id="gradebook-pagination-controls" style="display: flex; gap: 8px;">
+              <!-- Pagination buttons -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p>Powered by <a href="https://techora.in" class="footer-brand" target="_blank">Techora</a></p>
+        <p>&copy; 2026 Techora. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Create New Test Modal -->
+  <div class="modal-overlay" id="new-test-modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h3 class="section-title" id="modal-title" style="margin-bottom: 0;">Create Test Profile</h3>
+        <button class="btn btn-secondary" onclick="closeNewTestModal()" style="border: none; padding: 4px 8px; cursor: pointer;">
+          <i class="fa-solid fa-xmark" style="font-size: 1.2rem;"></i>
+        </button>
+      </div>
+      <form id="new-test-form">
+        <input type="hidden" id="modal-test-id">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <!-- Left Column -->
+          <div>
+            <div class="form-group">
+              <label for="new-test-name" class="form-label">Test / Exam Name *</label>
+              <input type="text" id="new-test-name" class="form-control-compact" placeholder="e.g. Algebra Unit Test, Mid Term" required>
+            </div>
+            <div class="form-group">
+              <label for="new-test-class" class="form-label">Class *</label>
+              <select id="new-test-class" class="form-control" required onchange="window.handleNewTestClassChange()">
+                <option value="">Select Class...</option>
+                <option value="Class 8">Class 8</option>
+                <option value="Class 9">Class 9</option>
+                <option value="Class 10">Class 10</option>
+                <option value="Plus One Science">Plus One Science</option>
+                <option value="Plus One Commerce">Plus One Commerce</option>
+                <option value="Plus One Humanities">Plus One Humanities</option>
+                <option value="Plus Two Science">Plus Two Science</option>
+                <option value="Plus Two Commerce">Plus Two Commerce</option>
+                <option value="Plus Two Humanities">Plus Two Humanities</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="new-test-date" class="form-label">Exam Date *</label>
+              <input type="date" id="new-test-date" class="form-control-compact" required>
+            </div>
+          </div>
+          <!-- Right Column -->
+          <div style="display: flex; flex-direction: column;">
+            <div class="form-group" style="flex: 1; display: flex; flex-direction: column; margin-bottom: 0;">
+              <label class="form-label">Select Batches *</label>
+              <div id="new-test-batch-container" style="flex: 1; display: flex; align-content: flex-start; flex-wrap: wrap; gap: 8px; max-height: 200px; overflow-y: auto; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-surface); min-height: 120px;">
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">Please select a class first.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Default Single Subject and Max Marks Group -->
+        <div id="single-subject-group" style="margin-top: 16px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="new-test-subject" class="form-label">Subject *</label>
+              <select id="new-test-subject" class="form-control">
+                <option value="">Select Subject...</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Biology">Biology</option>
+                <option value="Science">Science</option>
+                <option value="English">English</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Accountancy">Accountancy</option>
+                <option value="Business Studies">Business Studies</option>
+                <option value="Economics">Economics</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="new-test-max-marks" class="form-label">Max Marks *</label>
+              <input type="number" id="new-test-max-marks" class="form-control-compact" min="1" max="1000" placeholder="e.g. 50, 100">
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Multi-Subject Group -->
+        <div id="multi-subject-group" style="display: none; margin-top: 16px;">
+          <label class="form-label" style="font-weight: 600; margin-bottom: 8px; display: block;">Select Exam Subjects & Max Marks</label>
+          <div id="multi-subject-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 180px; overflow-y: auto; padding: 10px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-secondary);">
+            <!-- filled dynamically -->
+          </div>
+        </div>
+
+        <div style="margin-top: 32px; display: flex; justify-content: flex-end; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+          <button type="button" class="btn btn-secondary" onclick="closeNewTestModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="save-test-btn" style="min-width: 140px;">Create Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="delete-confirm-modal">
+    <div class="modal-content" style="max-width: 400px; text-align: center; padding: 32px 24px;">
+      <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 20px;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 style="margin-bottom: 12px; font-size: 1.25rem;">Delete Test Profile?</h3>
+      <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 0.95rem; line-height: 1.5;">Are you sure you want to permanently delete this test record and all entered marks? This action cannot be undone.</p>
+      
+      <input type="hidden" id="delete-test-id" value="">
+      
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button type="button" class="btn btn-secondary" onclick="closeDeleteConfirmModal()" style="flex: 1;">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm-delete-test-btn" onclick="confirmDeleteTest()" style="flex: 1; background: #ef4444; border-color: #ef4444; color: white;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CSV Upload Modal -->
+  <div class="modal-overlay" id="csv-upload-modal">
+    <div class="modal-content" style="max-width: 900px; padding: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h3 class="section-title" style="margin-bottom: 0;">Upload CSV Data</h3>
+        <button class="btn btn-secondary" onclick="closeCSVUploadModal()" style="border: none; padding: 4px 8px; cursor: pointer;">
+          <i class="fa-solid fa-xmark" style="font-size: 1.2rem;"></i>
+        </button>
+      </div>
+
+      <div style="margin-bottom: 20px; display: flex; gap: 16px; align-items: center;">
+        <div style="flex: 1; border: 2px dashed var(--border-color); padding: 24px; border-radius: 12px; text-align: center; background: var(--bg-surface); cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('csv-file-input').click()" id="csv-drop-zone">
+          <i class="fa-solid fa-file-csv" style="font-size: 2rem; color: var(--color-primary); margin-bottom: 12px;"></i>
+          <h4 style="margin: 0 0 8px 0;">Click to select CSV file</h4>
+          <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">or drag and drop your file here</p>
+          <input type="file" id="csv-file-input" style="display: none;" accept=".csv" onchange="handleCSVUpload(event)">
+        </div>
+      </div>
+
+      <!-- Preview Section -->
+      <div id="csv-preview-section" style="display: none;">
+        <h4 style="margin-bottom: 12px; font-size: 1.05rem;">Preview & Validation</h4>
+        <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 24px;">
+          <table class="premium-table" style="margin: 0;">
+            <thead id="csv-preview-thead">
+              <!-- dynamically populated -->
+            </thead>
+            <tbody id="csv-preview-tbody">
+              <!-- dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+        
+        <div style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+          <button type="button" class="btn btn-secondary" onclick="closeCSVUploadModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" id="apply-csv-btn" onclick="applyCSVToRoster()" style="min-width: 140px;">Apply Valid Marks</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/educational-details.js"></script>
+</body>
+</html>

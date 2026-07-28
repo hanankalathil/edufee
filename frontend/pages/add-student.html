@@ -26,7 +26,7 @@
       <section class="glass-card">
         <form id="student-form" enctype="multipart/form-data">
           <div class="photo-upload-container" style="margin-bottom: 32px; border-bottom: 1px solid var(--border-color); padding-bottom: 24px;">
-            <img src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809" alt="Preview" class="photo-preview" id="upload-preview">
+            <img src="../assets/images/default-avatar.svg" alt="Preview" class="photo-preview" id="upload-preview">
             <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
               <span class="form-label">Profile Photo <span style="font-weight: normal; color: var(--text-muted); font-size: 0.8rem;">(Optional)</span></span>
               
@@ -82,14 +82,16 @@
                 </div>
 
                 <div class="form-group">
+                  <label for="batch" class="form-label">Batch *</label>
+                  <select id="batch" name="batch" class="form-control" required>
+                    <option value="">Loading batches...</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
                   <label for="class" class="form-label">Class *</label>
-                  <select id="class" name="class" class="form-control" required>
-                    <option value="">Select Class...</option>
-                    <option value="Class 8">Class 8</option>
-                    <option value="Class 9">Class 9</option>
-                    <option value="Class 10">Class 10</option>
-                    <option value="Plus One">Plus One</option>
-                    <option value="Plus Two">Plus Two</option>
+                  <select id="class" name="class" class="form-control" required disabled>
+                    <option value="">Select Batch First...</option>
                   </select>
                 </div>
 
@@ -100,13 +102,6 @@
                     <option value="Science">Science</option>
                     <option value="Commerce">Commerce</option>
                     <option value="Humanities">Humanities</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="batch" class="form-label">Batch *</label>
-                  <select id="batch" name="batch" class="form-control" required>
-                    <option value="">Loading batches...</option>
                   </select>
                 </div>
 
