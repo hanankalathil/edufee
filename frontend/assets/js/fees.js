@@ -147,12 +147,14 @@ async function initFeesPage() {
   if (feeTypeInput && customDropdown) {
     const dropdownItems = customDropdown.querySelectorAll('.dropdown-item');
 
-    feeTypeInput.addEventListener('focus', () => {
-      customDropdown.classList.add('show');
-    });
-
     feeTypeInput.addEventListener('input', () => {
       const filter = feeTypeInput.value.toLowerCase();
+      
+      if (!filter) {
+        customDropdown.classList.remove('show');
+        return;
+      }
+
       let hasVisible = false;
       dropdownItems.forEach(item => {
         if (item.textContent.toLowerCase().includes(filter)) {
