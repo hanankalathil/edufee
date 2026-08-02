@@ -6,7 +6,7 @@
   <title>Dashboard - Techora EduFee</title>
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="../assets/css/dashboard.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
 </head>
 <body>
   <div id="app-container">
@@ -85,23 +85,23 @@
         <section class="glass-card actions-container">
           <h3 class="section-title">Quick Actions</h3>
           <div class="actions-grid">
-            <button onclick="window.location.href='add-student.html'" class="action-btn">
-              <i class="fa-solid fa-user-plus"></i> Add Student
+            <button onclick="window.location.href='add-student.html'" class="action-btn" style="background-color: #3b82f6; border: none; color: white;">
+              <i class="fa-solid fa-user-plus" style="color: white;"></i> Add Student
             </button>
-            <button onclick="window.location.href='fees.html'" class="action-btn">
-              <i class="fa-solid fa-money-check-dollar"></i> Collect Fee
+            <button onclick="window.location.href='fees.html'" class="action-btn" style="background-color: #10b981; border: none; color: white;">
+              <i class="fa-solid fa-money-check-dollar" style="color: white;"></i> Collect Fee
             </button>
-            <button onclick="window.location.href='attendance.html'" class="action-btn">
-              <i class="fa-solid fa-clipboard-user"></i> Attendance
+            <button onclick="window.location.href='attendance.html'" class="action-btn" style="background-color: #f59e0b; border: none; color: white;">
+              <i class="fa-solid fa-clipboard-user" style="color: white;"></i> Attendance
             </button>
-            <button onclick="window.location.href='educational-details.html'" class="action-btn">
-              <i class="fa-solid fa-book-open"></i> Enter Marks
+            <button onclick="window.location.href='reminders.html'" class="action-btn" style="background-color: #8b5cf6; border: none; color: white;">
+              <i class="fa-solid fa-bell" style="color: white;"></i> Send Reminders
             </button>
-            <button onclick="window.location.href='reminders.html'" class="action-btn">
-              <i class="fa-solid fa-bell"></i> Send Reminders
+            <button onclick="window.location.href='batches.html'" class="action-btn" style="background-color: #14b8a6; border: none; color: white;">
+              <i class="fa-solid fa-layer-group" style="color: white;"></i> Add Batches
             </button>
-            <button onclick="window.location.href='batches.html'" class="action-btn">
-              <i class="fa-solid fa-layer-group"></i> Add Batches
+            <button onclick="window.location.href='whatsapp.html'" class="action-btn" style="background-color: #25D366; border: none; color: white;">
+              <i class="fa-brands fa-whatsapp" style="color: white;"></i> WhatsApp
             </button>
           </div>
         </section>
@@ -191,12 +191,12 @@
               <div class="cp-item-desc">Mark daily attendance</div>
             </div>
           </div>
-          <div class="cp-item" data-tags="all academics" onclick="window.location.href='educational-details.html'">
+          <div class="cp-item" data-tags="all academics" onclick="showV2Popup(event)">
             <div class="cp-item-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
               <i class="fa-solid fa-book-open"></i>
             </div>
             <div class="cp-item-text">
-              <div class="cp-item-title">Enter Marks</div>
+              <div class="cp-item-title">Enter Marks <span style="margin-left: 8px; background: var(--color-primary, #2563eb); color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; line-height: 1;">V2</span></div>
               <div class="cp-item-desc">Record student exam marks</div>
             </div>
           </div>

@@ -183,7 +183,7 @@ const setLocalStorageJson = (key, val) => {
 
 // Initialize Mock Data if it doesn't exist
 const initializeMockDB = () => {
-  const CURRENT_MOCK_VERSION = "v5";
+  const CURRENT_MOCK_VERSION = "v6";
   if (localStorage.getItem('mock_version') !== CURRENT_MOCK_VERSION) {
     localStorage.removeItem('students');
     localStorage.removeItem('fees');
@@ -518,7 +518,7 @@ const initializeMockDB = () => {
         paidAmount: 2800,
         dueAmount: 0,
         status: "Paid",
-        dueDate: "2026-07-10T00:00:00.000Z",
+        dueDate: "2026-08-02T00:00:00.000Z",
         paymentHistory: [
           {
             _id: "pay1_1",
@@ -542,7 +542,7 @@ const initializeMockDB = () => {
         paidAmount: 2000,
         dueAmount: 2100,
         status: "Partial",
-        dueDate: "2026-07-10T00:00:00.000Z",
+        dueDate: "2026-08-02T00:00:00.000Z",
         paymentHistory: [
           {
             _id: "pay2_1",
@@ -566,7 +566,7 @@ const initializeMockDB = () => {
         paidAmount: 0,
         dueAmount: 2650,
         status: "Overdue",
-        dueDate: "2026-07-05T00:00:00.000Z",
+        dueDate: "2026-08-03T00:00:00.000Z",
         paymentHistory: []
       },
       {
@@ -605,7 +605,7 @@ const initializeMockDB = () => {
         paidAmount: 0,
         dueAmount: 3000,
         status: "Pending",
-        dueDate: "2026-07-25T00:00:00.000Z",
+        dueDate: "2026-08-02T00:00:00.000Z",
         paymentHistory: []
       },
       {
@@ -755,7 +755,7 @@ const initializeMockDB = () => {
         paidAmount: 0,
         dueAmount: 4200,
         status: "Overdue",
-        dueDate: "2026-07-05T00:00:00.000Z",
+        dueDate: "2026-08-03T00:00:00.000Z",
         paymentHistory: []
       },
       {
@@ -1652,7 +1652,65 @@ const api = {
   },
 
   downloadReceipt: async (feeId, paymentId = '') => {
-    window.open(`receipt-preview.html?feeId=${feeId}&paymentId=${paymentId}`, '_blank');
+    // Create modal overlay
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 999999; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s;';
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = 'background: #fff; border-radius: 16px; width: 100%; max-width: 750px; position: relative; transform: scale(0.95) translateY(20px); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); height: 85vh; max-height: 800px;';
+    
+    // Header
+    const header = document.createElement('div');
+    header.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; border-radius: 16px 16px 0 0; flex-shrink: 0;';
+    header.innerHTML = `
+      <h3 style="margin: 0; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; color: #0f172a;">Receipt Preview</h3>
+      <div style="display: flex; gap: 8px;">
+        <button id="modal-print-btn" style="background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: background 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'"><i class="fa-solid fa-print"></i> Print</button>
+        <button id="modal-close-btn" style="background: transparent; color: #64748b; border: none; padding: 8px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: color 0.2s;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    `;
+    
+    // Iframe container
+    const iframeContainer = document.createElement('div');
+    iframeContainer.style.cssText = 'flex: 1; padding: 0; border-radius: 0 0 16px 16px; overflow: hidden; position: relative; background: #f1f5f9;';
+    
+    // We adjust the path. If we are in /pages/, we don't need 'pages/'. 
+    // api.js is loaded from various places, so we use absolute path from root or relative to window.location
+    const basePath = window.location.pathname.includes('/pages/') ? '' : 'pages/';
+    
+    iframeContainer.innerHTML = `
+      <iframe id="receipt-iframe" src="${basePath}receipt-preview.html?feeId=${feeId}&paymentId=${paymentId}&modal=true" style="width: 100%; height: 100%; border: none; background: transparent;"></iframe>
+    `;
+    
+    modal.appendChild(header);
+    modal.appendChild(iframeContainer);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    // Animate in
+    requestAnimationFrame(() => {
+      overlay.style.opacity = '1';
+      modal.style.transform = 'scale(1) translateY(0)';
+    });
+    
+    const closeBtn = header.querySelector('#modal-close-btn');
+    const printBtn = header.querySelector('#modal-print-btn');
+    const iframe = iframeContainer.querySelector('#receipt-iframe');
+    
+    const closeModal = () => {
+      overlay.style.opacity = '0';
+      modal.style.transform = 'scale(0.95) translateY(20px)';
+      setTimeout(() => overlay.remove(), 300);
+    };
+    
+    closeBtn.onclick = closeModal;
+    overlay.onclick = (e) => { if(e.target === overlay) closeModal(); };
+    
+    printBtn.onclick = () => {
+      if (iframe.contentWindow) {
+        iframe.contentWindow.print();
+      }
+    };
   },
 
   // Attendance
@@ -2518,24 +2576,32 @@ function renderLayout() {
           <li class="nav-item ${currentPath.includes('attendance.html') ? 'active' : ''}">
             <a href="attendance.html"><i class="fa-solid fa-calendar-check"></i> <span>Attendance</span></a>
           </li>
-          <li class="nav-item ${currentPath.includes('educational-details.html') ? 'active' : ''}">
-            <a href="educational-details.html"><i class="fa-solid fa-book-open"></i> <span>Edu Details</span></a>
-          </li>
-          <li class="nav-item ${currentPath.includes('timetable.html') ? 'active' : ''}">
-            <a href="#" onclick="showV2Popup(event)"><i class="fa-solid fa-calendar-days"></i> <span>Timetable</span> <span style="margin-left: 8px; background: var(--color-primary, #2563eb); color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; line-height: 1;">V2</span></a>
-          </li>
           <li class="nav-item ${currentPath.includes('reminders.html') ? 'active' : ''}">
             <a href="reminders.html"><i class="fa-solid fa-paper-plane"></i> <span>Reminders</span></a>
           </li>
           <li class="nav-item ${currentPath.includes('reports.html') ? 'active' : ''}">
             <a href="reports.html"><i class="fa-solid fa-chart-line"></i> <span>Reports</span></a>
           </li>
-          <li class="nav-item ${currentPath.includes('analytics.html') ? 'active' : ''}">
-            <a href="#" onclick="showV2Popup(event)"><i class="fa-solid fa-chart-column"></i> <span>Analytics</span> <span style="margin-left: 8px; background: var(--color-primary, #2563eb); color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; line-height: 1;">V2</span></a>
-          </li>
           <li class="nav-item ${currentPath.includes('settings.html') ? 'active' : ''}">
             <a href="settings.html"><i class="fa-solid fa-sliders"></i> <span>Settings</span></a>
           </li>
+          <li class="nav-item">
+            <a href="#" onclick="window.toggleV2Submenu(event)">
+              <i class="fa-solid fa-flask"></i> <span>V2 Features</span>
+              <i class="fa-solid fa-chevron-down v2-chevron" id="v2-submenu-icon" style="transition: transform 0.3s; font-size: 0.8rem; margin-left: auto;"></i>
+            </a>
+          </li>
+          <div id="v2-submenu" style="display: none; padding-left: 15px; margin-top: 4px;">
+            <li class="nav-item ${currentPath.includes('educational-details.html') ? 'active' : ''}">
+              <a href="#" onclick="showV2Popup(event)"><i class="fa-solid fa-book-open"></i> <span>Edu Details</span></a>
+            </li>
+            <li class="nav-item ${currentPath.includes('timetable.html') ? 'active' : ''}">
+              <a href="#" onclick="showV2Popup(event)"><i class="fa-solid fa-calendar-days"></i> <span>Timetable</span></a>
+            </li>
+            <li class="nav-item ${currentPath.includes('analytics.html') ? 'active' : ''}">
+              <a href="#" onclick="showV2Popup(event)"><i class="fa-solid fa-chart-column"></i> <span>Analytics</span></a>
+            </li>
+          </div>
         </ul>
 
         <div class="sidebar-footer">
@@ -2716,6 +2782,19 @@ if (document.readyState === 'loading') {
   setupModalObserver();
 }
 
+window.toggleV2Submenu = function(e) {
+  e.preventDefault();
+  const submenu = document.getElementById('v2-submenu');
+  const icon = document.getElementById('v2-submenu-icon');
+  if (submenu.style.display === 'none') {
+    submenu.style.display = 'block';
+    if(icon) icon.style.transform = 'rotate(180deg)';
+  } else {
+    submenu.style.display = 'none';
+    if(icon) icon.style.transform = 'rotate(0deg)';
+  }
+};
+
 window.showV2Popup = function(e) {
   if (e) e.preventDefault();
   
@@ -2725,7 +2804,7 @@ window.showV2Popup = function(e) {
   
   const content = document.createElement('div');
   content.style.cssText = 'background: var(--bg-secondary); padding: 40px; border-radius: 20px; max-width: 450px; width: 90%; text-align: center; box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); position: relative; animation: v2slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: var(--text-main);';
-  
+
   document.body.style.overflow = 'hidden';
   
   const closeBtn = document.createElement('button');

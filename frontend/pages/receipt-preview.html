@@ -6,7 +6,7 @@
   <title>Receipt Preview - Techora EduFee</title>
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="../assets/css/fees.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
   <style>
     body {
       background: var(--bg-primary);
@@ -172,6 +172,16 @@
       const urlParams = new URLSearchParams(window.location.search);
       const feeId = urlParams.get('feeId');
       const paymentId = urlParams.get('paymentId');
+      const isModal = urlParams.get('modal') === 'true';
+
+      if (isModal) {
+        document.querySelector('.no-print').style.display = 'none';
+        document.body.style.padding = '20px';
+        document.body.style.background = 'transparent';
+        document.querySelector('.receipt-container').style.boxShadow = 'none';
+        document.querySelector('.receipt-container').style.border = 'none';
+        document.querySelector('.receipt-container').style.margin = '0 auto';
+      }
 
       if (feeId) {
         loadReceiptPreviewData(feeId, paymentId);

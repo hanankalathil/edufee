@@ -80,32 +80,32 @@ function renderStudentCards(students) {
     const img = s.photo || '../assets/images/default-avatar.svg';
     
     return `
-      <tr style="border-bottom: 1px solid #e5e7eb; background: white; transition: background 0.15s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
-        <td style="padding: 16px 20px; font-size: 0.875rem; font-weight: 700; color: #111827;">${s.studentId}</td>
-        <td style="padding: 16px 20px; font-size: 0.875rem; color: #374151; font-weight: 500;">
+      <tr>
+        <td style="font-weight: 700;">${s.studentId}</td>
+        <td>
           <div style="display: flex; align-items: center; gap: 12px;">
             <img src="${img}" alt="${s.name}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
             <span>${s.name}</span>
           </div>
         </td>
-        <td style="padding: 16px 20px; font-size: 0.875rem; color: #374151;">
+        <td>
           <div style="font-weight: 500;">${s.class}</div>
-          <div style="font-size: 0.75rem; color: #6b7280; margin-top: 4px;">${s.batch}</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">${s.batch}</div>
         </td>
-        <td style="padding: 16px 20px; font-size: 0.875rem; color: #374151;">
+        <td>
           <div style="font-weight: 500;">${s.parentName || 'N/A'}</div>
-          <div style="font-size: 0.75rem; color: #2563eb; font-weight: 500; margin-top: 4px;">${s.whatsappNumber || 'N/A'}</div>
+          <div style="font-size: 0.75rem; color: var(--color-primary); font-weight: 500; margin-top: 4px;">${s.whatsappNumber || 'N/A'}</div>
         </td>
-        <td style="padding: 16px 20px; font-size: 0.875rem; color: #374151;">${admDate}</td>
-        <td style="padding: 16px 20px; text-align: right;">
+        <td>${admDate}</td>
+        <td style="text-align: right;">
           <div style="display: flex; gap: 8px; justify-content: flex-end;">
-            <button title="View Details" style="width: 32px; height: 32px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; color: #6b7280; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#9ca3af'; this.style.color='#374151';" onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280';" onclick="window.location.href='student-profile.html?id=${s._id}'">
+            <button class="btn btn-secondary" title="View Details" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" onclick="window.location.href='student-profile.html?id=${s._id}'">
               <i class="fa-regular fa-eye" style="font-size: 0.875rem;"></i>
             </button>
-            <button title="Edit Student" style="width: 32px; height: 32px; border: 1px solid #d1fae5; border-radius: 6px; background: white; color: #10b981; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#10b981'" onmouseout="this.style.borderColor='#d1fae5'" onclick="window.location.href='add-student.html?id=${s._id}'">
+            <button class="btn btn-secondary" title="Edit Student" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; color: #10b981;" onclick="window.location.href='add-student.html?id=${s._id}'">
               <i class="fa-solid fa-pencil" style="font-size: 0.875rem;"></i>
             </button>
-            <button title="Delete Student" style="width: 32px; height: 32px; border: 1px solid #fee2e2; border-radius: 6px; background: white; color: #ef4444; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#ef4444'" onmouseout="this.style.borderColor='#fee2e2'" onclick="deleteStudent('${s._id}')">
+            <button class="btn btn-secondary" title="Delete Student" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; color: #ef4444;" onclick="deleteStudent('${s._id}')">
               <i class="fa-regular fa-trash-can" style="font-size: 0.875rem;"></i>
             </button>
           </div>
@@ -393,12 +393,34 @@ async function initStudentProfilePage() {
     document.getElementById('profile-parent').textContent = s.parentName;
     document.getElementById('profile-school').textContent = s.school || 'N/A';
     let subjectText = 'N/A';
+    const subjectsEl = document.getElementById('profile-subjects');
+    const subjectsContainer = subjectsEl.closest('.detail-item');
+    
+    // Reset defaults
+    subjectsContainer.onclick = null;
+    subjectsContainer.style.cursor = 'default';
+    subjectsContainer.title = '';
+
     if (s.subjects && s.subjects.length > 3) {
-      subjectText = s.subjects.slice(0, 3).join(', ') + `, +${s.subjects.length - 3} more`;
+      const shortText = s.subjects.slice(0, 3).join(', ') + `, <span style="color: var(--color-primary); font-weight: 600;">+${s.subjects.length - 3} more</span>`;
+      const fullText = s.subjects.join(', ') + ` <span style="color: var(--color-primary); font-weight: 600; font-size: 0.85em; margin-left: 4px;">(Show less)</span>`;
+      
+      let isExpanded = false;
+      subjectsEl.innerHTML = shortText;
+      
+      subjectsContainer.style.cursor = 'pointer';
+      subjectsContainer.title = "Click to toggle all subjects";
+      
+      subjectsContainer.onclick = () => {
+        isExpanded = !isExpanded;
+        subjectsEl.innerHTML = isExpanded ? fullText : shortText;
+      };
     } else if (s.subjects && s.subjects.length > 0) {
       subjectText = s.subjects.join(', ');
+      subjectsEl.textContent = subjectText;
+    } else {
+      subjectsEl.textContent = subjectText;
     }
-    document.getElementById('profile-subjects').textContent = subjectText;
     document.getElementById('profile-admission').textContent = new Date(s.admissionDate).toLocaleDateString();
     document.getElementById('profile-address').textContent = s.address || 'N/A';
 
@@ -424,8 +446,6 @@ async function initStudentProfilePage() {
     // Render Attendance table
     renderProfileAttendanceTable(studentId);
 
-    // Render Academic records
-    renderProfileAcademicTable(studentId);
 
   } catch (error) {
     console.error(error);
@@ -505,54 +525,6 @@ async function renderProfileAttendanceTable(studentId) {
   }
 }
 
-async function renderProfileAcademicTable(studentId) {
-  const tbody = document.getElementById('profile-academic-table');
-  const avgKpi = document.getElementById('kpi-avg-score');
-  const countKpi = document.getElementById('kpi-tests-taken');
-  if (!tbody) return;
-
-  try {
-    const performance = await api.getStudentPerformance(studentId);
-    if (avgKpi) avgKpi.textContent = `${performance.averagePercentage}%`;
-    if (countKpi) countKpi.textContent = performance.testsTaken;
-
-    if (performance.records.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No academic records found for this student.</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = performance.records.map(r => {
-      let scoreColor = 'color: #ef4444;';
-      if (r.percentage >= 75) {
-        scoreColor = 'color: #10b981;';
-      } else if (r.percentage >= 50) {
-        scoreColor = 'color: #f59e0b;';
-      }
-
-      return `
-        <tr>
-          <td class="wrap-cell" style="font-weight: 600;">${r.name}</td>
-          <td>${r.subject}</td>
-          <td>${new Date(r.date).toLocaleDateString()}</td>
-          <td><span style="${scoreColor} font-weight: 700;">${r.marks}</span> / ${r.maxMarks}</td>
-          <td>${r.classAverage}%</td>
-          <td>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="flex: 1; height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; width: 60px;">
-                <div style="height: 100%; width: ${r.percentage}%; background: ${r.percentage >= 75 ? '#10b981' : (r.percentage >= 50 ? '#f59e0b' : '#ef4444')};"></div>
-              </div>
-              <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">${r.percentage}%</span>
-            </div>
-          </td>
-          <td class="wrap-cell" style="font-style: italic; color: var(--text-muted); font-size: 0.85rem;">${r.remarks || 'None'}</td>
-        </tr>
-      `;
-    }).join('');
-
-  } catch (error) {
-    console.error('Error rendering profile academic table:', error);
-  }
-}
 
 window.switchProfileTab = (tabName) => {
   activeProfileTab = tabName;
@@ -561,7 +533,6 @@ window.switchProfileTab = (tabName) => {
 
   document.getElementById('tab-content-fees').style.display = 'none';
   document.getElementById('tab-content-attendance').style.display = 'none';
-  document.getElementById('tab-content-academic').style.display = 'none';
 
   if (tabName === 'fees') {
     tabs[0].classList.add('active');
@@ -569,9 +540,6 @@ window.switchProfileTab = (tabName) => {
   } else if (tabName === 'attendance') {
     tabs[1].classList.add('active');
     document.getElementById('tab-content-attendance').style.display = 'block';
-  } else if (tabName === 'academic') {
-    tabs[2].classList.add('active');
-    document.getElementById('tab-content-academic').style.display = 'block';
   }
 };
 

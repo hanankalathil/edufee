@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
    1. REMINDERS CENTER
    ========================================== */
 let activeTab = 'today';
+window.currentPage = 1;
 
 function initRemindersCenter() {
   switchReminderTab('today');
@@ -72,10 +73,38 @@ async function loadReminders() {
 
     if (filteredFees.length === 0) {
       tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No records found for this category.</td></tr>`;
+      document.getElementById('pagination-container').style.display = 'none';
       return;
     }
 
-    tbody.innerHTML = filteredFees.map(f => {
+    const itemsPerPage = 10;
+    const startIndex = (window.currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const feesToShow = filteredFees.slice(startIndex, endIndex);
+
+    const totalItems = filteredFees.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    document.getElementById('pagination-container').style.display = 'flex';
+    const visibleEnd = Math.min(endIndex, totalItems);
+    document.getElementById('pagination-info').textContent = `Showing ${totalItems === 0 ? 0 : startIndex + 1} to ${visibleEnd} of ${totalItems} entries`;
+    
+    let paginationHTML = '';
+    
+    const prevDisabled = window.currentPage === 1 ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : '';
+    paginationHTML += `<button class="pagination-btn" onclick="if(window.currentPage > 1) { window.currentPage--; loadReminders(); }" ${prevDisabled}><i class="fa-solid fa-angle-left"></i></button>`;
+    
+    const displayPages = Math.max(1, totalPages);
+    for (let i = 1; i <= displayPages; i++) {
+       const activeClass = window.currentPage === i ? 'active' : '';
+       paginationHTML += `<button class="pagination-btn ${activeClass}" onclick="window.currentPage = ${i}; loadReminders();">${i}</button>`;
+    }
+    
+    const nextDisabled = (window.currentPage === totalPages || totalPages === 0) ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : '';
+    paginationHTML += `<button class="pagination-btn" onclick="if(window.currentPage < ${totalPages}) { window.currentPage++; loadReminders(); }" ${nextDisabled}><i class="fa-solid fa-angle-right"></i></button>`;
+
+    document.getElementById('pagination-controls').innerHTML = paginationHTML;
+
+    tbody.innerHTML = feesToShow.map(f => {
       if (!f.student) return '';
       
       let statusClass = 'badge-unpaid';
@@ -98,13 +127,53 @@ async function loadReminders() {
       `;
     }).join('');
 
+    // Save filtered fees for Send All functionality
+    window.currentFilteredFees = filteredFees;
+
   } catch (error) {
     console.error('Error loading reminders:', error);
   }
 }
 
+window.currentPage = 1; // Make it accessible globally for inline onclick
+
+window.triggerSendAll = async () => {
+  if (!window.currentFilteredFees || window.currentFilteredFees.length === 0) {
+    showToastNotification("No records to send.");
+    return;
+  }
+  
+  if (await confirm(`Are you sure you want to send reminders to all ${window.currentFilteredFees.length} students in this list?`)) {
+    const queue = JSON.parse(localStorage.getItem('queue') || '[]');
+    let count = 0;
+    
+    for (const f of window.currentFilteredFees) {
+      if (!f.student) continue;
+      
+      queue.push({
+        id: 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        studentName: f.student.name,
+        parentNumber: f.student.whatsappNumber,
+        amount: f.dueAmount,
+        dueDate: new Date(f.dueDate).toLocaleDateString(),
+        status: 'Pending',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      count++;
+    }
+    
+    localStorage.setItem('queue', JSON.stringify(queue));
+    showToastNotification(`Added ${count} reminders to the sending queue.`);
+    
+    if (activeTab === 'sent') {
+      loadReminders();
+    }
+  }
+};
+
 window.switchReminderTab = (tabName) => {
   activeTab = tabName;
+  window.currentPage = 1;
   const tabs = document.querySelectorAll('.tab-btn');
   tabs.forEach(btn => btn.classList.remove('active'));
 

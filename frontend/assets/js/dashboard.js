@@ -70,21 +70,30 @@ function renderChart(chartData) {
 
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const textColor = isDark ? '#94a3b8' : '#64748b';
-  const gridColor = isDark ? '#374151' : '#e2e8f0';
+  const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+
+  // Create gradient fill
+  const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 300);
+  gradient.addColorStop(0, 'rgba(37, 99, 235, 0.4)');
+  gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
 
   myChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: chartData.labels.length > 0 ? chartData.labels : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
       datasets: [{
-        label: 'Monthly Revenue (₹)',
+        label: 'Monthly Revenue',
         data: chartData.data.length > 0 ? chartData.data : [0, 0, 0, 0, 0, 0],
         borderColor: '#2563eb',
-        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+        backgroundColor: gradient,
         tension: 0.4,
         fill: true,
         borderWidth: 3,
-        pointBackgroundColor: '#2563eb'
+        pointBackgroundColor: isDark ? '#1e293b' : '#ffffff',
+        pointBorderColor: '#2563eb',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
       }]
     },
     options: {
@@ -93,28 +102,55 @@ function renderChart(chartData) {
       plugins: {
         legend: {
           display: false
+        },
+        tooltip: {
+          backgroundColor: isDark ? '#0f172a' : '#ffffff',
+          titleColor: isDark ? '#f1f5f9' : '#0f172a',
+          bodyColor: isDark ? '#cbd5e1' : '#475569',
+          borderColor: isDark ? '#334155' : '#e2e8f0',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: false,
+          callbacks: {
+            label: function(context) {
+              return '₹' + context.parsed.y.toLocaleString();
+            }
+          }
         }
+      },
+      interaction: {
+        mode: 'index',
+        intersect: false,
       },
       scales: {
         x: {
           grid: {
-            color: gridColor
+            color: gridColor,
+            borderDash: [5, 5],
+            drawBorder: false,
           },
           ticks: {
             color: textColor,
             font: {
               family: 'Plus Jakarta Sans'
-            }
+            },
+            padding: 10
           }
         },
         y: {
           grid: {
-            color: gridColor
+            color: gridColor,
+            borderDash: [5, 5],
+            drawBorder: false,
           },
           ticks: {
             color: textColor,
             font: {
               family: 'Plus Jakarta Sans'
+            },
+            padding: 10,
+            callback: function(value) {
+              return '₹' + value.toLocaleString();
             }
           }
         }

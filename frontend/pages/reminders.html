@@ -6,7 +6,7 @@
   <title>Reminders Center - Techora EduFee</title>
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="../assets/css/reminders.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
 </head>
 <body>
   <div id="app-container">
@@ -18,9 +18,14 @@
           <h1>Reminders Center</h1>
           <p style="color: var(--text-muted); font-size: 0.9rem;">Monitor fee collection reminders, send manual WhatsApp alerts, or view active queues.</p>
         </div>
-        <button class="btn btn-primary" onclick="window.location.href='settings.html?tab=whatsapp'">
-          <i class="fa-solid fa-gears"></i> WhatsApp Settings
-        </button>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-secondary" onclick="triggerSendAll()" style="color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+            <i class="fa-brands fa-whatsapp"></i> Send All
+          </button>
+          <button class="btn btn-primary" onclick="window.location.href='settings.html?tab=whatsapp'">
+            <i class="fa-solid fa-gears"></i> WhatsApp Settings
+          </button>
+        </div>
       </header>
 
       <!-- Tabs -->
@@ -50,6 +55,11 @@
               </tr>
             </tbody>
           </table>
+        </div>
+        <div id="pagination-container" class="table-pagination" style="display: none;">
+          <span id="pagination-info">Showing 1 to 10 of 20 entries</span>
+          <div class="pagination-controls" id="pagination-controls">
+          </div>
         </div>
       </section>
 

@@ -413,6 +413,49 @@ body {
   border-bottom: none;
 }
 
+/* Table Pagination */
+.table-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.pagination-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.pagination-btn:hover {
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+.pagination-btn.active {
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 500;
+}
+
 /* Smooth fade-in animation for tab transitions */
 .profile-tab-panel {
   animation: tabFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
@@ -717,34 +760,39 @@ footer {
   }
 }
 
-/* Tabs Styling */
+/* Tabs Box Style */
 .profile-main-tabs {
-  display: flex;
-  gap: 16px;
-  border-bottom: 1px solid var(--border-color);
+  display: inline-flex;
+  gap: 8px;
+  background: var(--bg-primary);
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
   margin-bottom: 24px;
 }
 
 .tab-btn {
   background: transparent;
   border: none;
+  border-radius: 8px;
   color: var(--text-muted);
   font-weight: 600;
-  padding: 12px 8px;
+  padding: 10px 20px;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
   transition: var(--transition);
   font-family: var(--font-body);
   font-size: 0.95rem;
 }
 
-.tab-btn:hover {
+.tab-btn:hover:not(.active) {
+  background: rgba(var(--color-primary-rgb), 0.05);
   color: var(--color-primary);
 }
 
 .tab-btn.active {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(var(--color-primary-rgb), 0.2);
 }
 
 /* Custom Alert Dialog styling */
@@ -951,4 +999,8 @@ select:focus,
 .custom-select-container.open .custom-select-trigger {
   border-color: var(--color-primary) !important;
   box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2) !important;
+}
+
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }

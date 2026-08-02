@@ -6,7 +6,7 @@
   <title>Settings - Techora EduFee</title>
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="../assets/css/settings.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
 </head>
 <body>
   <div id="app-container">
@@ -194,61 +194,44 @@
           <section class="settings-panel" id="panel-whatsapp" style="display: none;">
             <div class="status-banner" id="whatsapp-conn-banner">
               <div style="display: flex; flex-direction: column; gap: 4px;">
-                <h3 style="margin: 0; font-size: 1.1rem;">WhatsApp Service Status</h3>
-                <span id="conn-status" class="badge badge-unpaid" style="align-self: flex-start;">Disconnected</span>
+                <h3 style="margin: 0; font-size: 1.1rem;">Meta Cloud API Status</h3>
+                <span id="conn-status" class="badge badge-unpaid" style="align-self: flex-start; background: #10b981; color: white;">Connected</span>
               </div>
-              <button class="btn btn-primary" onclick="simulateConnection()" id="conn-action-btn" style="background: #25D366; border-color: #25D366; color: #fff;">
-                <i class="fa-solid fa-qrcode"></i> Connect Device
+              <button class="btn btn-secondary" onclick="window.location.href='whatsapp.html'" style="background: #25D366; border-color: #25D366; color: #fff;">
+                <i class="fa-solid fa-paper-plane"></i> Go to Dashboard
               </button>
             </div>
 
             <div class="whatsapp-hub-grid">
-              <!-- Configuration & Templates (Left) -->
+              <!-- Configuration (Left) -->
               <div style="display: flex; flex-direction: column; gap: 24px;">
-                <!-- WhatsApp QR Code Connection Card -->
-                <div class="glass-card" id="whatsapp-conn-card">
-                  <h3 class="section-title">Link Device</h3>
-                  <div id="conn-disconnected-ui">
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
-                      Link your WhatsApp account using a QR code to enable automatic reminder dispatching.
-                    </p>
-                    <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap; justify-content: center;">
-                      <div style="position: relative; border: 2px solid var(--border-color); padding: 12px; border-radius: 16px; background: #fff; display: flex; align-items: center; justify-content: center; width: 160px; height: 160px;">
-                        <img id="qr-code-img" src="" alt="WhatsApp QR Code" style="width: 100%; height: 100%; display: none;">
-                        <div id="qr-loader" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
-                          <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--color-primary);"></i>
-                          <span style="font-size: 0.75rem; color: var(--text-muted);">Generating QR Code...</span>
-                        </div>
-                      </div>
-                      <div style="flex: 1; min-width: 180px;">
-                        <ol style="font-size: 0.8rem; color: var(--text-muted); padding-left: 16px; display: flex; flex-direction: column; gap: 8px;">
-                          <li>Open <strong>WhatsApp</strong> on your phone.</li>
-                          <li>Tap <strong>Linked Devices</strong>.</li>
-                          <li>Point your phone to this screen.</li>
-                        </ol>
-                        <div style="margin-top: 16px;">
-                          <button class="btn btn-secondary" onclick="generateQRCode()" style="padding: 8px 12px; font-size: 0.75rem; width: 100%;">
-                            <i class="fa-solid fa-arrows-rotate"></i> Refresh QR
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div class="glass-card">
+                  <h3 class="section-title">API Credentials</h3>
+                  <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
+                    Enter your official Meta WhatsApp Cloud API details.
+                  </p>
                   
-                  <div id="conn-connected-ui" style="display: none;">
-                    <div style="display: flex; align-items: center; gap: 16px; background: rgba(16, 185, 129, 0.05); padding: 16px; border-radius: var(--border-radius); border: 1px solid rgba(16, 185, 129, 0.2);">
-                      <div style="width: 50px; height: 50px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
-                        <i class="fa-brands fa-whatsapp"></i>
-                      </div>
-                      <div style="flex: 1;">
-                        <h4 style="font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Techora Bot Account</h4>
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">Phone: <span style="font-weight: 600; color: var(--text-main);">+91 98765 43210</span></p>
-                      </div>
-                      <button class="btn btn-danger" onclick="disconnectDevice()" style="padding: 8px 12px; font-size: 0.75rem;">
-                        <i class="fa-solid fa-link-slash"></i> Disconnect
-                      </button>
+                  <form id="whatsapp-api-form" onsubmit="event.preventDefault(); alert('API Configuration Saved!');">
+                    <div class="form-group">
+                      <label class="form-label">Permanent Access Token *</label>
+                      <input type="password" class="form-control" value="EAXXXXXXXXXXXX..." required>
                     </div>
-                  </div>
+                    <div class="form-group">
+                      <label class="form-label">Phone Number ID *</label>
+                      <input type="text" class="form-control" value="101234567890123" required>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">WhatsApp Business Account ID *</label>
+                      <input type="text" class="form-control" value="109876543210987" required>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Webhook Verify Token *</label>
+                      <input type="text" class="form-control" value="edufees_webhook_secret" required>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
+                      <button type="submit" class="btn btn-primary" style="background: #128C7E; border-color: #128C7E; color: white; padding: 10px 20px; font-weight: 500;">Save Configuration</button>
+                    </div>
+                  </form>
                 </div>
 
                 <!-- Automation Modes (Grid) -->
@@ -284,32 +267,7 @@
                   </div>
                 </div>
 
-                <!-- Attendance Group Sharing (Disabled for V2) -->
-                <div class="glass-card" style="opacity: 0.6; pointer-events: none; position: relative;">
-                  <div style="position: absolute; top: 16px; right: 16px; background: var(--color-primary); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; z-index: 10;">Coming in V2</div>
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <h3 class="section-title" style="margin-bottom: 0; padding-right: 90px;">Attendance Group Sharing</h3>
-                    <label class="switch-toggle" style="opacity: 0.5; display: none;">
-                      <input type="checkbox" id="toggle-group-share" disabled>
-                      <span class="slider-round"></span>
-                    </label>
-                  </div>
-                  <div class="form-group">
-                    <label for="att-group-target" class="form-label">Global Group Link / Number *</label>
-                    <input type="text" id="att-group-target" class="form-control" placeholder="https://chat.whatsapp.com/..." disabled>
-                  </div>
-                  <div class="form-group" style="margin-top: 16px;">
-                    <label for="att-template-text" class="form-label">Message Template</label>
-                    <div class="template-variables">
-                      <span class="variable-badge group-var" data-var="{{date}}">{{date}}</span>
-                      <span class="variable-badge group-var" data-var="{{class}}">{{class}}</span>
-                      <span class="variable-badge group-var" data-var="{{batch}}">{{batch}}</span>
-                      <span class="variable-badge group-var" data-var="{{present}}">{{present}}</span>
-                      <span class="variable-badge group-var" data-var="{{absent}}">{{absent}}</span>
-                    </div>
-                    <textarea id="att-template-text" class="form-control" rows="10" style="font-family: monospace;" disabled></textarea>
-                  </div>
-                </div>
+
               </div>
 
               <!-- Right side: Realtime Queue Monitor & Template Editor -->
@@ -345,33 +303,12 @@
                     </div>
                   </div>
 
-                  <div style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;" id="queue-list-container">
+                  <div style="max-height: 450px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;" id="queue-list-container">
                     <!-- Queue items listed here -->
                   </div>
                 </div>
 
-                <!-- Template Editor -->
-                <div class="glass-card template-editor">
-                  <h3 class="section-title" style="margin-bottom: 4px;">Message Template Editor</h3>
-                  <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0; margin-bottom: 16px;">Customize standard reminder formats.</p>
-                  <div class="template-variables">
-                    <span class="variable-badge" data-var="{{studentName}}">{{studentName}}</span>
-                    <span class="variable-badge" data-var="{{parentName}}">{{parentName}}</span>
-                    <span class="variable-badge" data-var="{{amount}}">{{amount}}</span>
-                    <span class="variable-badge" data-var="{{dueDate}}">{{dueDate}}</span>
-                    <span class="variable-badge" data-var="{{class}}">{{class}}</span>
-                    <span class="variable-badge" data-var="{{batch}}">{{batch}}</span>
-                    <span class="variable-badge" data-var="{{tuitionCenter}}">{{tuitionCenter}}</span>
-                  </div>
 
-                  <div class="form-group">
-                    <textarea id="template-text" class="form-control" rows="10" style="font-family: monospace;"></textarea>
-                  </div>
-
-                  <div style="display: flex; justify-content: flex-end;">
-                    <button class="btn btn-primary" onclick="saveSettings()" style="width: 100%;">Save Configuration</button>
-                  </div>
-                </div>
               </div>
             </div>
           </section>

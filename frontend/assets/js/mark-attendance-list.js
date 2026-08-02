@@ -1,4 +1,5 @@
 let studentsData = [];
+let originalStudentsData = [];
 let classParam = '';
 let batchParam = '';
 let dateParam = '';
@@ -28,6 +29,7 @@ async function loadRosterData() {
   try {
     const sheet = await api.getAttendance(dateParam, classParam, batchParam);
     studentsData = sheet.records || [];
+    originalStudentsData = JSON.parse(JSON.stringify(studentsData));
 
     if (studentsData.length === 0) {
       rosterContainer.innerHTML = `
@@ -139,6 +141,14 @@ window.markAllRoster = (status) => {
   updateRosterStats();
 };
 
+window.resetRoster = () => {
+  if (originalStudentsData.length > 0) {
+    studentsData = JSON.parse(JSON.stringify(originalStudentsData));
+    renderRosterList();
+    updateRosterStats();
+  }
+};
+
 function updateRosterStats() {
   const total = studentsData.length;
   const present = studentsData.filter(r => r.status === 'Present').length;
@@ -146,7 +156,11 @@ function updateRosterStats() {
   const percent = total > 0 ? Math.round((present / total) * 100) : 100;
 
   document.getElementById('stats-summary-text').innerHTML = `
-    Present: <strong style="color: #10b981;">${present}</strong> | Absent: <strong style="color: #ef4444;">${absent}</strong> (${percent}%)
+    <div style="display: flex; gap: 4px; font-weight: 600; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px;">
+      <span style="color: #16a34a; background: #f0fdf4; padding: 4px 6px; border-radius: 6px; font-size: 0.7rem; border: 1px solid #bbf7d0; white-space: nowrap;">P: ${present}</span>
+      <span style="color: #dc2626; background: #fef2f2; padding: 4px 6px; border-radius: 6px; font-size: 0.7rem; border: 1px solid #fecaca; white-space: nowrap;">A: ${absent}</span>
+      <span style="color: #475569; background: #f1f5f9; padding: 4px 6px; border-radius: 6px; font-size: 0.7rem; border: 1px solid #e2e8f0; white-space: nowrap;">${percent}%</span>
+    </div>
   `;
 }
 

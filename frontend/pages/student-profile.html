@@ -6,7 +6,7 @@
   <title>Student Profile - Techora EduFee</title>
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="../assets/css/students.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
 </head>
 <body>
   <div id="app-container">
@@ -130,7 +130,6 @@
             <div class="profile-main-tabs">
               <button class="tab-btn active" onclick="switchProfileTab('fees')">Fees Invoices</button>
               <button class="tab-btn" onclick="switchProfileTab('attendance')">Attendance History</button>
-              <button class="tab-btn" onclick="switchProfileTab('academic')">Academic Records</button>
             </div>
 
             <!-- Tab Content: Fees -->
@@ -155,6 +154,20 @@
                   </tbody>
                 </table>
               </div>
+              <div class="table-pagination">
+                <div>Showing 1 to 10 of 10 entries</div>
+                <div class="pagination-controls">
+                  <button class="pagination-btn">
+                    <i class="fa-solid fa-chevron-left" style="font-size: 0.75rem;"></i>
+                  </button>
+                  <button class="pagination-btn active">
+                    1
+                  </button>
+                  <button class="pagination-btn">
+                    <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Tab Content: Attendance -->
@@ -176,47 +189,23 @@
                   </tbody>
                 </table>
               </div>
+              <div class="table-pagination">
+                <div>Showing 1 to 10 of 10 entries</div>
+                <div class="pagination-controls">
+                  <button class="pagination-btn">
+                    <i class="fa-solid fa-chevron-left" style="font-size: 0.75rem;"></i>
+                  </button>
+                  <button class="pagination-btn active">
+                    1
+                  </button>
+                  <button class="pagination-btn">
+                    <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i>
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <!-- Tab Content: Academic Records -->
-            <div id="tab-content-academic" class="profile-tab-panel" style="display: none;">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
-                <div class="glass-card" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: rgba(37, 99, 235, 0.05); border: 1px solid var(--border-color);">
-                  <i class="fa-solid fa-award" style="font-size: 1.8rem; color: var(--color-primary);"></i>
-                  <div>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Academic Average</p>
-                    <h3 style="font-size: 1.3rem; margin: 4px 0 0 0;" id="kpi-avg-score">0%</h3>
-                  </div>
-                </div>
-                <div class="glass-card" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: rgba(16, 185, 129, 0.05); border: 1px solid var(--border-color);">
-                  <i class="fa-solid fa-check-double" style="font-size: 1.8rem; color: #10b981;"></i>
-                  <div>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Tests Taken</p>
-                    <h3 style="font-size: 1.3rem; margin: 4px 0 0 0;" id="kpi-tests-taken">0</h3>
-                  </div>
-                </div>
-              </div>
-              <div class="table-container">
-                <table class="premium-table">
-                  <thead>
-                    <tr>
-                      <th class="wrap-cell">Exam/Test Name</th>
-                      <th>Subject</th>
-                      <th>Date</th>
-                      <th>Score</th>
-                      <th>Class Avg</th>
-                      <th>Performance</th>
-                      <th class="wrap-cell">Remarks</th>
-                    </tr>
-                  </thead>
-                  <tbody id="profile-academic-table">
-                    <tr>
-                      <td colspan="7" style="text-align: center; color: var(--text-muted);">No academic records found.</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+
 
           </div>
         </div>

@@ -6,7 +6,7 @@
   <title>Students - Techora EduFee</title>
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="../assets/css/students.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
 </head>
 <body>
   <div id="app-container">
@@ -33,7 +33,7 @@
         <div class="filter-group">
           <div class="form-group" style="margin-bottom: 0; flex-direction: row; align-items: center; gap: 8px;">
             <label class="form-label" style="white-space: nowrap;">Class:</label>
-            <select id="filter-class" class="form-control" style="padding: 8px 12px; border-radius: 12px; min-width: 180px;">
+            <select id="filter-class" class="form-control" style="padding: 8px 12px; border-radius: 12px; min-width: 220px;">
               <option value="">All Classes</option>
               <option value="Class 8">Class 8</option>
               <option value="Class 9">Class 9</option>
@@ -49,7 +49,7 @@
 
           <div class="form-group" style="margin-bottom: 0; flex-direction: row; align-items: center; gap: 8px;">
             <label class="form-label" style="white-space: nowrap;">Batch:</label>
-            <select id="filter-batch" class="form-control" style="padding: 8px 12px; border-radius: 12px; min-width: 180px;">
+            <select id="filter-batch" class="form-control" style="padding: 8px 12px; border-radius: 12px; min-width: 220px;">
               <option value="">All Batches</option>
             </select>
           </div>
@@ -61,33 +61,31 @@
       </section>
 
       <!-- Students Table -->
-      <section style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px;">
-        <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; text-align: left;">
-            <thead>
-              <tr style="background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
-                <th style="padding: 16px 20px; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;">STUDENT ID</th>
-                <th style="padding: 16px 20px; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;">NAME</th>
-                <th style="padding: 16px 20px; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;">CLASS & BATCH</th>
-                <th style="padding: 16px 20px; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;">PARENT / CONTACT</th>
-                <th style="padding: 16px 20px; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;">ADMISSION DATE</th>
-                <th style="padding: 16px 20px; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; text-align: right; white-space: nowrap;">ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody id="students-grid-container">
-              <!-- Student rows dynamically rendered here -->
-            </tbody>
-          </table>
-        </div>
+      <section class="table-container" style="margin-bottom: 24px;">
+        <table class="premium-table">
+          <thead>
+            <tr>
+              <th>STUDENT ID</th>
+              <th>NAME</th>
+              <th>CLASS & BATCH</th>
+              <th>PARENT / CONTACT</th>
+              <th>ADMISSION DATE</th>
+              <th style="text-align: right;">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="students-grid-container">
+            <!-- Student rows dynamically rendered here -->
+          </tbody>
+        </table>
         
-        <div style="padding: 16px 20px; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; background: #fff;">
-          <span style="font-size: 0.875rem; color: #6b7280;" id="table-pagination-info">Showing 0 entries</span>
+        <div style="padding: 16px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-secondary);">
+          <span style="font-size: 0.875rem; color: var(--text-muted);" id="table-pagination-info">Showing 0 entries</span>
           <div style="display: flex; gap: 6px;">
-            <button style="width: 34px; height: 34px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; color: #9ca3af; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <button class="btn btn-secondary" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center;">
               <i class="fa-solid fa-chevron-left" style="font-size: 0.75rem;"></i>
             </button>
-            <button style="width: 34px; height: 34px; border: 1px solid #2563eb; border-radius: 6px; background: #2563eb; color: white; font-weight: 600; font-size: 0.875rem; display: flex; align-items: center; justify-content: center; cursor: pointer;">1</button>
-            <button style="width: 34px; height: 34px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; color: #9ca3af; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <button class="btn btn-primary" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center;">1</button>
+            <button class="btn btn-secondary" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center;">
               <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i>
             </button>
           </div>

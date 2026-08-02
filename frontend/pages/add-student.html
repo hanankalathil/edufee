@@ -6,7 +6,7 @@
   <title>Add/Edit Student - Techora EduFee</title>
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="../assets/css/students.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
 </head>
 <body>
   <div id="app-container">
@@ -41,8 +41,9 @@
           </div>
 
           <div class="form-sections-container">
-            <!-- Section 1: Basic Information -->
-            <div class="form-section">
+            <div style="display: flex; flex-direction: column; gap: 32px;">
+              <!-- Section 1: Basic Information -->
+              <div class="form-section">
               <h3 class="form-section-title"><i class="fa-solid fa-user"></i> Basic Information</h3>
               <div class="form-grid-2">
                 <div class="form-group" style="grid-column: span 2;">
@@ -63,6 +64,18 @@
                 <div class="form-group" style="grid-column: span 2;">
                   <label for="address" class="form-label">Home Address</label>
                   <textarea id="address" name="address" class="form-control" rows="3" placeholder="123 Street Name, Area, City"></textarea>
+                </div>
+              </div>
+              </div>
+
+              <!-- Section 3: Notification Details -->
+              <div class="form-section">
+                <h3 class="form-section-title"><i class="fa-solid fa-envelope"></i> Notification Details</h3>
+                <div class="form-grid-2">
+                  <div class="form-group" style="grid-column: span 2;">
+                    <label for="email" class="form-label">Email Address *</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="For sharing student details automatically" required>
+                  </div>
                 </div>
               </div>
             </div>
