@@ -35,9 +35,14 @@
         <section class="glass-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3 class="section-title" style="margin-bottom: 0;">Invoices Directory</h3>
-            <div class="search-container" style="width: 300px;">
-              <i class="fa-solid fa-magnifying-glass search-icon"></i>
-              <input type="text" id="fees-search" class="search-input" placeholder="Search name, ID, invoice, parent...">
+            <div style="display: flex; gap: 15px; align-items: center;">
+              <select id="fees-batch-filter" class="form-control" style="width: 280px; height: 100%; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); border-radius: var(--border-radius); padding: 8px 12px; font-size: 0.9rem; cursor: pointer;">
+                <option value="All Batches">All Batches</option>
+              </select>
+              <div class="search-container" style="width: 300px;">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="fees-search" class="search-input" placeholder="Search name, ID, invoice, parent...">
+              </div>
             </div>
           </div>
 

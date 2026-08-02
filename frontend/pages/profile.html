@@ -19,34 +19,200 @@
         </div>
       </header>
 
-      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 32px;">
-        <section class="glass-card" style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;">
-          <div class="user-avatar" style="width: 100px; height: 100px; font-size: 3rem; border-radius: 50%;">A</div>
-          <div>
-            <h3 class="student-card-name" id="profile-admin-name">Admin User</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem;" id="profile-admin-email">admin@techora.in</p>
+      <style>
+        .profile-header-cover {
+          height: 120px;
+          background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+          border-radius: var(--border-radius) var(--border-radius) 0 0;
+          position: relative;
+        }
+        .profile-card {
+          padding: 0;
+          overflow: hidden;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .profile-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+        }
+        .profile-avatar-container {
+          margin-top: -50px;
+          display: flex;
+          justify-content: center;
+          position: relative;
+        }
+        .profile-avatar-wrapper {
+          padding: 4px;
+          background: var(--bg-secondary);
+          border-radius: 50%;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .profile-avatar {
+          width: 100px;
+          height: 100px;
+          font-size: 3rem;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--color-secondary), #334155);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          font-family: var(--font-heading);
+          font-weight: 700;
+        }
+        .profile-info {
+          padding: 24px;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+        }
+        .profile-stats {
+          display: flex;
+          justify-content: center;
+          gap: 32px;
+          padding-top: 16px;
+          border-top: 1px dashed var(--border-color);
+          width: 100%;
+        }
+        .stat-item {
+          display: flex;
+          flex-direction: column;
+        }
+        .stat-val {
+          font-weight: 700;
+          font-family: var(--font-heading);
+          color: var(--text-main);
+          font-size: 1.2rem;
+        }
+        .stat-label {
+          font-size: 0.75rem;
+          color: var(--text-muted);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        
+        .form-card {
+          padding: 32px;
+          transition: box-shadow 0.3s ease;
+        }
+        .form-card:hover {
+          box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+        }
+        .input-group {
+          position: relative;
+        }
+        .input-icon {
+          position: absolute;
+          left: 16px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--text-muted);
+        }
+        .input-with-icon {
+          padding-left: 44px;
+        }
+        .avatar-upload-overlay {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          background: var(--color-primary);
+          color: white;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 3px solid var(--bg-secondary);
+          transition: transform 0.2s, background 0.2s;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .profile-avatar-wrapper:hover .avatar-upload-overlay {
+          transform: scale(1.1);
+          background: var(--color-accent);
+        }
+      </style>
+
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 32px; align-items: start;">
+        <!-- Premium Profile Card -->
+        <section class="glass-card profile-card">
+          <div class="profile-header-cover"></div>
+          <div class="profile-avatar-container">
+            <div class="profile-avatar-wrapper">
+              <label for="admin-photo-upload" style="cursor: pointer; position: relative; display: block;">
+                <div class="profile-avatar" id="avatar-preview">A</div>
+                <div class="avatar-upload-overlay">
+                  <i class="fa-solid fa-camera"></i>
+                </div>
+              </label>
+              <input type="file" id="admin-photo-upload" accept="image/*" style="display: none;" onchange="
+                const file = this.files[0];
+                if(file) {
+                  const reader = new FileReader();
+                  reader.onload = function(e) {
+                    const avatar = document.getElementById('avatar-preview');
+                    avatar.style.backgroundImage = 'url(' + e.target.result + ')';
+                    avatar.style.backgroundSize = 'cover';
+                    avatar.style.backgroundPosition = 'center';
+                    avatar.innerHTML = '';
+                  }
+                  reader.readAsDataURL(file);
+                }
+              ">
+            </div>
           </div>
-          <span class="badge badge-paid">Super Administrator</span>
+          <div class="profile-info">
+            <div>
+              <h3 class="student-card-name" id="profile-admin-name" style="font-size: 1.5rem; margin-bottom: 4px;">Admin User</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem;" id="profile-admin-email">admin@techora.in</p>
+            </div>
+            <span class="badge" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 8px 16px;">Super Administrator</span>
+            
+            <div class="profile-stats">
+              <div class="stat-item">
+                <span class="stat-val">Last Login</span>
+                <span class="stat-label">Today, 09:41 AM</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-val">Status</span>
+                <span class="stat-label" style="color: #10b981;">Active</span>
+              </div>
+            </div>
+          </div>
         </section>
 
-        <section class="glass-card">
-          <h3 class="section-title">Credentials details</h3>
+        <!-- Premium Form Card -->
+        <section class="glass-card form-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h3 class="section-title" style="margin: 0;">
+              <i class="fa-solid fa-user-shield" style="color: var(--color-primary); margin-right: 8px;"></i>
+              Credentials details
+            </h3>
+          </div>
+          
           <form id="admin-profile-form" onsubmit="event.preventDefault(); alert('Profile credentials updated (Mock).');">
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 24px;">
               <label for="admin-name-input" class="form-label">Full Name</label>
-              <input type="text" id="admin-name-input" class="form-control" value="Admin User" required>
+              <div class="input-group">
+                <i class="fa-regular fa-user input-icon"></i>
+                <input type="text" id="admin-name-input" class="form-control input-with-icon" value="Admin User" required>
+              </div>
             </div>
-            <div class="form-group">
+            
+            <div class="form-group" style="margin-bottom: 32px;">
               <label for="admin-email-input" class="form-label">Login Email</label>
-              <input type="email" id="admin-email-input" class="form-control" value="admin@techora.in" required>
-            </div>
-            <div class="form-group">
-              <label for="admin-pass-input" class="form-label">Update Password</label>
-              <input type="password" id="admin-pass-input" class="form-control" placeholder="••••••••">
+              <div class="input-group">
+                <i class="fa-regular fa-envelope input-icon"></i>
+                <input type="email" id="admin-email-input" class="form-control input-with-icon" value="admin@techora.in" required>
+              </div>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
-              <button type="submit" class="btn btn-primary">Update Profile</button>
+            <div style="display: flex; justify-content: flex-end; padding-top: 24px; border-top: 1px solid var(--border-color);">
+              <button type="submit" class="btn btn-primary" style="padding: 14px 28px; border-radius: 8px; font-weight: 700; letter-spacing: 0.5px;">
+                <i class="fa-solid fa-check" style="margin-right: 8px;"></i> Save Changes
+              </button>
             </div>
           </form>
         </section>

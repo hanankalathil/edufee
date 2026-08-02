@@ -475,9 +475,11 @@ function renderProfileFeesTable(records) {
         <td style="color: #ef4444; font-weight: 600;">₹${f.dueAmount}</td>
         <td><span class="badge ${badgeClass}">${f.status}</span></td>
         <td>
-          <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="api.downloadReceipt('${f._id}')">
-            <i class="fa-solid fa-download"></i> Receipt
-          </button>
+          <div class="table-actions" style="justify-content: flex-start;">
+            <button class="btn btn-receipt" onclick="api.downloadReceipt('${f._id}')" ${f.status === 'Unpaid' ? 'disabled' : ''}>
+              <i class="fa-solid fa-download"></i> Receipt
+            </button>
+          </div>
         </td>
       </tr>
     `;

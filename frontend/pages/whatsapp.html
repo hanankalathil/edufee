@@ -213,9 +213,9 @@
             </div>
           </div>
 
-          <!-- Template Editor -->
+          <!-- Template Editor (Individual Payment) -->
           <div class="glass-card template-editor" style="display: flex; flex-direction: column;">
-            <h3 class="section-title" style="margin-bottom: 4px;">Message Template Editor</h3>
+            <h3 class="section-title" style="margin-bottom: 4px;">Individual Payment Reminder</h3>
             <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0; margin-bottom: 16px;">Customize standard reminder formats.</p>
             <div class="template-variables">
               <span class="variable-badge" data-var="{{studentName}}">{{studentName}}</span>
@@ -239,6 +239,82 @@ Thank you,
 
             <div style="display: flex; justify-content: flex-end; margin-top: auto;">
               <button class="btn btn-primary" onclick="window.saveSettings()" style="width: 100%;">Save Configuration</button>
+            </div>
+          </div>
+
+          <!-- Batch Payment Reminder -->
+          <div class="glass-card template-editor" style="display: flex; flex-direction: column;">
+            <h3 class="section-title" style="margin-bottom: 4px;">Batch Payment Reminder</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0; margin-bottom: 16px;">Reminder for remaining payment to all batch groups.</p>
+            <div class="template-variables">
+              <span class="variable-badge" data-var="{{batch}}">{{batch}}</span>
+              <span class="variable-badge" data-var="{{class}}">{{class}}</span>
+              <span class="variable-badge" data-var="{{totalPendingAmount}}">{{totalPendingAmount}}</span>
+              <span class="variable-badge" data-var="{{dueDate}}">{{dueDate}}</span>
+              <span class="variable-badge" data-var="{{tuitionCenter}}">{{tuitionCenter}}</span>
+            </div>
+            <div class="form-group" style="flex: 1; display: flex; flex-direction: column;">
+              <textarea id="batch-payment-template-text" class="form-control" rows="10" style="font-family: monospace; flex: 1; resize: none;">Attention Parents of {{class}} - {{batch}},
+
+This is a reminder regarding the pending fees for this batch.
+The total outstanding amount is ₹{{totalPendingAmount}}.
+Please clear the dues before {{dueDate}}.
+
+Thank you,
+{{tuitionCenter}}</textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: auto;">
+              <button class="btn btn-primary" onclick="window.saveBatchPaymentTemplate()" style="width: 100%;">Save Configuration</button>
+            </div>
+          </div>
+
+          <!-- General Message (Batch) -->
+          <div class="glass-card template-editor" style="display: flex; flex-direction: column;">
+            <h3 class="section-title" style="margin-bottom: 4px;">General Message (Batch)</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0; margin-bottom: 16px;">General message broadcast to a batch group.</p>
+            <div class="template-variables">
+              <span class="variable-badge" data-var="{{batch}}">{{batch}}</span>
+              <span class="variable-badge" data-var="{{class}}">{{class}}</span>
+              <span class="variable-badge" data-var="{{date}}">{{date}}</span>
+              <span class="variable-badge" data-var="{{tuitionCenter}}">{{tuitionCenter}}</span>
+            </div>
+            <div class="form-group" style="flex: 1; display: flex; flex-direction: column;">
+              <textarea id="batch-general-template-text" class="form-control" rows="10" style="font-family: monospace; flex: 1; resize: none;">Dear Parents of {{class}} - {{batch}},
+
+[Your Message Here]
+
+Date: {{date}}
+Thank you,
+{{tuitionCenter}}</textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: auto;">
+              <button class="btn btn-primary" onclick="window.saveBatchGeneralTemplate()" style="width: 100%;">Save Configuration</button>
+            </div>
+          </div>
+
+          <!-- General Message (Individual Parent) -->
+          <div class="glass-card template-editor" style="display: flex; flex-direction: column;">
+            <h3 class="section-title" style="margin-bottom: 4px;">General Message (Individual Parent)</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0; margin-bottom: 16px;">General message directed to an individual parent.</p>
+            <div class="template-variables">
+              <span class="variable-badge" data-var="{{parentName}}">{{parentName}}</span>
+              <span class="variable-badge" data-var="{{studentName}}">{{studentName}}</span>
+              <span class="variable-badge" data-var="{{class}}">{{class}}</span>
+              <span class="variable-badge" data-var="{{batch}}">{{batch}}</span>
+              <span class="variable-badge" data-var="{{date}}">{{date}}</span>
+              <span class="variable-badge" data-var="{{tuitionCenter}}">{{tuitionCenter}}</span>
+            </div>
+            <div class="form-group" style="flex: 1; display: flex; flex-direction: column;">
+              <textarea id="parent-general-template-text" class="form-control" rows="10" style="font-family: monospace; flex: 1; resize: none;">Dear {{parentName}},
+
+[Your Message Here regarding {{studentName}}]
+
+Date: {{date}}
+Thank you,
+{{tuitionCenter}}</textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: auto;">
+              <button class="btn btn-primary" onclick="window.saveParentGeneralTemplate()" style="width: 100%;">Save Configuration</button>
             </div>
           </div>
         </div>

@@ -16,14 +16,38 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initFeesPage() {
   const searchInput = document.getElementById('fees-search');
   const paymentForm = document.getElementById('payment-form');
+  const batchFilter = document.getElementById('fees-batch-filter');
   
   let currentPage = 1;
   const pageSize = 10;
 
+  if (batchFilter) {
+    try {
+      const batches = await api.getBatches();
+      batches.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b.name;
+        opt.textContent = `${b.name} (${b.class})`;
+        batchFilter.appendChild(opt);
+      });
+      if (window.initializeCustomSelects) {
+        window.initializeCustomSelects();
+      }
+    } catch (e) {
+      console.error('Failed to load batches for filter', e);
+    }
+    
+    batchFilter.addEventListener('change', () => {
+      currentPage = 1;
+      render();
+    });
+  }
+
   // Load and render invoices
   const render = async () => {
     const invoices = await api.getFees({
-      search: searchInput ? searchInput.value : ''
+      search: searchInput ? searchInput.value : '',
+      batch: batchFilter ? batchFilter.value : 'All Batches'
     });
     
     // Sort: Unpaid first, then Partial, then Paid
@@ -75,6 +99,9 @@ async function initFeesPage() {
     paymentForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
+      const isConfirmed = await confirm("Are you sure you want to post this payment?");
+      if (!isConfirmed) return;
+
       const feeId = document.getElementById('modal-fee-id').value;
       const paymentData = {
         amountPaid: document.getElementById('amountPaid').value,
@@ -316,7 +343,7 @@ function renderInvoicesTable(invoices) {
             ` : `
               <div class="pay-placeholder"></div>
             `}
-            <button class="btn btn-receipt" onclick="api.downloadReceipt('${f._id}')">
+            <button class="btn btn-receipt" onclick="api.downloadReceipt('${f._id}')" ${f.status === 'Unpaid' ? 'disabled' : ''}>
               <i class="fa-solid fa-download"></i> Receipt
             </button>
             <button class="btn btn-whatsapp" onclick="shareInvoiceWhatsApp('${f._id}')">
@@ -469,7 +496,7 @@ function renderAuditTable(payments) {
       <td><span class="badge" style="background: rgba(37,99,235,0.05); color: var(--color-primary);">${p.paymentMethod}</span></td>
       <td>
         <div class="table-actions">
-          <button class="btn btn-secondary" onclick="api.downloadReceipt('${p.feeId}', '${p._id}')">
+          <button class="btn btn-receipt" onclick="api.downloadReceipt('${p.feeId}', '${p._id}')">
             <i class="fa-solid fa-download"></i> Receipt
           </button>
         </div>

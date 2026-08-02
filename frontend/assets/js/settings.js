@@ -162,14 +162,11 @@ window.switchSettingsSection = (sectionName) => {
   } else if (sectionName === 'branding') {
     links[1].classList.add('active');
     document.getElementById('panel-branding').style.display = 'block';
-  } else if (sectionName === 'notifications') {
-    links[2].classList.add('active');
-    document.getElementById('panel-notifications').style.display = 'block';
   } else if (sectionName === 'whatsapp') {
-    links[3].classList.add('active');
+    links[2].classList.add('active');
     document.getElementById('panel-whatsapp').style.display = 'block';
   } else if (sectionName === 'security') {
-    links[4].classList.add('active');
+    links[3].classList.add('active');
     document.getElementById('panel-security').style.display = 'block';
   }
 };

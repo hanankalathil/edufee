@@ -83,6 +83,47 @@
         display: none !important;
       }
     }
+    [data-theme="dark"] body {
+      background: #0f172a;
+    }
+    [data-theme="dark"] .receipt-container {
+      background: #1e293b;
+      color: #f1f5f9;
+      border-color: #334155;
+    }
+    [data-theme="dark"] .receipt-header {
+      border-bottom-color: #334155;
+    }
+    [data-theme="dark"] p {
+      color: #cbd5e1 !important;
+    }
+    [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4, [data-theme="dark"] strong, [data-theme="dark"] span {
+      color: #f8fafc !important;
+    }
+    [data-theme="dark"] .receipt-table td {
+      border-bottom-color: #334155;
+    }
+    [data-theme="dark"] .total-row {
+      border-top-color: #334155 !important;
+    }
+    [data-theme="dark"] #row-discount, [data-theme="dark"] #total-paid {
+      color: #34d399 !important;
+    }
+    [data-theme="dark"] #row-fine, [data-theme="dark"] #total-due {
+      color: #f87171 !important;
+    }
+    @media print {
+      [data-theme="dark"] body {
+        background: #fff;
+      }
+      [data-theme="dark"] .receipt-container {
+        background: #fff;
+        color: #0f172a;
+      }
+      [data-theme="dark"] p, [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4, [data-theme="dark"] strong, [data-theme="dark"] span {
+        color: #0f172a !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -169,6 +210,10 @@
   <script src="../assets/js/api.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+
       const urlParams = new URLSearchParams(window.location.search);
       const feeId = urlParams.get('feeId');
       const paymentId = urlParams.get('paymentId');

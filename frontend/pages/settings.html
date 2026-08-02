@@ -34,11 +34,7 @@
                 <i class="fa-solid fa-palette"></i> <span>Branding & Theme</span>
               </a>
             </li>
-            <li>
-              <a href="javascript:void(0)" class="settings-link" onclick="switchSettingsSection('notifications')">
-                <i class="fa-solid fa-bell"></i> <span>Preferences</span>
-              </a>
-            </li>
+
             <li>
               <a href="javascript:void(0)" class="settings-link" onclick="switchSettingsSection('whatsapp')">
                 <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp Connection</span>
@@ -163,32 +159,6 @@
             </form>
           </section>
 
-          <!-- Preferences settings panel -->
-          <section class="glass-card settings-panel" id="panel-notifications" style="display: none;">
-            <h3 class="section-title"><i class="fa-solid fa-bell" style="color: var(--color-primary); margin-right: 8px;"></i> Preference Notifications</h3>
-            <div style="display: flex; flex-direction: column; gap: 18px;">
-              <label class="custom-checkbox-container">
-                <input type="checkbox" checked>
-                <span class="custom-checkmark"></span>
-                <span class="checkbox-text">Enable email notifications on new fee collections.</span>
-              </label>
-
-              <label class="custom-checkbox-container">
-                <input type="checkbox" checked>
-                <span class="custom-checkmark"></span>
-                <span class="checkbox-text">Enable auto queueing of daily due WhatsApp alerts.</span>
-              </label>
-
-              <label class="custom-checkbox-container">
-                <input type="checkbox">
-                <span class="custom-checkmark"></span>
-                <span class="checkbox-text">Send automatic congratulations to students on their birthday.</span>
-              </label>
-            </div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 32px;">
-              <button class="btn btn-primary" onclick="alert('Preferences updated (Mock).')">Save Preferences</button>
-            </div>
-          </section>
 
           <!-- WhatsApp Connection panel -->
           <section class="settings-panel" id="panel-whatsapp" style="display: none;">

@@ -51,9 +51,11 @@ function renderRecentPayments(payments) {
       <td>${new Date(p.paymentDate).toLocaleDateString()}</td>
       <td><span class="badge" style="background: rgba(37, 99, 235, 0.08); color: var(--color-primary);">${p.paymentMethod}</span></td>
       <td>
-        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="api.downloadReceipt('${p.feeId}', '${p._id}')">
-          <i class="fa-solid fa-download"></i> Receipt
-        </button>
+        <div class="table-actions">
+          <button class="btn btn-receipt" onclick="api.downloadReceipt('${p.feeId}', '${p._id}')">
+            <i class="fa-solid fa-download"></i> Receipt
+          </button>
+        </div>
       </td>
     </tr>
   `).join('');

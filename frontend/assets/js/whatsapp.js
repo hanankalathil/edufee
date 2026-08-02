@@ -32,6 +32,26 @@ document.addEventListener('DOMContentLoaded', () => {
             id: 'general_reminder',
             name: 'General Reminder',
             content: 'Hello {{ParentName}},\n\nThis is a reminder from {{TuitionCenter}}.\n\nStudent: {{StudentName}}\nClass: {{Class}}\n\nPlease review your recent updates on the portal.\n\nThank you.'
+        },
+        {
+            id: 'individual_payment',
+            name: 'Individual Payment Reminder',
+            content: 'Hello {{parentName}},\n\nThis is a reminder that the fee of ₹{{amount}} for {{studentName}} ({{class}} - {{batch}}) is pending.\nPlease complete the payment before {{dueDate}}.\n\nThank you,\n{{tuitionCenter}}'
+        },
+        {
+            id: 'batch_payment',
+            name: 'Batch Payment Reminder',
+            content: 'Attention Parents of {{class}} - {{batch}},\n\nThis is a reminder regarding the pending fees for this batch.\nThe total outstanding amount is ₹{{totalPendingAmount}}.\nPlease clear the dues before {{dueDate}}.\n\nThank you,\n{{tuitionCenter}}'
+        },
+        {
+            id: 'batch_general',
+            name: 'General Message (Batch)',
+            content: 'Dear Parents of {{class}} - {{batch}},\n\n[Your Message Here]\n\nDate: {{date}}\nThank you,\n{{tuitionCenter}}'
+        },
+        {
+            id: 'parent_general',
+            name: 'General Message (Individual Parent)',
+            content: 'Dear {{parentName}},\n\n[Your Message Here regarding {{studentName}}]\n\nDate: {{date}}\nThank you,\n{{tuitionCenter}}'
         }
     ];
 
@@ -79,12 +99,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const batch = document.getElementById('mock-batch')?.value || 'Morning A';
                 const date = new Date().toLocaleDateString();
                 
-                text = text.replace(/{{ParentName}}/g, parentName);
-                text = text.replace(/{{StudentName}}/g, studentName);
-                text = text.replace(/{{Class}}/g, className);
-                text = text.replace(/{{Batch}}/g, batch);
-                text = text.replace(/{{TuitionCenter}}/g, 'Techora Academy');
-                text = text.replace(/{{Date}}/g, date);
+                text = text.replace(/{{ParentName}}/g, parentName).replace(/{{parentName}}/g, parentName);
+                text = text.replace(/{{StudentName}}/g, studentName).replace(/{{studentName}}/g, studentName);
+                text = text.replace(/{{Class}}/g, className).replace(/{{class}}/g, className);
+                text = text.replace(/{{Batch}}/g, batch).replace(/{{batch}}/g, batch);
+                text = text.replace(/{{TuitionCenter}}/g, 'Techora Academy').replace(/{{tuitionCenter}}/g, 'Techora Academy');
+                text = text.replace(/{{Date}}/g, date).replace(/{{date}}/g, date);
+                
+                // Additional mock values for new templates
+                text = text.replace(/{{amount}}/g, '5,000');
+                text = text.replace(/{{dueDate}}/g, '15th Oct, 2026');
+                text = text.replace(/{{totalPendingAmount}}/g, '1,25,000');
 
                 // Preserve line breaks
                 chatPreviewText.innerHTML = text.replace(/\n/g, '<br>');
@@ -216,20 +241,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Variable Badge Click Logic
-            const templateArea = document.getElementById('template-text');
-            const variables = document.querySelectorAll('.template-editor .variable-badge');
+            const templateEditors = document.querySelectorAll('.template-editor');
             
-            variables.forEach(badge => {
-              badge.addEventListener('click', () => {
-                const start = templateArea.selectionStart;
-                const end = templateArea.selectionEnd;
-                const text = templateArea.value;
-                const placeholder = badge.getAttribute('data-var');
-                
-                templateArea.value = text.substring(0, start) + placeholder + text.substring(end);
-                templateArea.focus();
-                templateArea.setSelectionRange(start + placeholder.length, start + placeholder.length);
-              });
+            templateEditors.forEach(editor => {
+              const textarea = editor.querySelector('textarea');
+              const badges = editor.querySelectorAll('.variable-badge');
+              
+              if (textarea) {
+                badges.forEach(badge => {
+                  badge.addEventListener('click', () => {
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    const text = textarea.value;
+                    const placeholder = badge.getAttribute('data-var');
+                    
+                    textarea.value = text.substring(0, start) + placeholder + text.substring(end);
+                    textarea.focus();
+                    textarea.setSelectionRange(start + placeholder.length, start + placeholder.length);
+                  });
+                });
+              }
             });
 
             const attTemplateArea = document.getElementById('att-template-text');
@@ -288,7 +319,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.saveSettings = async () => {
-        // Mock save logic for Message Template Editor
-        alert("Message Template configurations saved successfully!");
+        alert("Individual Payment Reminder configurations saved successfully!");
+    };
+
+    window.saveBatchPaymentTemplate = async () => {
+        alert("Batch Payment Reminder configurations saved successfully!");
+    };
+
+    window.saveBatchGeneralTemplate = async () => {
+        alert("General Message (Batch) configurations saved successfully!");
+    };
+
+    window.saveParentGeneralTemplate = async () => {
+        alert("General Message (Individual Parent) configurations saved successfully!");
     };
 });
