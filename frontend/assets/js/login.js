@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Handle Global Loader
+  const globalLoader = document.getElementById('global-loader');
+  if (globalLoader) {
+    setTimeout(() => {
+      globalLoader.classList.add('hidden');
+      setTimeout(() => globalLoader.remove(), 600); // Remove from DOM after fade out
+    }, 1200); // 1.2s loading delay for effect
+  }
+
   const loginForm = document.getElementById('login-form');
   const errorMessage = document.getElementById('error-message');
   const togglePassword = document.getElementById('toggle-password');
@@ -82,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
       await api.login(email, password);
       // Success, reset attempts and redirect to dashboard
       localStorage.setItem('loginFailedAttempts', '0');
+      sessionStorage.setItem('justLoggedIn', 'true');
       window.location.href = 'dashboard.html';
     } catch (error) {
       failedAttempts++;

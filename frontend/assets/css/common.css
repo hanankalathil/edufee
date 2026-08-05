@@ -79,6 +79,13 @@ body {
   transition: background 0.3s, color 0.3s, border-color 0.3s;
   min-height: 100vh;
   display: flex;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input, textarea {
+  user-select: auto;
+  -webkit-user-select: auto;
 }
 
 /* App Layout Container */

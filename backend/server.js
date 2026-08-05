@@ -31,6 +31,15 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+// Serve frontend statically
+const path = require('path');
+app.use('/pages', express.static(path.join(__dirname, '../frontend/pages')));
+app.use('/assets', express.static(path.join(__dirname, '../frontend/assets')));
+
+// API Routes
+const apiRoutes = require('./routes');
+app.use('/api', apiRoutes);
+
 const PORT = 3001;
 
 let sock = null;
@@ -71,6 +80,15 @@ async function connectToWhatsApp() {
       
       if (shouldReconnect) {
         connectToWhatsApp();
+      } else {
+        // Logged out or invalid tokens (401). Clear auth and restart to get a new QR code.
+        console.log('Session is invalid or logged out. Clearing auth and regenerating QR code...');
+        try {
+          fs.rmSync('./.auth_info', { recursive: true, force: true });
+        } catch (err) {}
+        setTimeout(() => {
+          connectToWhatsApp();
+        }, 1000);
       }
     } else if (connection === 'open') {
       console.log('Opened connection');
@@ -97,25 +115,27 @@ app.get('/api/whatsapp/status', (req, res) => {
 const fs = require('fs');
 
 app.post('/api/whatsapp/disconnect', async (req, res) => {
+  connectionStatus = 'disconnected';
+  qrData = null;
+  userPhone = null;
+
   if (sock) {
     try {
       await sock.logout();
-    } catch(e) {}
-    connectionStatus = 'disconnected';
-    qrData = null;
-    userPhone = null;
-    
-    // Clear auth info so we can scan a new device
-    fs.rmSync('./.auth_info', { recursive: true, force: true });
-    
-    // Restart the connection to generate a new QR code immediately
+      // 'close' event handler will take care of restarting
+    } catch(e) {
+      try { fs.rmSync('./.auth_info', { recursive: true, force: true }); } catch (err) {}
+      setTimeout(() => {
+        connectToWhatsApp();
+      }, 1000);
+    }
+    res.json({ success: true, message: 'Disconnected and restarting' });
+  } else {
+    try { fs.rmSync('./.auth_info', { recursive: true, force: true }); } catch (err) {}
     setTimeout(() => {
       connectToWhatsApp();
     }, 1000);
-    
-    res.json({ success: true, message: 'Disconnected and restarting' });
-  } else {
-    res.json({ success: false, message: 'Not connected' });
+    res.json({ success: true, message: 'Not connected, restarting' });
   }
 });
 
@@ -158,4 +178,68 @@ io.on('connection', (socket) => {
 server.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
   connectToWhatsApp();
+  
+  // Automatically open the browser
+  const { exec } = require('child_process');
+  const url = 'http://localhost:3001/pages/login.html';
+  
+  // Platform specific command to open browser
+  const startCommand = process.platform === 'win32' ? 'start' : process.platform === 'darwin' ? 'open' : 'xdg-open';
+  exec(`${startCommand} ${url}`);
+});
+
+// Setup Monthly Fee Cron Job
+const cron = require('node-cron');
+const { getDb, saveDb } = require('./db');
+
+// Run at 00:00 on day-of-month 1
+cron.schedule('0 0 1 * *', async () => {
+  console.log('Running monthly fee generation job...');
+  try {
+    const db = await getDb();
+    
+    const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    let feesIssued = 0;
+    
+    db.students.forEach(student => {
+      const batch = db.batches.find(b => b.name === student.batch);
+      if (batch && batch.price) {
+        const price = parseFloat(batch.price);
+        
+        // Check if fee for this month already exists for this student
+        const exists = db.fees.find(f => f.studentId === student._id && f.feeType === 'Monthly Tuition' && f.billingPeriod === currentMonth);
+        
+        if (!exists) {
+          const dueDate = new Date();
+          dueDate.setDate(dueDate.getDate() + 10); // Due in 10 days
+          
+          db.fees.push({
+            _id: 'fee_' + Date.now() + '_' + Math.floor(Math.random() * 1000000),
+            studentId: student._id,
+            feeType: 'Monthly Tuition',
+            billingPeriod: currentMonth,
+            totalAmount: price,
+            discount: 0,
+            fine: 0,
+            netAmount: price,
+            paidAmount: 0,
+            dueAmount: price,
+            status: 'Unpaid',
+            dueDate: dueDate.toISOString(),
+            paymentHistory: []
+          });
+          feesIssued++;
+        }
+      }
+    });
+    
+    if (feesIssued > 0) {
+      await saveDb();
+      console.log(`Successfully issued ${feesIssued} monthly fees for ${currentMonth}.`);
+    } else {
+      console.log(`No new monthly fees to issue for ${currentMonth}.`);
+    }
+  } catch (err) {
+    console.error('Error generating monthly fees:', err);
+  }
 });

@@ -7,6 +7,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   const classSelect = document.getElementById('att-class');
   const subjectSelect = document.getElementById('att-subject');
 
+  // Load dynamic classes
+  async function loadClasses() {
+    if (!classSelect) return;
+    try {
+      const classes = await api.getClasses();
+      classSelect.innerHTML = '<option value="">Select Class...</option>' + 
+        classes.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+    } catch (e) {
+      console.error('Error loading classes:', e);
+    }
+  }
+
   async function updateBatches() {
     if (!batchSelect || !classSelect) return;
     try {
@@ -97,6 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     batchSelect.addEventListener('change', updateSubjects);
   }
 
+  await loadClasses();
   await updateBatches();
 });
 

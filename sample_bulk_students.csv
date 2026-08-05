@@ -1,0 +1,5 @@
+name,parentName,whatsappNumber,class,batch,school,address,subjects,admissionDate
+John Doe,Richard Doe,9876543210,Class 10,Morning Batch,Global High School,123 Main St,"Mathematics, Science",2026-08-01
+Jane Smith,Robert Smith,9876543211,Class 10,Evening Batch,Global High School,456 Oak St,"Mathematics, English",2026-08-02
+Michael Brown,David Brown,9876543212,Class 12,Weekend Special,City Public School,789 Pine St,"Physics, Chemistry",2026-08-03
+Emily Davis,William Davis,9876543213,Class 12,Morning Batch,City Public School,321 Elm St,"Biology, Chemistry",2026-08-04

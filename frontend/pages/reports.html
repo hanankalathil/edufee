@@ -19,32 +19,33 @@
         </div>
       </header>
 
-      <!-- Selection Filter -->
-      <section class="glass-card" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; position: relative; z-index: 10;">
-        <div class="form-group" style="margin-bottom: 0;">
-          <label for="report-type" class="form-label">Select Report Type</label>
-          <select id="report-type" class="form-control" style="width: 250px;" onchange="loadReportPreview()">
-            <option value="daily">Daily Revenue Report</option>
-            <option value="weekly">Weekly Revenue Report</option>
-            <option value="monthly">Monthly Revenue Report</option>
-            <option value="student">Student Ledger Statement</option>
-            <option value="reminder">WhatsApp Reminder Logs</option>
-          </select>
-        </div>
-
-        <div style="display: flex; gap: 12px;">
-          <button class="btn btn-secondary" onclick="exportReport('csv')">
-            <i class="fa-solid fa-file-excel"></i> Export Excel (CSV)
-          </button>
-          <button class="btn btn-primary" onclick="exportReport('pdf')">
-            <i class="fa-solid fa-file-pdf"></i> Export PDF Report
-          </button>
-        </div>
-      </section>
-
-      <!-- Preview Table -->
+      <!-- Reports Section -->
       <section class="glass-card">
-        <h3 class="section-title" id="report-title-preview">Report Preview</h3>
+        <!-- Selection Filter -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; position: relative; z-index: 10; margin-bottom: 24px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="report-type" class="form-label">Select Report Type</label>
+            <select id="report-type" class="form-control" style="width: 250px;" onchange="loadReportPreview()">
+              <option value="daily">Daily Revenue Report</option>
+              <option value="weekly">Weekly Revenue Report</option>
+              <option value="monthly">Monthly Revenue Report</option>
+              <option value="student">Student Ledger Statement</option>
+              <option value="reminder">WhatsApp Reminder Logs</option>
+            </select>
+          </div>
+
+          <div style="display: flex; gap: 12px;">
+            <button class="btn btn-secondary" onclick="exportReport('csv')">
+              <i class="fa-solid fa-file-excel"></i> Export Excel (CSV)
+            </button>
+            <button class="btn btn-primary" onclick="exportReport('pdf')">
+              <i class="fa-solid fa-file-pdf"></i> Export PDF Report
+            </button>
+          </div>
+        </div>
+
+        <!-- Preview Table -->
+        <h3 class="section-title" id="report-title-preview" style="display: none;">Report Preview</h3>
         <div class="table-container">
           <table class="premium-table">
             <thead id="report-table-header">

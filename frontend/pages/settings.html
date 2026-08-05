@@ -20,10 +20,10 @@
         </div>
       </header>
 
-      <div class="settings-layout">
+      <div class="settings-layout glass-card" style="padding: 0; display: flex; flex-direction: column; gap: 0; overflow: hidden;">
         <!-- Settings Navigation Sidebar -->
-        <aside class="settings-nav-aside">
-          <ul class="settings-list-navigation">
+        <aside class="settings-nav-aside" style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 16px 24px;">
+          <ul class="settings-list-navigation" style="border: none; background: transparent; box-shadow: none; border-radius: 0; padding: 0; margin: 0; gap: 12px;">
             <li>
               <a href="javascript:void(0)" class="settings-link active" onclick="switchSettingsSection('general')">
                 <i class="fa-solid fa-hotel"></i> <span>General Details</span>
@@ -56,9 +56,9 @@
         </aside>
 
         <!-- Settings Content Area -->
-        <div class="settings-content-area" style="flex: 1; width: 100%;">
+        <div class="settings-content-area" style="flex: 1; width: 100%; padding: 24px;">
           <!-- General settings panel -->
-          <section class="glass-card settings-panel" id="panel-general">
+          <section class="settings-panel" id="panel-general">
             <h3 class="section-title"><i class="fa-solid fa-hotel" style="color: var(--color-primary); margin-right: 8px;"></i> General Academy Details</h3>
             <form id="settings-general-form">
               <div class="form-group">
@@ -97,7 +97,7 @@
           </section>
 
           <!-- Branding logo/theme settings panel -->
-          <section class="glass-card settings-panel" id="panel-branding" style="display: none;">
+          <section class="settings-panel" id="panel-branding" style="display: none;">
             <h3 class="section-title"><i class="fa-solid fa-palette" style="color: var(--color-primary); margin-right: 8px;"></i> Logo & Theme Branding</h3>
             <form id="settings-branding-form">
               <div class="branding-layout">
@@ -412,7 +412,7 @@
                     <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;" id="q-progress-text">0 / 0</span>
                   </div>
                   <div style="width: 100%; height: 8px; background: var(--border-color); border-radius: 100px; overflow: hidden;">
-                    <div id="q-progress-bar" style="width: 17%; height: 100%; background: linear-gradient(90deg, #25D366, #128C7E); border-radius: 100px; transition: width 0.5s ease;"></div>
+                    <div id="q-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #25D366, #128C7E); border-radius: 100px; transition: width 0.5s ease;"></div>
                   </div>
                 </div>
 

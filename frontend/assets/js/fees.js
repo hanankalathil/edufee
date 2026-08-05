@@ -16,38 +16,76 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initFeesPage() {
   const searchInput = document.getElementById('fees-search');
   const paymentForm = document.getElementById('payment-form');
+  const classFilter = document.getElementById('fees-class-filter');
   const batchFilter = document.getElementById('fees-batch-filter');
   
   let currentPage = 1;
   const pageSize = 10;
 
-  if (batchFilter) {
+  if (classFilter && batchFilter) {
     try {
-      const batches = await api.getBatches();
-      batches.forEach(b => {
+      const classes = await api.getClasses();
+      classes.forEach(c => {
         const opt = document.createElement('option');
-        opt.value = b.name;
-        opt.textContent = `${b.name} (${b.class})`;
-        batchFilter.appendChild(opt);
+        opt.value = c.name;
+        opt.textContent = c.name;
+        classFilter.appendChild(opt);
       });
-      if (window.initializeCustomSelects) {
-        window.initializeCustomSelects();
-      }
+
+      const batches = await api.getBatches();
+
+      const updateBatches = () => {
+        batchFilter.innerHTML = '<option value="All Batches">All Batches</option>';
+        const selectedClass = classFilter.value;
+        let filteredBatches = batches;
+        if (selectedClass !== 'All Classes') {
+          filteredBatches = batches.filter(b => b.class === selectedClass);
+        }
+        filteredBatches.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b.name;
+          opt.textContent = `${b.name} (${b.class})`;
+          batchFilter.appendChild(opt);
+        });
+
+        if (window.initializeCustomSelects) {
+          const nextElBatch = batchFilter.nextElementSibling;
+          if (nextElBatch && nextElBatch.classList.contains('custom-select-container')) {
+            nextElBatch.remove();
+            batchFilter.style.display = '';
+          }
+          const nextElClass = classFilter.nextElementSibling;
+          if (nextElClass && nextElClass.classList.contains('custom-select-container')) {
+            nextElClass.remove();
+            classFilter.style.display = '';
+          }
+          window.initializeCustomSelects();
+        }
+      };
+
+      classFilter.addEventListener('change', () => {
+        updateBatches();
+        currentPage = 1;
+        render();
+      });
+
+      batchFilter.addEventListener('change', () => {
+        currentPage = 1;
+        render();
+      });
+
+      updateBatches();
     } catch (e) {
-      console.error('Failed to load batches for filter', e);
+      console.error('Failed to load classes/batches for filter', e);
     }
-    
-    batchFilter.addEventListener('change', () => {
-      currentPage = 1;
-      render();
-    });
   }
 
   // Load and render invoices
   const render = async () => {
     const invoices = await api.getFees({
       search: searchInput ? searchInput.value : '',
-      batch: batchFilter ? batchFilter.value : 'All Batches'
+      batch: batchFilter ? batchFilter.value : 'All Batches',
+      className: classFilter ? classFilter.value : 'All Classes'
     });
     
     // Sort: Unpaid first, then Partial, then Paid
@@ -201,6 +239,7 @@ async function initFeesPage() {
       };
       
       const filters = {
+        className: document.getElementById('bulkClass').value,
         batch: document.getElementById('bulkBatch').value
       };
 
@@ -219,23 +258,60 @@ async function initFeesPage() {
 
 window.openIssueFeeModal = async () => {
   const modal = document.getElementById('issue-fee-modal');
+  const classSelect = document.getElementById('bulkClass');
   const batchSelect = document.getElementById('bulkBatch');
   
-  if (batchSelect) {
+  if (classSelect && batchSelect) {
+    classSelect.innerHTML = '<option value="All Classes">All Classes (Everyone)</option>';
     batchSelect.innerHTML = '<option value="All Batches">All Batches (Everyone)</option>';
     try {
-      const batches = await api.getBatches();
-      batches.forEach(b => {
+      const classes = await api.getClasses();
+      classes.forEach(c => {
         const opt = document.createElement('option');
-        opt.value = b.name;
-        opt.textContent = `${b.name} (${b.class})`;
-        batchSelect.appendChild(opt);
+        opt.value = c.name;
+        opt.textContent = c.name;
+        classSelect.appendChild(opt);
       });
-      if (window.initializeCustomSelects) {
-        window.initializeCustomSelects();
-      }
+
+      const batches = await api.getBatches();
+
+      const updateBatches = () => {
+        batchSelect.innerHTML = '<option value="All Batches">All Batches (Everyone)</option>';
+        const selectedClass = classSelect.value;
+        let filteredBatches = batches;
+        if (selectedClass !== 'All Classes') {
+          filteredBatches = batches.filter(b => b.class === selectedClass);
+        }
+        filteredBatches.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b.name;
+          opt.textContent = `${b.name} (${b.class})`;
+          batchSelect.appendChild(opt);
+        });
+
+        // Re-initialize custom selects if they exist
+        if (window.initializeCustomSelects) {
+          // Need to remove old custom-select-container for batchSelect if it was created
+          const nextElBatch = batchSelect.nextElementSibling;
+          if (nextElBatch && nextElBatch.classList.contains('custom-select-container')) {
+            nextElBatch.remove();
+            batchSelect.style.display = '';
+          }
+          const nextElClass = classSelect.nextElementSibling;
+          if (nextElClass && nextElClass.classList.contains('custom-select-container')) {
+            nextElClass.remove();
+            classSelect.style.display = '';
+          }
+          window.initializeCustomSelects();
+        }
+      };
+
+      classSelect.addEventListener('change', updateBatches);
+      
+      // Trigger initial load
+      updateBatches();
     } catch (e) {
-      console.error('Failed to load batches', e);
+      console.error('Failed to load classes/batches', e);
     }
   }
 
@@ -340,7 +416,7 @@ function renderInvoicesTable(invoices) {
         <td><span class="badge ${statusClass}">${f.status}</span></td>
         <td>
           <div class="table-actions">
-            ${f.dueAmount > 0 ? `
+            ${f.status !== 'Paid' ? `
               <button class="btn btn-pay" onclick="openPaymentModal('${f._id}', ${f.dueAmount})">Pay</button>
             ` : `
               <div class="pay-placeholder"></div>

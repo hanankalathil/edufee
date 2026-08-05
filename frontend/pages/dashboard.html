@@ -9,6 +9,14 @@
   <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
 </head>
 <body>
+  <div id="initial-loader" style="display: none; position: fixed; inset: 0; background: var(--bg-body, #0f172a); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease;">
+    <div class="loader-spinner" style="width: 60px; height: 60px; border: 5px solid var(--border-color, #334155); border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <h2 style="margin-top: 24px; font-family: 'Outfit', sans-serif; font-size: 1.8rem; color: var(--text-main, #f8fafc); font-weight: 700;">Techora EduFee</h2>
+    <p style="color: var(--text-muted, #94a3b8); margin-top: 8px; font-size: 1rem;">Loading your dashboard...</p>
+    <style>
+      @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+  </div>
   <div id="app-container">
     <!-- Sidebar Injection Target -->
     <div id="sidebar-container"></div>

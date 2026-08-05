@@ -364,3 +364,38 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Bulk Selection Styles */
+.student-row {
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.student-row.bulk-selected {
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+.student-row.bulk-selected td {
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.bulk-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  transition: all 0.2s;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.student-row.bulk-selected .bulk-checkbox {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}

@@ -36,6 +36,9 @@
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3 class="section-title" style="margin-bottom: 0;">Invoices Directory</h3>
             <div style="display: flex; gap: 15px; align-items: center;">
+              <select id="fees-class-filter" class="form-control" style="width: 280px; height: 100%; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); border-radius: var(--border-radius); padding: 8px 12px; font-size: 0.9rem; cursor: pointer;">
+                <option value="All Classes">All Classes</option>
+              </select>
               <select id="fees-batch-filter" class="form-control" style="width: 280px; height: 100%; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); border-radius: var(--border-radius); padding: 8px 12px; font-size: 0.9rem; cursor: pointer;">
                 <option value="All Batches">All Batches</option>
               </select>
@@ -96,12 +99,22 @@
             </div>
 
 
-            <div class="form-group">
-              <label for="bulkBatch" class="form-label">Target Batch *</label>
-              <select id="bulkBatch" class="form-control" required>
-                <option value="All Batches">All Batches (Everyone)</option>
-                <!-- Dynamic batches will be loaded here -->
-              </select>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div class="form-group">
+                <label for="bulkClass" class="form-label">Target Class *</label>
+                <select id="bulkClass" class="form-control" required>
+                  <option value="All Classes">All Classes (Everyone)</option>
+                  <!-- Dynamic classes will be loaded here -->
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="bulkBatch" class="form-label">Target Batch *</label>
+                <select id="bulkBatch" class="form-control" required>
+                  <option value="All Batches">All Batches (Everyone)</option>
+                  <!-- Dynamic batches will be loaded here -->
+                </select>
+              </div>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">

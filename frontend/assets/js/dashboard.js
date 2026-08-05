@@ -1,4 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Check for initial loader
+  const loader = document.getElementById('initial-loader');
+  if (loader && sessionStorage.getItem('justLoggedIn') === 'true') {
+    loader.style.display = 'flex';
+    sessionStorage.removeItem('justLoggedIn');
+    
+    // Simulate loading and fade out
+    setTimeout(() => {
+      loader.style.opacity = '0';
+      setTimeout(() => loader.style.display = 'none', 500);
+    }, 1500); // 1.5 seconds loading time
+  } else if (loader) {
+    loader.style.display = 'none';
+  }
+
   // Set Admin display name
   const user = api.getUser();
   if (user) {

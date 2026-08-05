@@ -18,76 +18,90 @@
           <h1>Students Directory</h1>
           <p style="color: var(--text-muted); font-size: 0.9rem;">Manage registrations, classes, and detailed directory lists.</p>
         </div>
-        <button class="btn btn-primary" onclick="window.location.href='add-student.html'">
-          <i class="fa-solid fa-plus"></i> Add New Student
-        </button>
-      </header>
-
-      <!-- Filters -->
-      <section class="glass-card filter-bar">
-        <div class="search-container" style="width: 300px;">
-          <i class="fa-solid fa-magnifying-glass search-icon"></i>
-          <input type="text" id="search-input" class="search-input" placeholder="Search by name, ID, or WhatsApp...">
-        </div>
-
-        <div class="filter-group">
-          <div class="form-group" style="margin-bottom: 0; flex-direction: row; align-items: center; gap: 8px;">
-            <label class="form-label" style="white-space: nowrap;">Class:</label>
-            <select id="filter-class" class="form-control" style="padding: 8px 12px; border-radius: 12px; min-width: 220px;">
-              <option value="">All Classes</option>
-              <option value="Class 8">Class 8</option>
-              <option value="Class 9">Class 9</option>
-              <option value="Class 10">Class 10</option>
-              <option value="Plus One Science">Plus One Science</option>
-              <option value="Plus One Commerce">Plus One Commerce</option>
-              <option value="Plus One Humanities">Plus One Humanities</option>
-              <option value="Plus Two Science">Plus Two Science</option>
-              <option value="Plus Two Commerce">Plus Two Commerce</option>
-              <option value="Plus Two Humanities">Plus Two Humanities</option>
-            </select>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 0; flex-direction: row; align-items: center; gap: 8px;">
-            <label class="form-label" style="white-space: nowrap;">Batch:</label>
-            <select id="filter-batch" class="form-control" style="padding: 8px 12px; border-radius: 12px; min-width: 220px;">
-              <option value="">All Batches</option>
-            </select>
-          </div>
-          
-          <button class="btn btn-secondary" onclick="window.location.href='batches.html'">
-            <i class="fa-solid fa-layer-group"></i> Batches
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <button class="btn btn-secondary" onclick="document.getElementById('bulk-upload-input').click()">
+            <i class="fa-solid fa-file-import"></i> Bulk Add
+          </button>
+          <input type="file" id="bulk-upload-input" accept=".csv" style="display: none;" onchange="handleBulkUpload(event)">
+          <button class="btn btn-primary" onclick="window.location.href='add-student.html'">
+            <i class="fa-solid fa-plus"></i> Add New Student
           </button>
         </div>
-      </section>
+      </header>
 
-      <!-- Students Table -->
-      <section class="table-container" style="margin-bottom: 24px;">
-        <table class="premium-table">
-          <thead>
-            <tr>
-              <th>STUDENT ID</th>
-              <th>NAME</th>
-              <th>CLASS & BATCH</th>
-              <th>PARENT / CONTACT</th>
-              <th>ADMISSION DATE</th>
-              <th style="text-align: right;">ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody id="students-grid-container">
-            <!-- Student rows dynamically rendered here -->
-          </tbody>
-        </table>
-        
-        <div style="padding: 16px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-secondary);">
-          <span style="font-size: 0.875rem; color: var(--text-muted);" id="table-pagination-info">Showing 0 entries</span>
-          <div style="display: flex; gap: 6px;">
-            <button class="btn btn-secondary" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center;">
-              <i class="fa-solid fa-chevron-left" style="font-size: 0.75rem;"></i>
+      <!-- Combined Filters and Table -->
+      <section class="glass-card" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+        <!-- Filters -->
+        <div class="filter-bar" style="padding: 24px; border-bottom: 1px solid var(--border-color);">
+          <div class="search-container" style="width: 300px;">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="search-input" class="search-input" placeholder="Search by name, ID, or WhatsApp...">
+          </div>
+
+          <div class="filter-group">
+            <div class="form-group" style="margin-bottom: 0; flex-direction: row; align-items: center; gap: 8px;">
+              <label class="form-label" style="white-space: nowrap;">Class:</label>
+              <select id="filter-class" class="form-control" style="padding: 8px 12px; border-radius: 12px; min-width: 220px;">
+                <option value="">All Classes</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0; flex-direction: row; align-items: center; gap: 8px;">
+              <label class="form-label" style="white-space: nowrap;">Batch:</label>
+              <select id="filter-batch" class="form-control" style="padding: 8px 12px; border-radius: 12px; min-width: 220px;">
+                <option value="">All Batches</option>
+              </select>
+            </div>
+            
+            <button class="btn btn-secondary" onclick="window.location.href='batches.html'">
+              <i class="fa-solid fa-layer-group"></i> Batches
             </button>
-            <button class="btn btn-primary" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center;">1</button>
-            <button class="btn btn-secondary" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center;">
-              <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i>
-            </button>
+          </div>
+        </div>
+
+        <!-- Students Table -->
+        <div class="table-container" style="border: none; box-shadow: none; border-radius: 0;">
+          <!-- Bulk Actions Toolbar -->
+          <div id="bulk-actions-toolbar" style="display: none; padding: 12px 20px; background: rgba(239, 68, 68, 0.05); border-bottom: 1px solid rgba(239, 68, 68, 0.1); align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <i class="fa-solid fa-check-double" style="color: #ef4444;"></i>
+              <span id="bulk-selection-count" style="font-weight: 600; color: #ef4444;">0 students selected</span>
+            </div>
+            <div style="display: flex; gap: 12px;">
+              <button class="btn btn-secondary" onclick="exitBulkSelectionMode()">Cancel</button>
+              <button class="btn btn-danger" onclick="executeBulkDelete()">
+                <i class="fa-solid fa-trash-can"></i> Delete Selected
+              </button>
+            </div>
+          </div>
+
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>STUDENT ID</th>
+                <th>NAME</th>
+                <th>CLASS & BATCH</th>
+                <th>PARENT / CONTACT</th>
+                <th>ADMISSION DATE</th>
+                <th style="text-align: right;">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="students-grid-container">
+              <!-- Student rows dynamically rendered here -->
+            </tbody>
+          </table>
+          
+          <div style="padding: 16px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-secondary);">
+            <span style="font-size: 0.875rem; color: var(--text-muted);" id="table-pagination-info">Showing 0 entries</span>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn btn-secondary" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-chevron-left" style="font-size: 0.75rem;"></i>
+              </button>
+              <button class="btn btn-primary" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center;">1</button>
+              <button class="btn btn-secondary" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i>
+              </button>
+            </div>
           </div>
         </div>
       </section>

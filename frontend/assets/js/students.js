@@ -21,13 +21,67 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ==========================================
    1. STUDENTS DIRECTORY LIST
    ========================================== */
+window.isBulkSelectionMode = false;
+window.selectedStudents = new Set();
+window.currentStudentsList = [];
+window.lastSelectedRowIndex = -1;
+window.isDraggingToSelect = false;
+
+window.exitBulkSelectionMode = () => {
+  window.isBulkSelectionMode = false;
+  window.isDraggingToSelect = false;
+  window.lastSelectedRowIndex = -1;
+  window.isBulkSelectionMode = false;
+  window.selectedStudents.clear();
+  const toolbar = document.getElementById('bulk-actions-toolbar');
+  if (toolbar) toolbar.style.display = 'none';
+  if (typeof renderStudentCards === 'function') {
+    renderStudentCards(window.currentStudentsList);
+  }
+};
+
+window.executeBulkDelete = async () => {
+  if (window.selectedStudents.size === 0) return;
+  if (await confirm(`Are you sure you want to permanently delete ${window.selectedStudents.size} student(s)?`)) {
+    try {
+      const deletePromises = Array.from(window.selectedStudents).map(id => api.deleteStudent(id));
+      await Promise.all(deletePromises);
+      alert('Selected students deleted successfully.');
+      window.exitBulkSelectionMode();
+      initStudentsList();
+    } catch (e) {
+      alert('Error deleting some students: ' + e.message);
+    }
+  }
+};
+
+window.toggleStudentSelection = (id) => {
+  if (window.selectedStudents.has(id)) {
+    window.selectedStudents.delete(id);
+  } else {
+    window.selectedStudents.add(id);
+  }
+  
+  if (window.selectedStudents.size === 0) {
+    window.exitBulkSelectionMode();
+  } else {
+    const countEl = document.getElementById('bulk-selection-count');
+    if (countEl) countEl.textContent = `${window.selectedStudents.size} student(s) selected`;
+    renderStudentCards(window.currentStudentsList);
+  }
+};
+
 async function initStudentsList() {
   const searchInput = document.getElementById('search-input');
   const classFilter = document.getElementById('filter-class');
   const batchFilter = document.getElementById('filter-batch');
 
-  // Load dynamic batches for the filter dropdown
+  // Load dynamic classes and batches for the filter dropdown
   try {
+    const classes = await api.getClasses();
+    classFilter.innerHTML = '<option value="">All Classes</option>' +
+      classes.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+
     const batches = await api.getBatches();
     batchFilter.innerHTML = '<option value="">All Batches</option>' + 
       batches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
@@ -65,6 +119,7 @@ async function initStudentsList() {
 }
 
 function renderStudentCards(students) {
+  window.currentStudentsList = students;
   const container = document.getElementById('students-grid-container');
   if (!container) return;
 
@@ -79,9 +134,15 @@ function renderStudentCards(students) {
     let admDate = s.admissionDate ? new Date(s.admissionDate).toLocaleDateString() : 'N/A';
     const img = s.photo || '../assets/images/default-avatar.svg';
     
+    const isSelected = window.selectedStudents.has(s._id);
+    const rowClass = (window.isBulkSelectionMode || isSelected) ? `student-row ${isSelected ? 'bulk-selected' : ''}` : 'student-row';
+    
     return `
-      <tr>
-        <td style="font-weight: 700;">${s.studentId}</td>
+      <tr class="${rowClass}" data-id="${s._id}">
+        <td style="font-weight: 700; display: flex; align-items: center; gap: 12px; height: 100%;">
+          ${window.isBulkSelectionMode ? `<div class="bulk-checkbox"><i class="fa-solid fa-check" style="font-size: 0.7rem;"></i></div>` : ''}
+          ${s.studentId}
+        </td>
         <td>
           <div style="display: flex; align-items: center; gap: 12px;">
             <img src="${img}" alt="${s.name}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
@@ -99,13 +160,13 @@ function renderStudentCards(students) {
         <td>${admDate}</td>
         <td style="text-align: right;">
           <div style="display: flex; gap: 8px; justify-content: flex-end;">
-            <button class="btn btn-secondary" title="View Details" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" onclick="window.location.href='student-profile.html?id=${s._id}'">
+            <button class="btn btn-secondary action-btn" title="View Details" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" onclick="window.location.href='student-profile.html?id=${s._id}'">
               <i class="fa-regular fa-eye" style="font-size: 0.875rem;"></i>
             </button>
-            <button class="btn btn-secondary" title="Edit Student" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; color: #10b981;" onclick="window.location.href='add-student.html?id=${s._id}'">
+            <button class="btn btn-secondary action-btn" title="Edit Student" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; color: #10b981;" onclick="window.location.href='add-student.html?id=${s._id}'">
               <i class="fa-solid fa-pencil" style="font-size: 0.875rem;"></i>
             </button>
-            <button class="btn btn-secondary" title="Delete Student" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; color: #ef4444;" onclick="deleteStudent('${s._id}')">
+            <button class="btn btn-secondary action-btn" title="Delete Student" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; color: #ef4444;" onclick="deleteStudent('${s._id}')">
               <i class="fa-regular fa-trash-can" style="font-size: 0.875rem;"></i>
             </button>
           </div>
@@ -113,6 +174,128 @@ function renderStudentCards(students) {
       </tr>
     `;
   }).join('');
+
+  // Attach long-press and click listeners to rows
+  let holdTimer;
+  const rows = container.querySelectorAll('.student-row');
+  
+  // For drag selection to stop when mouse is up anywhere
+  if (!window.dragSelectionInit) {
+    window.addEventListener('mouseup', () => {
+      window.isDraggingToSelect = false;
+    });
+    window.dragSelectionInit = true;
+  }
+  
+  rows.forEach((row, index) => {
+    const id = row.getAttribute('data-id');
+    
+    // Prevent row click if clicking action buttons
+    const actionBtns = row.querySelectorAll('.action-btn');
+    actionBtns.forEach(btn => {
+      btn.addEventListener('mousedown', e => e.stopPropagation());
+      btn.addEventListener('touchstart', e => e.stopPropagation());
+      btn.addEventListener('click', e => e.stopPropagation());
+    });
+
+    const enterBulkMode = () => {
+      window.isBulkSelectionMode = true;
+      window.selectedStudents.add(id);
+      window.lastSelectedRowIndex = index;
+      const toolbar = document.getElementById('bulk-actions-toolbar');
+      if (toolbar) toolbar.style.display = 'flex';
+      const countEl = document.getElementById('bulk-selection-count');
+      if (countEl) countEl.textContent = `1 student(s) selected`;
+      renderStudentCards(window.currentStudentsList);
+    };
+
+    const startHold = (e) => {
+      if (e.button && e.button !== 0) return; // Only left click
+      
+      // Handle drag selection start if in bulk mode
+      if (window.isBulkSelectionMode) {
+        window.isDraggingToSelect = true;
+        return;
+      }
+      
+      holdTimer = setTimeout(() => {
+        if (!window.isBulkSelectionMode) {
+          enterBulkMode();
+        }
+      }, 500);
+    };
+
+    const cancelHold = () => {
+      clearTimeout(holdTimer);
+    };
+
+    row.addEventListener('mousedown', startHold);
+    row.addEventListener('touchstart', startHold, { passive: true });
+    
+    row.addEventListener('mouseup', cancelHold);
+    row.addEventListener('mouseleave', cancelHold);
+    row.addEventListener('touchend', cancelHold);
+    row.addEventListener('touchcancel', cancelHold);
+    
+    row.addEventListener('mouseenter', (e) => {
+      if (window.isBulkSelectionMode && window.isDraggingToSelect) {
+        window.selectedStudents.add(id);
+        window.lastSelectedRowIndex = index;
+        const countEl = document.getElementById('bulk-selection-count');
+        if (countEl) countEl.textContent = `${window.selectedStudents.size} student(s) selected`;
+        row.classList.add('bulk-selected');
+        const checkbox = row.querySelector('.bulk-checkbox');
+        if (!checkbox && window.isBulkSelectionMode) {
+           // We might need to just call renderStudentCards but that interrupts drag. 
+           // So we do lightweight DOM update here:
+           renderStudentCards(window.currentStudentsList);
+        }
+      }
+    });
+
+    row.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      // Ctrl/Cmd click
+      if (e.ctrlKey || e.metaKey) {
+        if (!window.isBulkSelectionMode) {
+          window.isBulkSelectionMode = true;
+          const toolbar = document.getElementById('bulk-actions-toolbar');
+          if (toolbar) toolbar.style.display = 'flex';
+        }
+        window.toggleStudentSelection(id);
+        window.lastSelectedRowIndex = index;
+        return;
+      }
+      
+      // Shift click
+      if (e.shiftKey && window.lastSelectedRowIndex !== -1) {
+        if (!window.isBulkSelectionMode) {
+          window.isBulkSelectionMode = true;
+          const toolbar = document.getElementById('bulk-actions-toolbar');
+          if (toolbar) toolbar.style.display = 'flex';
+        }
+        
+        const start = Math.min(window.lastSelectedRowIndex, index);
+        const end = Math.max(window.lastSelectedRowIndex, index);
+        
+        for (let i = start; i <= end; i++) {
+          const rangeRowId = rows[i].getAttribute('data-id');
+          window.selectedStudents.add(rangeRowId);
+        }
+        
+        const countEl = document.getElementById('bulk-selection-count');
+        if (countEl) countEl.textContent = `${window.selectedStudents.size} student(s) selected`;
+        renderStudentCards(window.currentStudentsList);
+        return;
+      }
+      
+      if (window.isBulkSelectionMode) {
+        window.toggleStudentSelection(id);
+        window.lastSelectedRowIndex = index;
+      }
+    });
+  });
 
   const paginationInfo = document.getElementById('table-pagination-info');
   if (paginationInfo) {
@@ -156,6 +339,22 @@ function initAddStudentPage() {
       streamSelect.required = false;
       streamSelect.value = '';
     }
+    
+    const batchSelectEl = document.getElementById('batch');
+    if (batchSelectEl) {
+      if (val) {
+        const classBatches = allBatches.filter(b => b.class === val);
+        batchSelectEl.innerHTML = '<option value="">Select Batch...</option>' + classBatches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
+        batchSelectEl.disabled = false;
+      } else {
+        batchSelectEl.innerHTML = '<option value="">Select Class First...</option>';
+        batchSelectEl.disabled = true;
+        window.updateSubjectsForBatch("");
+      }
+      // Temporarily remove our own listener to avoid loops if needed, though dispatching shouldn't loop here since they listen on different elements.
+      batchSelectEl.dispatchEvent(new Event('change'));
+    }
+
     if (window.initializeCustomSelects) {
       window.initializeCustomSelects();
     }
@@ -229,31 +428,15 @@ function initAddStudentPage() {
     batchSelectEl.addEventListener('change', (e) => {
       const selectedBatchName = e.target.value;
       window.updateSubjectsForBatch(selectedBatchName);
-      
-      if (classSelect) {
-        if (selectedBatchName) {
-          const selectedBatch = allBatches.find(b => b.name === selectedBatchName);
-          if (selectedBatch && selectedBatch.class) {
-            classSelect.innerHTML = `<option value="${selectedBatch.class}">${selectedBatch.class}</option>`;
-            classSelect.value = selectedBatch.class;
-            classSelect.disabled = false;
-            classSelect.dispatchEvent(new Event('change'));
-          }
-        } else {
-          classSelect.innerHTML = '<option value="">Select Batch First...</option>';
-          classSelect.disabled = true;
-          classSelect.dispatchEvent(new Event('change'));
-        }
-      }
     });
   }
 
-  const populateBatches = async () => {
-    const batchSelect = document.getElementById('batch');
-    if (!batchSelect) return;
+  const populateClasses = async () => {
+    if (!classSelect) return;
     try {
+      const allClasses = await api.getClasses();
       allBatches = await api.getBatches();
-      batchSelect.innerHTML = '<option value="">Select Batch...</option>' + allBatches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
+      classSelect.innerHTML = '<option value="">Select Class...</option>' + allClasses.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
       
       if (studentId) {
         document.getElementById('form-title').textContent = 'Modify Student Record';
@@ -267,17 +450,17 @@ function initAddStudentPage() {
         window.initializeCustomSelects();
       }
     } catch (e) {
-      console.error('Error populating batch dropdown:', e);
+      console.error('Error populating class dropdown:', e);
     }
   };
 
-  populateBatches();
+  populateClasses();
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
 
-    // Class is populated automatically from the selected batch
+    // Class is already populated correctly
     let finalClass = classSelect.value;
     formData.set('class', finalClass);
 
@@ -328,6 +511,10 @@ async function loadStudentDataForEdit(id) {
       streamSelect.value = '';
     }
 
+    if (classSelect) {
+      classSelect.value = student.class;
+      classSelect.dispatchEvent(new Event('change'));
+    }
     const batchEl = document.getElementById('batch');
     if (batchEl) {
       batchEl.value = student.batch;
@@ -599,8 +786,7 @@ async function initBatchesPage() {
   };
 
   window.handleBatchClassSelection = (className) => {
-    const id = document.getElementById('batch-id').value;
-    if (!id && className) {
+    if (className) {
       const cls = allConfiguredClasses.find(c => c.name === className);
       const subjectsContainer = document.getElementById('batch-subjects-container');
       if (subjectsContainer && cls && cls.subjects) {
@@ -1001,4 +1187,101 @@ async function initBatchesPage() {
 
 window.filterByBatch = (batchName) => {
   window.location.href = `students.html?batch=${encodeURIComponent(batchName)}`;
+};
+
+window.handleBulkUpload = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const text = e.target.result;
+    const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+    if (lines.length <= 1) {
+      alert("CSV file is empty or only contains headers.");
+      return;
+    }
+
+    const parseCSVRow = (str) => {
+      const re = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
+      return str.split(re).map(val => val.trim().replace(/(^"|"$)/g, ''));
+    };
+
+    const headers = parseCSVRow(lines[0]).map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
+    const students = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const row = parseCSVRow(lines[i]);
+      if (row.length === 0 || (row.length === 1 && row[0] === '')) continue;
+      const studentObj = {};
+      headers.forEach((header, index) => {
+        studentObj[header] = row[index] || '';
+      });
+      students.push(studentObj);
+    }
+
+    try {
+      let successCount = 0;
+      
+      const existingClasses = await api.getClasses();
+      const existingBatches = await api.getBatches();
+      
+      const classNames = new Set(existingClasses.map(c => c.name));
+      const batchNames = new Set(existingBatches.map(b => b.name));
+
+      for (const st of students) {
+        if (!st.name) continue; // Skip empty rows
+
+        if (st.class && !classNames.has(st.class)) {
+          await api.createClass({ name: st.class, subjects: [] });
+          classNames.add(st.class);
+        }
+
+        if (st.batch && !batchNames.has(st.batch)) {
+          let inheritSubjects = [];
+          if (st.class) {
+            const clsObj = existingClasses.find(c => c.name === st.class);
+            if (clsObj) inheritSubjects = clsObj.subjects || [];
+          }
+          await api.createBatch({ 
+            name: st.batch, 
+            class: st.class || '', 
+            timing: 'Not Constant', 
+            price: 0, 
+            whatsappGroup: '', 
+            subjects: inheritSubjects 
+          });
+          batchNames.add(st.batch);
+        }
+        
+        const fd = new FormData();
+        const genId = 'STU' + Math.floor(Math.random() * 1000000);
+        fd.append('studentId', st.studentid || genId);
+        fd.append('name', st.name || '');
+        fd.append('parentName', st.parentname || '');
+        fd.append('whatsappNumber', st.whatsappnumber || st.whatsapp || '');
+        fd.append('class', st.class || '');
+        fd.append('batch', st.batch || '');
+        fd.append('school', st.school || '');
+        fd.append('address', st.address || '');
+        fd.append('subjects', st.subjects || '');
+        fd.append('admissionDate', st.admissiondate || new Date().toISOString().substring(0, 10));
+
+        await api.createStudent(fd);
+        successCount++;
+      }
+      
+      alert(`Successfully added ${successCount} students in bulk.`);
+      event.target.value = ''; // reset file input
+      
+      if (typeof initStudentsList === 'function') {
+        if (document.getElementById('search-input')) {
+          initStudentsList();
+        }
+      }
+    } catch (err) {
+      alert("Error during bulk upload: " + err.message);
+    }
+  };
+  reader.readAsText(file);
 };

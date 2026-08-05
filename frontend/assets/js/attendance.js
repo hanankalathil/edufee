@@ -11,13 +11,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (dateParam) {
     document.getElementById('att-date').value = dateParam;
   }
-  if (classParam) {
-    document.getElementById('att-class').value = classParam;
-  }
-
   // Load batches dynamically based on selected class
   const batchSelect = document.getElementById('att-batch');
   const classSelect = document.getElementById('att-class');
+
+  // Load dynamic classes
+  async function loadClasses() {
+    if (!classSelect) return;
+    try {
+      const classes = await api.getClasses();
+      classSelect.innerHTML = '<option value="">Select Class...</option>' + 
+        classes.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+      if (classParam) {
+        classSelect.value = classParam;
+      }
+    } catch (e) {
+      console.error('Error loading classes:', e);
+    }
+  }
 
   async function updateBatches() {
     if (!batchSelect || !classSelect) return;
@@ -86,6 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Load initially
+  await loadClasses();
   await updateBatches();
   loadAttendanceSheet();
 });
@@ -124,7 +136,7 @@ async function loadAttendanceSheet() {
       return;
     }
 
-    tbody.innerHTML = sheet.records.map(record => {
+    tbody.innerHTML = sheet.records.filter(r => r.student).map(record => {
       const student = record.student;
       const isPresent = record.status === 'Present';
       const stats = record.stats || { total: 0, present: 0, percent: 100 };

@@ -17,7 +17,8 @@ async function initEduPage() {
     allBatches = await api.getBatches();
     allStudents = await api.getStudents();
     
-    // Populate batch dropdowns
+    // Populate class and batch dropdowns
+    await populateClassDropdowns();
     populateBatchesDropdowns();
 
     // Load tests
@@ -52,6 +53,18 @@ async function initEduPage() {
     }
   } catch (error) {
     console.error('Error initializing Educational Details page:', error);
+  }
+}
+
+async function populateClassDropdowns() {
+  const classSelect = document.getElementById('new-test-class');
+  if (!classSelect) return;
+  try {
+    const classes = await api.getClasses();
+    classSelect.innerHTML = '<option value="">Select Class...</option>' + 
+      classes.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+  } catch (e) {
+    console.error('Error loading classes:', e);
   }
 }
 
