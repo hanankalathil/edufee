@@ -17,14 +17,14 @@
       <header class="top-bar">
         <div>
           <h1>WhatsApp Communication</h1>
-          <p style="color: var(--text-muted); font-size: 0.9rem;">Manage official Meta WhatsApp Cloud API messages</p>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Send fee reminders & announcements via WhatsApp</p>
         </div>
         <div class="top-bar-actions" style="display: flex; align-items: center; gap: 15px;">
           <a href="settings.html" class="btn btn-secondary" style="display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; text-decoration: none; color: inherit; font-size: 0.9rem; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); transition: background 0.3s;">
             <i class="fa-solid fa-arrow-left"></i> Settings
           </a>
-          <div class="status-badge" style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 6px;">
-            <span class="wa-status-dot wa-status-read"></span> API Connected
+          <div class="status-badge" id="wa-conn-badge" style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 6px;">
+            <span class="wa-status-dot wa-status-read"></span> Device Linked
           </div>
         </div>
       </header>
@@ -33,7 +33,7 @@
       <div class="wa-tabs">
         <div class="wa-tab active" data-target="tab-dashboard">Dashboard</div>
         <div class="wa-tab" data-target="tab-templates">Templates</div>
-        <div class="wa-tab" data-target="tab-send">Send Messages</div>
+        <div class="wa-tab" data-target="tab-send">Preview</div>
         <div class="wa-tab" data-target="tab-history">History & Logs</div>
       </div>
 
@@ -320,29 +320,19 @@ Thank you,
         </div>
       </div>
 
-      <!-- TAB: Send Messages -->
+      <!-- TAB: Template Preview -->
       <div id="tab-send" class="tab-content" style="display: none;">
         <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
           <!-- Configuration -->
           <div class="glass-card compose-card" style="display: flex; flex-direction: column; gap: 20px;">
-            <h3 class="section-title" style="margin-bottom: 0;">Compose Campaign</h3>
+            <div>
+              <h3 class="section-title" style="margin-bottom: 4px;">Template Preview</h3>
+              <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0;">Select a template and fill in sample data to see how it will look on WhatsApp.</p>
+            </div>
             
             <div class="compose-step">
               <div class="step-header">
                 <span class="step-number">1</span>
-                <h4 class="step-title">Select Audience</h4>
-              </div>
-              <div class="form-group" style="margin-bottom: 0;">
-                <select id="target-audience-select" class="form-control premium-select">
-                  <option value="all">All Students with Pending Fees</option>
-                  <!-- Batches will be inserted here by JS -->
-                </select>
-              </div>
-            </div>
-
-            <div class="compose-step">
-              <div class="step-header">
-                <span class="step-number">2</span>
                 <h4 class="step-title">Choose Template</h4>
               </div>
               <div class="form-group" style="margin-bottom: 5px;">
@@ -351,7 +341,7 @@ Thank you,
                   <!-- Populated by JS -->
                 </select>
               </div>
-              <small style="color: var(--text-muted); display: block; margin-top: 5px;">Meta allows only pre-approved templates to initiate conversations.</small>
+              <small style="color: var(--text-muted); display: block; margin-top: 5px;">Customize your templates in the Templates tab.</small>
             </div>
 
             <div class="test-variables-card">
@@ -372,19 +362,14 @@ Thank you,
                   <label>Class/Batch</label>
                   <input type="text" id="mock-class" class="form-input mock-variable-input compact-input" value="Class 10">
                 </div>
-              </div>
-            </div>
-
-            <button id="send-message-btn" class="btn premium-send-btn">
-              <i class="fa-solid fa-paper-plane send-icon"></i> Send via WhatsApp
-            </button>
-
-            <div id="send-progress-container" style="display: none; margin-top: 5px;">
-              <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px;">
-                <span id="send-progress-text">Sending...</span>
-              </div>
-              <div class="progress-container">
-                <div id="send-progress-bar" class="progress-bar"></div>
+                <div class="variable-input-group" style="margin-bottom: 0;">
+                  <label>Amount</label>
+                  <input type="text" id="mock-amount" class="form-input mock-variable-input compact-input" value="1500">
+                </div>
+                <div class="variable-input-group" style="margin-bottom: 0;">
+                  <label>Due Date</label>
+                  <input type="text" id="mock-due-date" class="form-input mock-variable-input compact-input" value="10 Aug 2026">
+                </div>
               </div>
             </div>
           </div>
@@ -397,7 +382,7 @@ Thank you,
               </div>
               <div class="wa-header-info">
                 <h4 class="wa-business-name">Techora EduFee <i class="fa-solid fa-circle-check" style="color: #25D366; font-size: 0.8rem; margin-left: 4px;"></i></h4>
-                <span class="wa-account-type">Official Business Account</span>
+                <span class="wa-account-type">Linked Device</span>
               </div>
             </div>
             <div class="chat-preview-container" style="flex: 1; border-radius: 0;">
@@ -433,7 +418,7 @@ Thank you,
                 <tr>
                   <th>Recipient</th>
                   <th>Number</th>
-                  <th>Template</th>
+                  <th>Message Type</th>
                   <th>Date & Time</th>
                   <th>Status</th>
                 </tr>

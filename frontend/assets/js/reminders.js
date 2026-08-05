@@ -255,97 +255,8 @@ async function initWhatsappSettings() {
   if (!window.autoQueueInterval) {
     window.autoQueueInterval = setInterval(processNextQueueItemSimulated, 5000);
   }
-
-  // Poll connection status every 4 seconds to detect QR scan automatically
-  if (!window.connStatusInterval) {
-    window.connStatusInterval = setInterval(checkConnectionStatus, 4000);
-  }
 }
 
-async function checkConnectionStatus() {
-  try {
-    const res = await api.getWhatsappStatus();
-    const isConnected = res.status === 'CONNECTED';
-    renderConnStatus(isConnected, res.status);
-  } catch (e) {
-    renderConnStatus(false, 'DISCONNECTED');
-  }
-}
-
-// WhatsApp QR / Connection Methods
-window.generateQRCode = async () => {
-  const qrImg = document.getElementById('qr-code-img');
-  const qrLoader = document.getElementById('qr-loader');
-  
-  if (!qrImg || !qrLoader) return;
-  
-  qrImg.style.display = 'none';
-  qrLoader.style.display = 'flex';
-  
-  try {
-    const res = await api.getWhatsappQR();
-    if (res && res.qr) {
-      qrImg.src = res.qr;
-      qrImg.onload = () => {
-        qrLoader.style.display = 'none';
-        qrImg.style.display = 'block';
-      };
-    } else {
-      setTimeout(generateQRCode, 3000);
-    }
-  } catch (err) {
-    console.error('Error fetching QR code:', err);
-    setTimeout(generateQRCode, 4000);
-  }
-};
-
-window.renderConnStatus = (isConnected, statusString = 'Disconnected') => {
-  const statusBadge = document.getElementById('conn-status');
-  const disconnectedUI = document.getElementById('conn-disconnected-ui');
-  const connectedUI = document.getElementById('conn-connected-ui');
-  
-  if (!statusBadge) return;
-  
-  if (isConnected) {
-    statusBadge.textContent = 'Connected';
-    statusBadge.className = 'badge badge-paid';
-    if (disconnectedUI) disconnectedUI.style.display = 'none';
-    if (connectedUI) connectedUI.style.display = 'block';
-  } else {
-    statusBadge.textContent = statusString === 'CONNECTING' ? 'Connecting...' : 'Disconnected';
-    statusBadge.className = statusString === 'CONNECTING' ? 'badge badge-partial' : 'badge badge-unpaid';
-    if (disconnectedUI) disconnectedUI.style.display = 'block';
-    if (connectedUI) connectedUI.style.display = 'none';
-    
-    // Only generate QR code if it is not currently loaded or if it is fully disconnected
-    const qrImg = document.getElementById('qr-code-img');
-    if (qrImg && !qrImg.src && statusString !== 'CONNECTING') {
-      generateQRCode();
-    }
-  }
-};
-
-window.simulateConnection = () => {
-  const statusBadge = document.getElementById('conn-status');
-  if (statusBadge) {
-    statusBadge.textContent = 'Connecting (Simulation)...';
-    statusBadge.className = 'badge badge-partial';
-  }
-  
-  setTimeout(() => {
-    localStorage.setItem('whatsappConnected', 'true');
-    renderConnStatus(true);
-    showToastNotification('Simulated connection success!');
-  }, 1200);
-};
-
-window.disconnectDevice = async () => {
-  if (await confirm('Are you sure you want to disconnect this WhatsApp session? Auto-reminders will stop.')) {
-    await api.disconnectWhatsapp();
-    renderConnStatus(false);
-    showToastNotification('WhatsApp account disconnected.');
-  }
-};
 
 // Simulate Automatic Queue Sender
 async function processNextQueueItemSimulated() {
@@ -526,10 +437,10 @@ async function loadQueueMonitor() {
       if (item.status === 'Cancelled') iconColor = '#64748B';
 
       return `
-        <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+        <div style="border-bottom: 1px solid var(--border-color); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; transition: background 0.2s;" onmouseover="this.style.background='rgba(37,211,102,0.03)'" onmouseout="this.style.background='transparent'">
           <div>
-            <h5 style="font-size: 0.85rem; font-weight: 600;">${item.studentName}</h5>
-            <p style="font-size: 0.75rem; color: var(--text-muted);">${item.parentNumber} | Due: ₹${item.amount}</p>
+            <h5 style="font-size: 0.85rem; font-weight: 600; margin: 0;">${item.studentName}</h5>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 2px 0 0 0;">${item.parentNumber} | Due: ₹${item.amount}</p>
           </div>
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 0.75rem; font-weight: 700; color: ${iconColor};">${item.status}</span>

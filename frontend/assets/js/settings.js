@@ -165,6 +165,9 @@ window.switchSettingsSection = (sectionName) => {
   } else if (sectionName === 'whatsapp') {
     links[2].classList.add('active');
     document.getElementById('panel-whatsapp').style.display = 'block';
+    if (typeof window.loadWhatsAppModule === 'function') {
+      window.loadWhatsAppModule();
+    }
   } else if (sectionName === 'security') {
     links[3].classList.add('active');
     document.getElementById('panel-security').style.display = 'block';
