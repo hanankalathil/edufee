@@ -204,14 +204,20 @@ async function initWhatsappSettings() {
   // Load existing configuration
   try {
     const settings = await api.getWhatsappSettings();
-    toggleManual.checked = settings.manualEnabled;
-    toggleAuto.checked = settings.autoEnabled;
-    delaySelect.value = settings.delayMinutes;
-    templateArea.value = settings.template;
+    if(toggleManual) toggleManual.checked = settings.manualEnabled;
+    if(toggleAuto) toggleAuto.checked = settings.autoEnabled;
+    if(delaySelect) delaySelect.value = settings.delayMinutes;
+    if(templateArea) templateArea.value = settings.template;
 
     if (toggleGroupShare) toggleGroupShare.checked = !!settings.groupShareEnabled;
     if (attGroupTarget) attGroupTarget.value = settings.groupLinkOrPhone || '';
     if (attTemplateArea) attTemplateArea.value = settings.attendanceTemplate || '';
+
+    // Load UPI Settings
+    const upiIdInput = document.getElementById('upi-id');
+    const payeeNameInput = document.getElementById('payee-name');
+    if (upiIdInput && settings.upiId) upiIdInput.value = settings.upiId;
+    if (payeeNameInput && settings.payeeName) payeeNameInput.value = settings.payeeName;
   } catch (error) {
     console.error('Error loading WhatsApp settings:', error);
   }
@@ -276,7 +282,18 @@ async function processNextQueueItemSimulated() {
   
   if (isConnected) {
     try {
-      const res = await api.sendWhatsappMessage(item.parentNumber, `Reminder: ${item.studentName} due amount is ₹${item.amount}. Due date: ${item.dueDate}. Please clear at the earliest.`);
+      let finalMessage = `Reminder: ${item.studentName} due amount is ₹${item.amount}. Due date: ${item.dueDate}. Please clear at the earliest.`;
+      
+      if (settings.upiId) {
+        const payeeName = settings.payeeName || 'Academy';
+        // Adding tr, mc, and mode=02 to attempt to force the UPI app to lock the amount
+        const tr = 'EDU' + Date.now() + item.amount;
+        const upiString = `upi://pay?pa=${settings.upiId}&pn=${payeeName}&am=${item.amount}&cu=INR&tr=${tr}&mc=5122&mode=02`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiString)}`;
+        finalMessage += `\n\nPay via Google Pay / UPI:\n${qrUrl}`;
+      }
+
+      const res = await api.sendWhatsappMessage(item.parentNumber, finalMessage);
       if (res.success) {
         item.status = 'Sent';
         item.time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -313,7 +330,7 @@ window.triggerManualReminder = async (studentId, feeId) => {
     const fee = fees.find(f => f._id === feeId);
 
     const template = settings.template || "Dear {{parentName}}, reminder that tuition fee of ₹{{amount}} for {{studentName}} is due on {{dueDate}}.";
-    const message = template
+    let message = template
       .replace('{{parentName}}', student.parentName)
       .replace('{{tuitionCenter}}', 'Techora Academy')
       .replace('{{studentName}}', student.name)
@@ -321,6 +338,15 @@ window.triggerManualReminder = async (studentId, feeId) => {
       .replace('{{amount}}', fee.dueAmount)
       .replace('{{dueDate}}', new Date(fee.dueDate).toLocaleDateString())
       .replace('{{batch}}', student.batch);
+
+    if (settings.upiId) {
+      const payeeName = settings.payeeName || 'Academy';
+      // Adding tr, mc, and mode=02 to attempt to force the UPI app to lock the amount
+      const tr = 'EDU' + Date.now() + fee.dueAmount;
+      const upiString = `upi://pay?pa=${settings.upiId}&pn=${payeeName}&am=${fee.dueAmount}&cu=INR&tr=${tr}&mc=5122&mode=02`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiString)}`;
+      message += `\n\nPay via Google Pay / UPI:\n${qrUrl}`;
+    }
 
     if (isConnected) {
       showToastNotification(`Sending message via WhatsApp API...`);
@@ -490,12 +516,14 @@ window.saveSettings = async () => {
   const delayMinutes = document.getElementById('queue-delay').value;
   const template = document.getElementById('template-text').value;
 
-  const groupShareEnabled = document.getElementById('toggle-group-share').checked;
-  const groupLinkOrPhone = document.getElementById('att-group-target').value;
-  const attendanceTemplate = document.getElementById('att-template-text').value;
+  const groupShareEnabled = document.getElementById('toggle-group-share') ? document.getElementById('toggle-group-share').checked : false;
+  const groupLinkOrPhone = document.getElementById('att-group-target') ? document.getElementById('att-group-target').value : '';
+  const attendanceTemplate = document.getElementById('att-template-text') ? document.getElementById('att-template-text').value : '';
 
   try {
+    const existing = await api.getWhatsappSettings();
     await api.updateWhatsappSettings({
+      ...existing,
       manualEnabled,
       autoEnabled,
       delayMinutes,
@@ -509,5 +537,20 @@ window.saveSettings = async () => {
     alert('WhatsApp notification settings updated successfully.');
   } catch (error) {
     alert('Error saving settings: ' + error.message);
+  }
+};
+
+window.saveUpiSettings = async () => {
+  const upiId = document.getElementById('upi-id').value;
+  const payeeName = document.getElementById('payee-name').value;
+  
+  try {
+    const settings = await api.getWhatsappSettings();
+    settings.upiId = upiId;
+    settings.payeeName = payeeName;
+    await api.updateWhatsappSettings(settings);
+    alert('UPI configuration updated successfully.');
+  } catch (error) {
+    alert('Error saving UPI settings: ' + error.message);
   }
 };

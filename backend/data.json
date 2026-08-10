@@ -116,6 +116,70 @@
       ],
       "admissionDate": "2026-08-04",
       "_id": "student_1785948577341"
+    },
+    {
+      "studentId": "STU529436",
+      "name": "John Doe",
+      "parentName": "Richard Doe",
+      "whatsappNumber": "9876543210",
+      "class": "Class 10",
+      "batch": "Morning Batch",
+      "school": "Global High School",
+      "address": "123 Main St",
+      "subjects": [
+        "Mathematics",
+        "Science"
+      ],
+      "admissionDate": "2026-08-01",
+      "_id": "student_1786200630826"
+    },
+    {
+      "studentId": "STU468863",
+      "name": "Jane Smith",
+      "parentName": "Robert Smith",
+      "whatsappNumber": "9876543211",
+      "class": "Class 10",
+      "batch": "Evening Batch",
+      "school": "Global High School",
+      "address": "456 Oak St",
+      "subjects": [
+        "Mathematics",
+        "English"
+      ],
+      "admissionDate": "2026-08-02",
+      "_id": "student_1786200630843"
+    },
+    {
+      "studentId": "STU455159",
+      "name": "Michael Brown",
+      "parentName": "David Brown",
+      "whatsappNumber": "9876543212",
+      "class": "Class 12",
+      "batch": "Weekend Special",
+      "school": "City Public School",
+      "address": "789 Pine St",
+      "subjects": [
+        "Physics",
+        "Chemistry"
+      ],
+      "admissionDate": "2026-08-03",
+      "_id": "student_1786200630848"
+    },
+    {
+      "studentId": "STU187421",
+      "name": "Emily Davis",
+      "parentName": "William Davis",
+      "whatsappNumber": "9876543213",
+      "class": "Class 12",
+      "batch": "Morning Batch",
+      "school": "City Public School",
+      "address": "321 Elm St",
+      "subjects": [
+        "Biology",
+        "Chemistry"
+      ],
+      "admissionDate": "2026-08-04",
+      "_id": "student_1786200630852"
     }
   ],
   "batches": [
@@ -245,6 +309,66 @@
       "status": "Unpaid",
       "dueDate": "2026-08-04T00:00:00.000Z",
       "paymentHistory": []
+    },
+    {
+      "_id": "fee_1786200630836_1",
+      "studentId": "student_1786200630826",
+      "feeType": "Monthly Tuition",
+      "billingPeriod": "August 2026",
+      "totalAmount": 0,
+      "discount": 0,
+      "fine": 0,
+      "netAmount": 0,
+      "paidAmount": 0,
+      "dueAmount": 0,
+      "status": "Paid",
+      "dueDate": "2026-08-01T00:00:00.000Z",
+      "paymentHistory": []
+    },
+    {
+      "_id": "fee_1786200630843_1",
+      "studentId": "student_1786200630843",
+      "feeType": "Monthly Tuition",
+      "billingPeriod": "August 2026",
+      "totalAmount": 0,
+      "discount": 0,
+      "fine": 0,
+      "netAmount": 0,
+      "paidAmount": 0,
+      "dueAmount": 0,
+      "status": "Paid",
+      "dueDate": "2026-08-02T00:00:00.000Z",
+      "paymentHistory": []
+    },
+    {
+      "_id": "fee_1786200630848_1",
+      "studentId": "student_1786200630848",
+      "feeType": "Monthly Tuition",
+      "billingPeriod": "August 2026",
+      "totalAmount": 0,
+      "discount": 0,
+      "fine": 0,
+      "netAmount": 0,
+      "paidAmount": 0,
+      "dueAmount": 0,
+      "status": "Paid",
+      "dueDate": "2026-08-03T00:00:00.000Z",
+      "paymentHistory": []
+    },
+    {
+      "_id": "fee_1786200630853_1",
+      "studentId": "student_1786200630852",
+      "feeType": "Monthly Tuition",
+      "billingPeriod": "August 2026",
+      "totalAmount": 0,
+      "discount": 0,
+      "fine": 0,
+      "netAmount": 0,
+      "paidAmount": 0,
+      "dueAmount": 0,
+      "status": "Paid",
+      "dueDate": "2026-08-04T00:00:00.000Z",
+      "paymentHistory": []
     }
   ],
   "attendance": [
@@ -282,14 +406,17 @@
       "autoEnabled": false,
       "delayMinutes": 1,
       "reminderDays": 2,
-      "language": "English"
+      "language": "English",
+      "upiId": "hanankalathil4@okicici",
+      "payeeName": "hanan"
     },
     "profile": {
       "tuitionName": "Techora Academy",
       "phone": "+91 99999 88888",
       "email": "info@techora.in",
       "address": "101, Education Hub, Bangalore, India",
-      "academicYear": "2026-27"
+      "academicYear": "2026-27",
+      "softwareExpiry": "2026-12-31T23:59:59.000Z"
     }
   }
 }

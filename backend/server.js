@@ -175,18 +175,22 @@ io.on('connection', (socket) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
-  connectToWhatsApp();
-  
-  // Automatically open the browser
-  const { exec } = require('child_process');
-  const url = 'http://localhost:3001/pages/login.html';
-  
-  // Platform specific command to open browser
-  const startCommand = process.platform === 'win32' ? 'start' : process.platform === 'darwin' ? 'open' : 'xdg-open';
-  exec(`${startCommand} ${url}`);
-});
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`Backend server running on http://localhost:${PORT}`);
+    connectToWhatsApp();
+    
+    // Automatically open the browser
+    const { exec } = require('child_process');
+    const url = 'http://localhost:3001/pages/login.html';
+    
+    // Platform specific command to open browser
+    const startCommand = process.platform === 'win32' ? 'start' : process.platform === 'darwin' ? 'open' : 'xdg-open';
+    exec(`${startCommand} ${url}`);
+  });
+}
+
+module.exports = { app, server, connectToWhatsApp };
 
 // Setup Monthly Fee Cron Job
 const cron = require('node-cron');

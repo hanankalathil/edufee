@@ -115,7 +115,8 @@ async function initializeMockDB() {
         phone: "+91 99999 88888",
         email: "info@techora.in",
         address: "101, Education Hub, Bangalore, India",
-        academicYear: "2026-27"
+        academicYear: "2026-27",
+        softwareExpiry: "2026-12-31T23:59:59.000Z"
       }
     }
   };

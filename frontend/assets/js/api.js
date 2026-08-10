@@ -186,7 +186,7 @@ const setLocalStorageJson = (key, val) => {
 
 
 // Mock API Methods
-const API_BASE = '/api';
+const API_BASE = window.location.port === '5500' || window.location.port === '5501' || window.location.protocol === 'file:' ? 'http://localhost:3001/api' : '/api';
 
 const fetchApi = async (endpoint, options = {}) => {
   const token = api.getToken();
@@ -246,7 +246,7 @@ const api = {
   // Batches
   getBatches: async () => fetchApi('/batches'),
   createBatch: async (data) => fetchApi('/batches', { method: 'POST', body: JSON.stringify(data) }),
-  updateBatch: async (id, data) => ({}),
+  updateBatch: async (id, data) => fetchApi(`/batches/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteBatch: async (id) => {},
 
   // Classes
@@ -281,7 +281,7 @@ const api = {
 
   // WhatsApp
   getWhatsappSettings: async () => fetchApi('/settings/whatsapp').catch(()=>({})),
-  updateWhatsappSettings: async (settings) => settings,
+  updateWhatsappSettings: async (settings) => fetchApi('/settings/whatsapp', { method: 'POST', body: JSON.stringify(settings) }),
   getWhatsappStatus: async () => fetchApi('/whatsapp/status').catch(()=>({status: 'DISCONNECTED'})),
   getWhatsappQR: async () => fetchApi('/whatsapp/qr').catch(()=>({})),
   disconnectWhatsapp: async () => ({ success: true }),
@@ -312,7 +312,6 @@ const api = {
   getStudentPerformance: async (id) => ({ averagePercentage: "0", testsTaken: 0, highestPercentage: "0", records: [] })
 };
 
-// Automate layout rendering on window load (Sidebar, Header, Theme, Logout)
 if (!window.location.pathname.endsWith('login.html') && !window.location.pathname.endsWith('receipt-preview.html') && !window.location.pathname.endsWith('mark-attendance.html') && !window.location.pathname.endsWith('mark-attendance-list.html')) {
   // if (!api.getToken()) {
   //   window.location.href = 'login.html';
@@ -320,13 +319,51 @@ if (!window.location.pathname.endsWith('login.html') && !window.location.pathnam
     document.addEventListener('DOMContentLoaded', () => {
       renderLayout();
       if (window.initializeCustomSelects) window.initializeCustomSelects();
+      checkLicenseStatus();
     });
   // }
 } else {
   // Run on login page or public page if any selects exist
   document.addEventListener('DOMContentLoaded', () => {
     if (window.initializeCustomSelects) window.initializeCustomSelects();
+    checkLicenseStatus();
   });
+}
+
+async function checkLicenseStatus() {
+  try {
+    const settings = await api.getSettings();
+    if (settings && settings.softwareExpiry) {
+      const expiryDate = new Date(settings.softwareExpiry);
+      if (new Date() > expiryDate) {
+        showPaymentPopup();
+      }
+    }
+  } catch (err) {
+    console.error("License check failed", err);
+  }
+}
+
+function showPaymentPopup() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.95); display: flex; justify-content: center; align-items: center; z-index: 999999; backdrop-filter: blur(10px);';
+  
+  const dialog = document.createElement('div');
+  dialog.style.cssText = 'background: var(--bg-secondary); padding: 40px; border-radius: 24px; text-align: center; max-width: 500px; width: 90%; box-shadow: 0 24px 60px rgba(0,0,0,0.5); border: 1px solid rgba(239, 68, 68, 0.2);';
+  
+  dialog.innerHTML = `
+    <div style="width: 80px; height: 80px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+      <i class="fa-solid fa-lock" style="font-size: 32px;"></i>
+    </div>
+    <h2 style="font-size: 1.8rem; margin-bottom: 16px; color: var(--text-main);">Software License Expired</h2>
+    <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 30px;">
+      Your subscription to the EduFee platform has expired. Please contact your software provider to complete the payment and renew your license.
+    </p>
+    <a href="mailto:support@techora.in" class="btn btn-primary" style="display: inline-block; padding: 12px 32px; font-weight: 600;">Contact Support</a>
+  `;
+  
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
 }
 
 window.initializeCustomSelects = () => {

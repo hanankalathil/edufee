@@ -30,6 +30,6 @@ echo.
 echo To stop the server, press CTRL+C
 echo.
 
-start "" "http://localhost:3001/pages/login.html"
-call npm start
+REM Start the backend server (it will open the browser automatically once ready)
+call npm run dev
 pause

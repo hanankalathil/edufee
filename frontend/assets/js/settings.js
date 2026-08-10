@@ -16,7 +16,11 @@ async function initSettingsPage() {
     const s = await api.getSettings();
     document.getElementById('tuitionName').value = s.tuitionName || '';
     document.getElementById('academicYear').value = s.academicYear || '2026-27';
-    document.getElementById('phone').value = s.phone || '';
+    
+    let loadedPhone = s.phone || '';
+    loadedPhone = loadedPhone.replace(/^\+91\s*/, '').replace(/[^0-9]/g, '').slice(0, 10);
+    document.getElementById('phone').value = loadedPhone;
+    
     document.getElementById('email').value = s.email || '';
     document.getElementById('address').value = s.address || '';
     
@@ -129,6 +133,12 @@ async function initSettingsPage() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
+    
+    // Ensure +91 prefix is added back for backend
+    let phoneVal = formData.get('phone') || '';
+    if (phoneVal && !phoneVal.startsWith('+91')) {
+      formData.set('phone', '+91 ' + phoneVal);
+    }
 
     try {
       await api.updateSettings(formData);
@@ -137,6 +147,81 @@ async function initSettingsPage() {
     } catch (error) {
       alert('Error updating settings: ' + error.message);
     }
+  });
+
+  // Auto-save logic for General Form
+  let saveTimeout;
+  const formInputs = form.querySelectorAll('input, select, textarea');
+
+  const getOrCreateStatusIndicator = (input) => {
+    const formGroup = input.closest('.form-group');
+    if (!formGroup) return null;
+    let statusEl = formGroup.querySelector('.input-auto-save-status');
+    if (!statusEl) {
+      statusEl = document.createElement('div');
+      statusEl.className = 'input-auto-save-status';
+      statusEl.style.color = '#10b981';
+      statusEl.style.fontSize = '0.75rem';
+      statusEl.style.marginTop = '6px';
+      statusEl.style.fontWeight = '500';
+      statusEl.style.minHeight = '18px';
+      formGroup.appendChild(statusEl);
+    }
+    return statusEl;
+  };
+
+  const triggerAutoSave = (e) => {
+    const input = e.target;
+    const statusEl = getOrCreateStatusIndicator(input);
+
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+
+    // Clear indicators from other fields
+    formInputs.forEach(otherInput => {
+      if (otherInput !== input) {
+        const otherStatusEl = otherInput.closest('.form-group')?.querySelector('.input-auto-save-status');
+        if (otherStatusEl) otherStatusEl.innerHTML = '';
+      }
+    });
+
+    if (statusEl) {
+      statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Autosaving...';
+      statusEl.style.color = '#10b981';
+    }
+
+    saveTimeout = setTimeout(async () => {
+      const formData = new FormData(form);
+      
+      // Ensure +91 prefix is added back for backend
+      let phoneVal = formData.get('phone') || '';
+      if (phoneVal && !phoneVal.startsWith('+91')) {
+        formData.set('phone', '+91 ' + phoneVal);
+      }
+
+      try {
+        await api.updateSettings(formData);
+        if (statusEl) {
+          statusEl.innerHTML = '<i class="fa-solid fa-check"></i> Autosaved';
+          setTimeout(() => {
+            if (statusEl.innerHTML.includes('Autosaved')) {
+              statusEl.innerHTML = '';
+            }
+          }, 3000);
+        }
+      } catch (error) {
+        if (statusEl) {
+          statusEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Error saving';
+          statusEl.style.color = '#ef4444';
+        }
+      }
+    }, 1000);
+  };
+
+  formInputs.forEach(input => {
+    input.addEventListener('input', triggerAutoSave);
+    input.addEventListener('change', triggerAutoSave);
   });
 
   // Set active state to theme button

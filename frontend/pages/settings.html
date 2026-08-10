@@ -61,23 +61,39 @@
           <section class="settings-panel" id="panel-general">
             <h3 class="section-title"><i class="fa-solid fa-hotel" style="color: var(--color-primary); margin-right: 8px;"></i> General Academy Details</h3>
             <form id="settings-general-form">
-              <div class="form-group">
-                <label for="tuitionName" class="form-label">Tuition Center Name *</label>
-                <input type="text" id="tuitionName" name="tuitionName" class="form-control" required>
-              </div>
+              <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                  <label for="tuitionName" class="form-label">Tuition Center Name *</label>
+                  <input type="text" id="tuitionName" name="tuitionName" class="form-control" required>
+                </div>
 
-              <div class="form-group">
-                <label for="academicYear" class="form-label">Academic Calendar Year *</label>
-                <select id="academicYear" name="academicYear" class="form-control" required>
-                  <option value="2026-27">2026 - 2027</option>
-                  <option value="2027-28">2027 - 2028</option>
-                </select>
+                <div class="form-group">
+                  <label for="academicYear" class="form-label">Academic Calendar Year *</label>
+                  <select id="academicYear" name="academicYear" class="form-control" required>
+                    <script>
+                      const currentYear = new Date().getFullYear();
+                      // Generate options for current year - 1, current year, and current year + 1
+                      for (let i = -1; i <= 2; i++) {
+                        const startYear = currentYear + i;
+                        const endYear = startYear + 1;
+                        const value = `${startYear}-${endYear.toString().substring(2)}`;
+                        const text = `${startYear} - ${endYear}`;
+                        document.write(`<option value="${value}">${text}</option>`);
+                      }
+                    </script>
+                  </select>
+                </div>
               </div>
 
               <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="form-group">
                   <label for="phone" class="form-label">Phone Contact *</label>
-                  <input type="text" id="phone" name="phone" class="form-control" required>
+                  <div class="form-control" style="display: flex; padding: 0; overflow: hidden; align-items: stretch; cursor: text;" onclick="document.getElementById('phone').focus()">
+                    <div style="background: rgba(0, 0, 0, 0.15); border-right: 1px solid var(--border-color); padding: 0 14px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 0.95rem;">
+                      +91
+                    </div>
+                    <input type="text" id="phone" name="phone" style="flex: 1; border: none; background: transparent; padding: 10px 14px; color: inherit; font-family: inherit; font-size: 0.95rem; outline: none;" placeholder="Enter 10 digit number" maxlength="10" required oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
+                  </div>
                 </div>
                 <div class="form-group">
                   <label for="email" class="form-label">Support Email *</label>
@@ -91,9 +107,30 @@
               </div>
 
               <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
-                <button type="submit" class="btn btn-primary">Save General Details</button>
+                <button type="submit" id="save-general-btn" class="btn btn-primary">Save General Details</button>
               </div>
             </form>
+
+            <!-- Google Pay / UPI Configuration -->
+            <div class="glass-card" style="padding: 16px; margin-top: 24px; border: 1px solid var(--border-color);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h4 style="margin: 0; font-size: 0.95rem;"><i class="fa-brands fa-google-pay" style="color: #4285F4; margin-right: 6px;"></i> UPI Payment QR</h4>
+              </div>
+              <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 12px;">Pre-fill fee amounts in payment QR codes sent with reminders.</p>
+              <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group" style="margin-bottom: 12px;">
+                  <label for="upi-id" class="form-label" style="font-size: 0.8rem;">Merchant UPI ID</label>
+                  <input type="text" id="upi-id" class="form-control compact-input" placeholder="e.g. yourname@okicici">
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                  <label for="payee-name" class="form-label" style="font-size: 0.8rem;">Payee Name</label>
+                  <input type="text" id="payee-name" class="form-control compact-input" placeholder="e.g. Techora Academy">
+                </div>
+              </div>
+              <div style="display: flex; justify-content: flex-end;">
+                <button class="btn btn-primary" style="font-size: 0.85rem;" onclick="window.saveUpiSettings()">Save UPI Details</button>
+              </div>
+            </div>
           </section>
 
           <!-- Branding logo/theme settings panel -->

@@ -88,23 +88,45 @@ router.post('/students', authMiddleware, async (req, res) => {
   // Auto invoice logic simplified
   const batch = db.batches.find(b => b.name === data.batch);
   const price = batch ? parseFloat(batch.price || 0) : 1500;
+  const admissionFee = batch && batch.admissionFee ? parseFloat(batch.admissionFee) : 0;
   const admissionDate = new Date(data.admissionDate || new Date());
+  const billingPeriod = admissionDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   
+  // Add Monthly Tuition Fee
   db.fees.push({
     _id: 'fee_' + Date.now() + '_1',
     studentId: data._id,
-    feeType: 'Admission Fee',
-    billingPeriod: admissionDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+    feeType: 'Monthly Tuition',
+    billingPeriod: billingPeriod,
     totalAmount: price,
     discount: 0,
     fine: 0,
     netAmount: price,
     paidAmount: 0,
     dueAmount: price,
-    status: 'Unpaid',
+    status: price <= 0 ? 'Paid' : 'Unpaid',
     dueDate: admissionDate.toISOString(),
     paymentHistory: []
   });
+
+  // Add Admission Fee if applicable
+  if (admissionFee > 0) {
+    db.fees.push({
+      _id: 'fee_' + Date.now() + '_2',
+      studentId: data._id,
+      feeType: 'Admission Fee',
+      billingPeriod: billingPeriod,
+      totalAmount: admissionFee,
+      discount: 0,
+      fine: 0,
+      netAmount: admissionFee,
+      paidAmount: 0,
+      dueAmount: admissionFee,
+      status: 'Unpaid',
+      dueDate: admissionDate.toISOString(),
+      paymentHistory: []
+    });
+  }
 
   await saveDb();
   res.json(data);
@@ -165,6 +187,15 @@ router.post('/batches', authMiddleware, async (req, res) => {
   res.json(data);
 });
 
+router.put('/batches/:id', authMiddleware, async (req, res) => {
+  const db = await getDb();
+  const index = db.batches.findIndex(b => b._id === req.params.id);
+  if (index === -1) return res.status(404).json({ error: 'Batch not found' });
+  db.batches[index] = { ...db.batches[index], ...req.body };
+  await saveDb();
+  res.json(db.batches[index]);
+});
+
 // --- CLASSES API ---
 router.get('/classes', authMiddleware, async (req, res) => {
   const db = await getDb();
@@ -185,6 +216,13 @@ router.post('/classes', authMiddleware, async (req, res) => {
 // --- SETTINGS API ---
 router.get('/settings/whatsapp', authMiddleware, async (req, res) => {
   const db = await getDb();
+  res.json(db.settings.whatsapp);
+});
+
+router.post('/settings/whatsapp', authMiddleware, async (req, res) => {
+  const db = await getDb();
+  db.settings.whatsapp = { ...db.settings.whatsapp, ...req.body };
+  await saveDb();
   res.json(db.settings.whatsapp);
 });
 router.get('/settings/profile', authMiddleware, async (req, res) => {

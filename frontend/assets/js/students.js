@@ -862,6 +862,7 @@ async function initBatchesPage() {
       timing = `${convert24to12(startTime)} - ${convert24to12(endTime)}`;
     }
     const price = parseFloat(document.getElementById('batch-price').value || 0);
+    const admissionFee = parseFloat(document.getElementById('batch-admission-fee').value || 0);
     const whatsappGroup = document.getElementById('batch-whatsapp-group').value.trim();
 
     // Get subjects
@@ -876,10 +877,10 @@ async function initBatchesPage() {
 
     try {
       if (id) {
-        await api.updateBatch(id, { name, class: className, timing, price, whatsappGroup, subjects });
+        await api.updateBatch(id, { name, class: className, timing, price, admissionFee, whatsappGroup, subjects });
         alert('Batch updated successfully.');
       } else {
-        await api.createBatch({ name, class: className, timing, price, whatsappGroup, subjects });
+        await api.createBatch({ name, class: className, timing, price, admissionFee, whatsappGroup, subjects });
         alert('Batch created successfully.');
       }
       closeBatchModal();
@@ -968,6 +969,7 @@ async function initBatchesPage() {
     }
 
     document.getElementById('batch-price').value = '';
+    document.getElementById('batch-admission-fee').value = '';
     document.getElementById('batch-whatsapp-group').value = '';
 
     // Clear and set default subjects
@@ -996,6 +998,7 @@ async function initBatchesPage() {
       document.getElementById('batch-id').value = batch._id;
       document.getElementById('batch-name').value = batch.name;
       document.getElementById('batch-price').value = batch.price || '';
+      document.getElementById('batch-admission-fee').value = batch.admissionFee || '';
       document.getElementById('batch-whatsapp-group').value = batch.whatsappGroup || '';
       
       let batchClass = batch.class || '';
